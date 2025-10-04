@@ -1,110 +1,117 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Product } from "@/types/product";
 import { useModalContext } from "@/app/context/QuickViewModalContext";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { updateQuickView } from "@/redux/features/quickView-slice";
 import { addItemToCart } from "@/redux/features/cart-slice";
+import { addItemToWishlist } from "@/redux/features/wishlist-slice";
 import Image from "next/image";
 import Link from "next/link";
-import { addItemToWishlist } from "@/redux/features/wishlist-slice";
+import { motion } from "framer-motion";
 
 const SingleItem = ({ item }: { item: Product }) => {
   const { openModal } = useModalContext();
   const dispatch = useDispatch<AppDispatch>();
+  const [rotate, setRotate] = useState({ x: 0, y: 0 });
 
-  // update the QuickView state
-  const handleQuickViewUpdate = () => {
-    dispatch(updateQuickView({ ...item }));
-  };
+  const handleQuickViewUpdate = () => dispatch(updateQuickView({ ...item }));
+  const handleAddToCart = () => dispatch(addItemToCart({ ...item, quantity: 1 }));
+  const handleItemToWishList = () =>
+    dispatch(addItemToWishlist({ ...item, status: "available", quantity: 1 }));
 
-  // add to cart
-  const handleAddToCart = () => {
-    dispatch(
-      addItemToCart({
-        ...item,
-        quantity: 1,
-      })
-    );
-  };
-
-  const handleItemToWishList = () => {
-    dispatch(
-      addItemToWishlist({
-        ...item,
-        status: "available",
-        quantity: 1,
-      })
-    );
+  // Mouse tilt for 3D effect
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    setRotate({
+      x: (0.5 - y) * 15, // tilt range
+      y: (x - 0.5) * 15,
+    });
   };
 
   return (
-    <div className="group">
-      <div className="relative overflow-hidden rounded-lg bg-[#d9bdc4] min-h-[403px]">
-        <div className="text-center px-4 py-7.5">
+    <div className="perspective-1000">
+      <motion.div
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100 min-h-[420px] shadow-2xl group cursor-pointer"
+        style={{
+          transformStyle: "preserve-3d",
+        }}
+        animate={{
+          rotateX: rotate.x,
+          rotateY: rotate.y,
+        }}
+        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setRotate({ x: 0, y: 0 })}
+      >
+        {/* Glow background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#ec4972]/30 via-transparent to-[#ff758f]/30 blur-2xl opacity-40 pointer-events-none"></div>
+
+        {/* Content */}
+        <div className="relative text-center px-4 py-7.5 z-10" style={{ transform: "translateZ(40px)" }}>
+          {/* Rating */}
           <div className="flex items-center justify-center gap-2.5 mb-2">
             <div className="flex items-center gap-1">
-              <Image
-                src="/images/icons/icon-star.svg"
-                alt="star icon"
-                width={14}
-                height={14}
-              />
-              <Image
-                src="/images/icons/icon-star.svg"
-                alt="star icon"
-                width={14}
-                height={14}
-              />
-              <Image
-                src="/images/icons/icon-star.svg"
-                alt="star icon"
-                width={14}
-                height={14}
-              />
-              <Image
-                src="/images/icons/icon-star.svg"
-                alt="star icon"
-                width={14}
-                height={14}
-              />
-              <Image
-                src="/images/icons/icon-star.svg"
-                alt="star icon"
-                width={14}
-                height={14}
-              />
+              {[...Array(5)].map((_, i) => (
+                <Image
+                  key={i}
+                  src="/images/icons/icon-star.svg"
+                  alt="star icon"
+                  width={14}
+                  height={14}
+                  className="drop-shadow-md"
+                />
+              ))}
             </div>
-
-            <p className="text-custom-sm">({item.reviews})</p>
+            <p className="text-sm text-gray-600">({item.reviews})</p>
           </div>
 
-          <h3 className="font-medium text-dark ease-out duration-200 hover:text-red mb-1.5">
-            <Link href="/shop-details"> {item.title} </Link>
+          {/* Title */}
+          <h3 className="font-semibold text-gray-800 hover:text-[#ec4972] mb-1.5 transition">
+            <Link href="/shop-details">{item.title}</Link>
           </h3>
 
+          {/* Price */}
           <span className="flex items-center justify-center gap-2 font-medium text-lg">
-            <span className="text-dark">${item.discountedPrice}</span>
-            <span className="text-dark-4 line-through">${item.price}</span>
+            <span className="text-[#ec4972]">${item.discountedPrice}</span>
+            <span className="text-gray-400 line-through">${item.price}</span>
           </span>
         </div>
 
-        <div className="flex justify-center items-center">
-          <Image src={item.imgs.previews[0]} alt="" width={280} height={280} />
-        </div>
+        {/* Floating Product Image */}
+        <motion.div
+          className="flex justify-center items-center relative z-10"
+          style={{ transform: "translateZ(60px)" }}
+          animate={{ y: [0, -12, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <Image
+            src={item.imgs.previews[0]}
+            alt=""
+            width={260}
+            height={260}
+            className="drop-shadow-2xl"
+          />
+        </motion.div>
 
-        <div className="absolute right-0 bottom-0 translate-x-full u-w-full flex flex-col gap-2 p-5.5 ease-linear duration-300 group-hover:translate-x-0">
+        {/* Hover Buttons */}
+        <div
+          className="absolute right-4 bottom-4 translate-y-full group-hover:translate-y-0 flex flex-col gap-3 transition-all duration-300 z-20"
+          style={{ transform: "translateZ(80px)" }}
+        >
+          {/* Quick View */}
           <button
             onClick={() => {
               handleQuickViewUpdate();
               openModal();
             }}
-            aria-label="button for quick view"
-            id="bestOne"
-            className="flex items-center justify-center w-9 h-9 rounded-[5px] shadow-1 ease-out duration-200 text-dark bg-white hover:text-white hover:bg-red"
+            aria-label="Quick View"
+            className="flex items-center justify-center w-10 h-10 rounded-md bg-white shadow-lg hover:bg-[#ec4972] hover:text-white transition"
           >
-            <svg
+               <svg
               className="fill-current"
               width="16"
               height="16"
@@ -127,13 +134,13 @@ const SingleItem = ({ item }: { item: Product }) => {
             </svg>
           </button>
 
+          {/* Add to Cart */}
           <button
-            onClick={() => handleAddToCart()}
-            aria-label="button for add to cart"
-            id="addCartOne"
-            className="flex items-center justify-center w-9 h-9 rounded-[5px] shadow-1 ease-out duration-200 text-dark bg-white hover:text-white hover:bg-red"
+            onClick={handleAddToCart}
+            aria-label="Add to Cart"
+            className="flex items-center justify-center w-10 h-10 rounded-md bg-gradient-to-r from-[#ec4972] to-[#ff758f] text-white shadow-lg hover:scale-105 transition"
           >
-            <svg
+             <svg
               className="fill-current"
               width="16"
               height="16"
@@ -162,15 +169,13 @@ const SingleItem = ({ item }: { item: Product }) => {
             </svg>
           </button>
 
+          {/* Wishlist */}
           <button
-            onClick={() => {
-              handleItemToWishList();
-            }}
-            aria-label="button for add to fav"
-            id="addFavOne"
-            className="flex items-center justify-center w-9 h-9 rounded-[5px] shadow-1 ease-out duration-200 text-dark bg-white hover:text-white hover:bg-red"
+            onClick={handleItemToWishList}
+            aria-label="Add to Wishlist"
+            className="flex items-center justify-center w-10 h-10 rounded-md bg-white shadow-lg hover:bg-[#ff5a8a] hover:text-white transition"
           >
-            <svg
+           <svg
               className="fill-current"
               width="16"
               height="16"
@@ -187,9 +192,11 @@ const SingleItem = ({ item }: { item: Product }) => {
             </svg>
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
 
 export default SingleItem;
+
+

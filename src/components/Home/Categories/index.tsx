@@ -29,7 +29,8 @@ const Categories = () => {
   }, []);
 
   return (
-    <section className="overflow-hidden pt-17.5">
+   <section className=" py-17.5 bg-gradient-to-b from-[#fff5f7] via-[#ffe0e6] to-white">
+
       <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0 pb-15 border-b border-gray-3">
         <div className="swiper categories-carousel common-carousel">
           {/* <!-- section title --> */}
@@ -119,6 +120,9 @@ const Categories = () => {
           <Swiper
             ref={sliderRef}
             slidesPerView={6}
+            autoplay={{ delay: 3000 }}
+            spaceBetween={15}
+            className="mySwiper"
             breakpoints={{
               // when window width is >= 640px
               0: {

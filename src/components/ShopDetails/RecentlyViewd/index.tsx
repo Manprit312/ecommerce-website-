@@ -31,7 +31,7 @@ const RecentlyViewdItems = () => {
           <div className="mb-10 flex items-center justify-between">
             <div>
               <span className="flex items-center gap-2.5 font-medium text-dark mb-1.5">
-                <Image
+                <Image 
                   src="/images/icons/icon-05.svg"
                   width={17}
                   height={17}
@@ -87,7 +87,7 @@ const RecentlyViewdItems = () => {
             ref={sliderRef}
             slidesPerView={4}
             spaceBetween={20}
-            className="justify-between"
+            className="justify-between m-2"
           >
             {shopData.map((item, key) => (
               <SwiperSlide key={key}>

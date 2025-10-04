@@ -98,7 +98,7 @@ const PreviewSliderModal = () => {
       <Swiper ref={sliderRef} slidesPerView={1} spaceBetween={20}>
         <SwiperSlide>
           <div className="flex justify-center items-center">
-            <Image
+            <Image 
               src={"/images/products/product-2-bg-1.png"}
               alt={"product image"}
               width={450}

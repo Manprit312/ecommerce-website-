@@ -8,11 +8,13 @@ import CounDown from "./Countdown";
 import Testimonials from "./Testimonials";
 import Newsletter from "../Common/Newsletter";
 import HeroCarousal from "./Hero/HeroCarousel";
+import HeroBanner from "./HomeBanner/HomeBanner";
 
 const Home = () => {
   return (
     <main>
-      <Hero />
+      <HeroBanner/>
+      {/* <Hero /> */}
       <Categories />
      
       <NewArrival />

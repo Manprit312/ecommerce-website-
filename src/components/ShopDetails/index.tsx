@@ -129,7 +129,7 @@ const ShopDetails = () => {
                         </svg>
                       </button>
 
-                      <Image
+                      <Image 
                         src={product.imgs?.previews[previewImg]}
                         alt="products-details"
                         width={400}
@@ -150,7 +150,7 @@ const ShopDetails = () => {
                             : "border-transparent"
                         }`}
                       >
-                        <Image
+                        <Image 
                           width={50}
                           height={50}
                           src={item}
@@ -938,7 +938,7 @@ const ShopDetails = () => {
                         <div className="flex items-center justify-between">
                           <a href="#" className="flex items-center gap-4">
                             <div className="w-12.5 h-12.5 rounded-full overflow-hidden">
-                              <Image
+                              <Image 
                                 src="/images/users/user-01.jpg"
                                 alt="author"
                                 className="w-12.5 h-12.5 rounded-full overflow-hidden"
@@ -1052,7 +1052,7 @@ const ShopDetails = () => {
                         <div className="flex items-center justify-between">
                           <a href="#" className="flex items-center gap-4">
                             <div className="w-12.5 h-12.5 rounded-full overflow-hidden">
-                              <Image
+                              <Image 
                                 src="/images/users/user-01.jpg"
                                 alt="author"
                                 className="w-12.5 h-12.5 rounded-full overflow-hidden"
@@ -1166,7 +1166,7 @@ const ShopDetails = () => {
                         <div className="flex items-center justify-between">
                           <a href="#" className="flex items-center gap-4">
                             <div className="w-12.5 h-12.5 rounded-full overflow-hidden">
-                              <Image
+                              <Image 
                                 src="/images/users/user-01.jpg"
                                 alt="author"
                                 className="w-12.5 h-12.5 rounded-full overflow-hidden"
