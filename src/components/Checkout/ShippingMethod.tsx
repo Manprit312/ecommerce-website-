@@ -59,7 +59,7 @@ const ShippingMethod = () => {
             <div className="rounded-md border-[0.5px] py-3.5 px-5 ease-out duration-200 hover:bg-gray-2 hover:border-transparent hover:shadow-none">
               <div className="flex items-center">
                 <div className="pr-4">
-                  <Image
+                  <Image 
                     src="/images/checkout/fedex.svg"
                     alt="fedex"
                     width={64}
@@ -99,7 +99,7 @@ const ShippingMethod = () => {
             <div className="rounded-md border-[0.5px] py-3.5 px-5 ease-out duration-200 hover:bg-gray-2 hover:border-transparent hover:shadow-none">
               <div className="flex items-center">
                 <div className="pr-4">
-                  <Image
+                  <Image 
                     src="/images/checkout/dhl.svg"
                     alt="dhl"
                     width={64}

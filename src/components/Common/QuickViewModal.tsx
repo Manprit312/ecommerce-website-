@@ -102,7 +102,7 @@ const QuickViewModal = () => {
                         activePreview === key && "border-2 border-red"
                       }`}
                     >
-                      <Image
+                      <Image 
                         src={img || ""}
                         alt="thumbnail"
                         width={61}
@@ -137,7 +137,7 @@ const QuickViewModal = () => {
                       </svg>
                     </button>
 
-                    <Image
+                    <Image 
                       src={product?.imgs?.previews?.[activePreview]}
                       alt="products-details"
                       width={400}
