@@ -1,65 +1,104 @@
 "use client";
-import { motion } from "framer-motion";
-import Image from "next/image";
+import React from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 
-const HeroBanner = () => {
+export default function HeroSection() {
+  const slides = [
+    {
+      id: 1,
+      title: "Illuminate Your Special Moments",
+      subtitle: "Perfect Gift Ideas",
+      description:
+        "Elegant LED photo frames and warm lighting solutions to make every occasion memorable.",
+      emoji: "🦢",
+      product: "Swan LED Photo Frame",
+      tag: "Wedding Gift Special",
+      gradient: "from-[#e9f9f0] via-white to-[#f8fdfb]",
+    },
+    {
+      id: 2,
+      title: "Bring Magic to Your Home Decor",
+      subtitle: "Handcrafted Designs",
+      description:
+        "Beautifully crafted LED lamps designed with simplicity, nature, and luxury in mind.",
+      emoji: "💡",
+      product: "Wooden LED Table Lamp",
+      tag: "Minimal & Elegant",
+      gradient: "from-white via-[#f5fff9] to-[#e9f9f0]",
+    },
+    {
+      id: 3,
+      title: "Light That Speaks Love",
+      subtitle: "Romantic Lighting Gifts",
+      description:
+        "Gift moments of warmth and light with heart-shaped LED frames for your loved ones.",
+      emoji: "❤️📷",
+      product: "Crystal Heart Frame",
+      tag: "Best Seller",
+      gradient: "from-[#f8fdfb] via-white to-[#e9f9f0]",
+    },
+  ];
+
   return (
-    <section className="relative w-full h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#ff4d6d] via-[#ff758f] to-[#ffe0e6] mt-19">
-      {/* Animated gradient blobs */}
-      <motion.div
-        className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 blur-3xl"
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute bottom-20 right-20 w-96 h-96 rounded-full bg-[#ff4d6d]/30 blur-3xl"
-        animate={{ scale: [1, 1.3, 1] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-      />
+    <section className="relative overflow-hidden bg-white text-gray-800">
+      <Swiper
+        modules={[Autoplay, Pagination]}
+        autoplay={{ delay: 4000, disableOnInteraction: false }}
+        pagination={{ clickable: true }}
+        loop
+        className="w-full"
+      >
+        {slides.map((slide) => (
+          <SwiperSlide key={slide.id}>
+            <div
+              className={`relative bg-gradient-to-r ${slide.gradient} py-20 md:py-28 transition-all duration-700`}
+            >
+              <div className="absolute inset-0 bg-[#1daa61]/5"></div>
 
-      {/* Content Wrapper */}
-      <div className="relative z-10 max-w-6xl w-full flex flex-col lg:flex-row items-center justify-between px-6 lg:px-20">
-        {/* Left Content */}
-        <motion.div
-          className="text-center lg:text-left max-w-lg backdrop-blur-lg bg-white/20 p-8 rounded-2xl shadow-2xl"
-          initial={{ opacity: 0, x: -60 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1 }}
-        >
-          <h1 className="text-5xl md:text-6xl font-extrabold text-white drop-shadow-lg">
-            Elevate Your Sound
-          </h1>
-          <p className="mt-6 text-lg text-white/90 leading-relaxed">
-            Experience music like never before with our 3D immersive wireless
-            headphones. Crystal clear, powerful, and built for you.
-          </p>
-          <motion.a
-            href="#shop"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-block mt-8 px-8 py-4 text-lg font-semibold text-white rounded-xl shadow-lg bg-gradient-to-r from-[#ff4d6d] to-[#ff758f] hover:shadow-2xl transition"
-          >
-            Shop Now
-          </motion.a>
-        </motion.div>
+              <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid md:grid-cols-2 gap-12 items-center">
+                  {/* Left Section */}
+                  <div>
+                    <div className="inline-block bg-[#1daa61]/10 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
+                      <span className="text-sm font-semibold text-[#1daa61]">
+                        {slide.subtitle}
+                      </span>
+                    </div>
+                    <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight text-gray-900">
+                      {slide.title}
+                    </h1>
+                    <p className="text-lg mb-8 text-gray-600 max-w-lg">
+                      {slide.description}
+                    </p>
+                    <div className="flex gap-4">
+                      <button className="bg-[#1daa61] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#189c57] transform hover:scale-105 transition-all shadow-lg">
+                        Shop Now
+                      </button>
+                      <button className="border-2 border-[#1daa61] text-[#1daa61] px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#f5fff9] transition-all">
+                        View Gifts
+                      </button>
+                    </div>
+                  </div>
 
-        {/* Right 3D Product */}
-        <motion.div
-          className="mt-12 lg:mt-0"
-          animate={{ y: [0, -20, 0], rotateY: [0, 15, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <Image
-            src="/images/hero/hero-01.png"
-            alt="3D Headphone"
-            width={450}
-            height={450}
-            className="drop-shadow-2xl"
-          />
-        </motion.div>
-      </div>
+                  {/* Right Section */}
+                  <div className="hidden md:block">
+                    <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 border border-[#1daa61]/20 text-center shadow-xl">
+                      <div className="text-6xl mb-4">{slide.emoji}</div>
+                      <h3 className="text-2xl font-bold mb-2 text-gray-800">
+                        {slide.product}
+                      </h3>
+                      <p className="text-[#1daa61] font-medium">{slide.tag}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </section>
   );
-};
-
-export default HeroBanner;
+}
