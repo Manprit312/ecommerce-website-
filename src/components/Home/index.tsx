@@ -24,7 +24,7 @@ export const products = [
       power: 'USB Powered LED',
       features: ['LED Night Light', 'Photo Frame', 'Wooden Base', 'Crystal Swan Design']
     },
-    images: ['🦢📷'],
+    images: ['/images/product1.jpeg'],
     inStock: true,
     badge: 'Bestseller'
   },
@@ -43,7 +43,7 @@ export const products = [
       colors: 'Multi-color LED',
       features: ['Auto Sensor', 'Color Changing', 'Energy Saving', 'Decorative']
     },
-    images: ['🍄💡'],
+    images: ['/images/product2.jpeg'],
     inStock: true,
     badge: 'Popular'
   },
@@ -60,7 +60,7 @@ export const products = [
       power: 'USB Powered',
       features: ['Adjustable Brightness', 'Modern Design', 'Energy Efficient']
     },
-    images: ['💡'],
+  images: ['/images/product3.jpeg'],
     inStock: true
   },
   { 
@@ -76,7 +76,7 @@ export const products = [
       power: 'Battery Powered LED',
       features: ['LED Backlight', 'Heart Design', 'Romantic Gift']
     },
-    images: ['❤️📷'],
+   images: ['/images/product4.jpeg'],
     inStock: true
   },
   { 
@@ -92,7 +92,7 @@ export const products = [
       power: 'Rechargeable Battery',
       features: ['Touch Control', '16 Colors', 'Portable']
     },
-    images: ['🌙'],
+   images: ['/images/product5.jpeg'],
     inStock: true
   },
   { 
@@ -108,7 +108,7 @@ export const products = [
       power: 'USB Powered',
       features: ['LED Accent', 'Butterfly Design', 'Photo Display']
     },
-    images: ['🦋📷'],
+   images: ['/images/product6.jpeg'],
     inStock: true
   },
   { 
@@ -124,7 +124,7 @@ export const products = [
       power: 'AC Adapter',
       features: ['Star Projection', 'Rotating', 'Multiple Colors']
     },
-    images: ['⭐'],
+   images: ['/images/product7.jpeg'],
     inStock: true
   },
   { 
@@ -140,7 +140,7 @@ export const products = [
       power: 'AC Powered',
       features: ['Vintage Style', 'LED Technology', 'Dimmable']
     },
-    images: ['💡'],
+ images: ['/images/product8.jpeg'],
     inStock: true
   },
 ];
