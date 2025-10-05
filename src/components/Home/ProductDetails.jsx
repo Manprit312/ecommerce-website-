@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { ShoppingCart, Star, Heart, ArrowLeft } from "lucide-react";
-
+import Image from "next/image";
 export default function ProductDetails({
   product,
   addToCart,
@@ -45,7 +45,7 @@ export default function ProductDetails({
             {/* Left: Product Image */}
             <div>
               <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl h-96 flex items-center justify-center text-9xl mb-6">
-                {product.images[0]}
+            <Image src={product.images[0]} alt={product.name} width={400} height={400} className="object-contain h-full w-auto" />
               </div>
               {product.badge && (
                 <span className="inline-block bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
