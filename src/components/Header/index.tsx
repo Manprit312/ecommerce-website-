@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Search, ShoppingCart, User, ChevronDown, Menu, X } from "lucide-react";
 import Image from "next/image";
 
-export default function Header() {
+export default function Header({cart}) {
   const [hoveredMenu, setHoveredMenu] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
