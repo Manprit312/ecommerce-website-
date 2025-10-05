@@ -102,13 +102,13 @@ const QuickViewModal = () => {
                         activePreview === key && "border-2 border-red"
                       }`}
                     >
-                      <Image 
+                      {/* <Image 
                         src={img || ""}
                         alt="thumbnail"
                         width={61}
                         height={61}
                         className="aspect-square"
-                      />
+                      /> */}
                     </button>
                   ))}
                 </div>
