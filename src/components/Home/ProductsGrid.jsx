@@ -1,20 +1,13 @@
-import ProductsBackground from "../ProductsBack";
-import ProductCard from "./ProductCard";
 
+import ProductCard from "./ProductCard";
+import NetworkBackground from "../background";
 export default function ProductsGrid({ products, ...handlers }) {
   return (
     <section
       className="relative w-full py-16 overflow-hidden"
-      style={{
-        backgroundImage: `
-          linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), rgba(29, 170, 97, 0.4)),
-          url('/images/productback.png')
-        `,
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-      }}
+     
     >
+      <NetworkBackground/>
       {/* Optional: 3D background effect */}
       {/* <ProductsBackground /> */}
 
