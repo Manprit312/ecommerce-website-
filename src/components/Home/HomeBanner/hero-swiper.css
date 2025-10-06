@@ -1,0 +1,12 @@
+/* Custom Swiper Pagination */
+.swiper-pagination-bullet {
+  background: #ccc;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+  background: #1daa61 !important; /* Dark green active dot */
+  transform: scale(1.2);
+  opacity: 1;
+}
