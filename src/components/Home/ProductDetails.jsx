@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
+import NetworkBackground from "../background";
 import "swiper/css/pagination"
 export default function ProductDetails({
   product,
@@ -36,16 +37,9 @@ export default function ProductDetails({
   const [tab, setTab] = useState("description");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 "   style={{
-        backgroundImage: `
-          linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), rgba(29, 170, 97, 0.4)),
-          url('/images/productback.png')
-        `,
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-      }} >
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 " >
       {/* Header */}
+      <NetworkBackground/>
       <header className="bg-white/90 backdrop-blur-lg shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
