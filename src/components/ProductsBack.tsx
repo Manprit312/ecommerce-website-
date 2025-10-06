@@ -1,8 +1,9 @@
 "use client";
-import React, { Suspense, useRef, useMemo } from "react";
+import React, { Suspense, useRef, useMemo,JSX } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Stars } from "@react-three/drei";
 import * as THREE from "three";
+
 
 function SmoothOrbs(): JSX.Element {
   const group = useRef<THREE.Group>(null);
