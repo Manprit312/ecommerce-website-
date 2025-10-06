@@ -3,9 +3,7 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer
-      className="bg-[rgb(24,35,55)] text-white py-14"
-    >
+    <footer className="bg-[rgb(24,35,55)] text-white py-14 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
@@ -98,6 +96,21 @@ export default function Footer() {
             <a href="#" className="hover:text-[#1daa61] transition-colors">Instagram</a>
             <a href="#" className="hover:text-[#1daa61] transition-colors">LinkedIn</a>
           </div>
+        </div>
+
+        {/* Created by section */}
+        <div className="mt-6 text-center text-gray-500 text-sm">
+          <p>
+            Designed & Developed by{" "}
+            <a
+              href="https://aydsoftware.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#1daa61] hover:text-[#17c36e] font-semibold transition-colors"
+            >
+              AYD Software
+            </a>
+          </p>
         </div>
       </div>
     </footer>

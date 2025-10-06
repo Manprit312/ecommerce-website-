@@ -34,11 +34,13 @@ export default function RootLayout({
           <PreLoader />
         ) : (
           <>
+          {/* <ElegantDottedBackground/> */}
             <ReduxProvider>
               <CartModalProvider>
                 <ModalProvider>
                   <PreviewSliderProvider>
                     {/* <Header /> */}
+
                     {children}
 
                     <QuickViewModal />
