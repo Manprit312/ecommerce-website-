@@ -21,7 +21,7 @@ export default function ProductCard({
           alt={product.name}
           width={300}
           height={300}
-          className="object-contain w-full h-full transition-transform duration-500 hover:scale-110"
+          className="object-cover w-full h-full transition-transform duration-500 hover:scale-110"
         />
 
         {/* Badge */}
