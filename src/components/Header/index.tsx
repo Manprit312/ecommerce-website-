@@ -26,12 +26,13 @@ export default function Header({ cart, menuOpen, setMenuOpen }: HeaderProps) {
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 relative">
+            <div className="w-20 relative">
               <Image
-                src="/logo.png"
+                src="/images/logo.png"
                 alt="Logo"
-                fill
-                className="object-contain"
+                width={200}
+                height={260}
+                className="object-cover"
               />
             </div>
             <span className="text-lg font-semibold text-gray-800 text-[#1daa61]">

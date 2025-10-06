@@ -8,6 +8,8 @@ import ProductsGrid from "./ProductsGrid";
 import ProductDetails from "./ProductDetails";
 import FeaturesSection from "./FeaturesSelection";
 import Footer from "../Footer";
+import { motion } from "framer-motion";
+
 export const products = [
   { 
     id: 1, 
@@ -169,6 +171,7 @@ export default function EcommerceWebsite() {
   />
   ) : (
     <>
+  
       <Header cart={cart} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
       <HomeBanner/>
       {/* <HeroSection /> */}

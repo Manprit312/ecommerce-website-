@@ -43,7 +43,10 @@ export default function HeroSection() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-white text-gray-800">
+    <section className="relative overflow-hidden bg-white text-gray-800"
+     style={{backgroundImage: 'url(/images/homebannerback.png)', backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center'
+      
+     }}>
       <Swiper
         modules={[Autoplay, Pagination]}
         autoplay={{ delay: 4000, disableOnInteraction: false }}
@@ -54,7 +57,7 @@ export default function HeroSection() {
         {slides.map((slide) => (
           <SwiperSlide key={slide.id}>
             <div
-              className={`relative bg-gradient-to-r ${slide.gradient} py-20 md:py-28 transition-all duration-700`}
+              className={`relative py-20 md:py-28 transition-all duration-700`}
             >
               <div className="absolute inset-0 bg-[#1daa61]/5"></div>
 
