@@ -34,30 +34,24 @@ export default function Categories({
 
   return (
     
-    <section className="w-full bg-gradient-to-b from-[#f5fff9] to-white py-3 shadow-inner">
+    <section className="w-full bg-gradient-to-b from-[#f5fff9] to-white py-4 shadow-inner">
         <NetworkBackground/>
-      <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-xl font-semibold text-gray-800 ">
-          Shop by Category
-        </h2>
+      <div className="max-w-7xl mx-auto">
+        
 
-        <div className="flex gap-4 overflow-x-auto scrollbar-hide p-2">
+        <div className="flex gap-4 overflow-x-auto scrollbar-hide w-full">
           {categories.map((category, index) => (
             <button
               key={index}
               onClick={() => handleClick(category.name)}
-              className={`flex flex-col items-center flex-shrink-0 w-24 cursor-pointer rounded-2xl pt-2 transition-all duration-300 ${
-                selectedCategory === category.name
-                  ? " bg-[#e8f9f1] shadow-md scale-105"
-                  : " hover:border-[#1daa61]/50 hover:bg-[#f6fff9]"
-              }`}
+              className={`flex flex-col items-center flex-shrink-0 w-18 cursor-pointer rounded-2xl  transition-all duration-300 `}
             >
-              <div className="w-16 h-16 rounded-full overflow-hidden bg-white border border-gray-100 flex items-center justify-center mb-2">
+              <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-100 flex items-center justify-center mb-2">
                 <Image
                   src={category.image}
                   alt={category.name}
-                  width={60}
-                  height={60}
+                  width={50}
+                  height={50}
                   className="object-contain"
                 />
               </div>
