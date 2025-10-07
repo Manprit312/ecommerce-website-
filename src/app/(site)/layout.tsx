@@ -11,8 +11,8 @@ import { ReduxProvider } from "@/redux/provider";
 import { usePathname } from "next/navigation";
 import { PreviewSliderProvider } from "../context/PreviewSliderContext";
 
-import ScrollToTop from "@/components/Common/ScrollToTop";
-import PreLoader from "@/components/Common/PreLoader";
+// import ScrollToTop from "@/components/Common/ScrollToTop";
+// import PreLoader from "@/components/Common/PreLoader";
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 const pathname = usePathname(); // 🔍 Get current route path
   const [loading, setLoading] = useState(true);
@@ -34,7 +34,8 @@ const pathname = usePathname(); // 🔍 Get current route path
     <html lang="en" suppressHydrationWarning={true}>
       <body>
         {loading ? (
-          <PreLoader />
+          // <PreLoader />
+          <></>
         ) : (
           <>
             <ReduxProvider>
@@ -59,7 +60,8 @@ const pathname = usePathname(); // 🔍 Get current route path
               </CartModalProvider>
             </ReduxProvider>
 
-            {!hideLayout && <ScrollToTop />}
+            {!hideLayout && <></>
+            }
           </>
         )}
       </body>
