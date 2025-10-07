@@ -20,7 +20,7 @@ export default function Header({ cart, menuOpen, setMenuOpen }: HeaderProps) {
   ];
 
   return (
-    <header className="w-full border-gray-200 shadow-sm pt-2 relative overflow-visible z-50 bg-white ">
+    <header className="w-full border-gray-200 shadow-sm  relative overflow-visible z-50 bg-white ">
       {/* --- MAIN HEADER --- */}
       <div className="bg-white py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4">

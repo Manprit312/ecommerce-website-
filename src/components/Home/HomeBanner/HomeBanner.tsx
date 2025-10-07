@@ -2,10 +2,10 @@
 import React from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
+import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/pagination";
-import "./hero-swiper.css"; // Custom CSS for dot color
+import "swiper/css/navigation";
+import "./hero-swiper.css"; // Keep your styling
 
 export default function HeroSection() {
   const slides = [
@@ -43,7 +43,7 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative  overflow-hidden bg-white text-gray-800"
+      className="relative overflow-hidden bg-white text-gray-800"
       style={{
         backgroundImage: "url(/images/homebannerback.png)",
         backgroundSize: "cover",
@@ -52,17 +52,18 @@ export default function HeroSection() {
       }}
     >
       <Swiper
-        modules={[Autoplay, Pagination]}
+        modules={[Autoplay, Navigation]}
         autoplay={{ delay: 4000, disableOnInteraction: false }}
-        pagination={{ clickable: true }}
+        navigation={{
+          nextEl: ".swiper-button-next-custom",
+          prevEl: ".swiper-button-prev-custom",
+        }}
         loop
-       
-        
-        className="w-full pb-6"
+        className="w-full "
       >
         {slides.map((slide) => (
           <SwiperSlide key={slide.id}>
-            <div className="relative py-2 md:py-8 transition-all duration-700">
+            <div className="relative pt-2 md:py-10 transition-all duration-700">
               <div className="absolute inset-0 bg-[#1daa61]/5"></div>
 
               <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -80,19 +81,11 @@ export default function HeroSection() {
                     <p className="text-base md:text-lg mb-5 text-gray-600 max-w-md">
                       {slide.description}
                     </p>
-                    {/* <div className="flex gap-3">
-                      <button className="bg-[#1daa61] text-white px-6 py-3 rounded-lg font-semibold text-base hover:bg-[#189c57] transform hover:scale-105 transition-all shadow-lg">
-                        Shop Now
-                      </button>
-                      <button className="border-2 border-[#1daa61] text-[#1daa61] px-6 py-3 rounded-lg font-semibold text-base hover:bg-[#f5fff9] transition-all">
-                        View Gifts
-                      </button>
-                    </div> */}
                   </div>
 
-                  {/* Right Section with 3D Effect Image */}
+                  {/* Right Section */}
                   <div className="hidden md:flex justify-center">
-                    <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-[#1daa61]/20  flex flex-col items-center transform perspective-[1000px]">
+                    <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-[#1daa61]/20 flex flex-col items-center transform perspective-[1000px]">
                       <div className="relative w-70 h-54 md:w-96 md:h-72 mb-3 overflow-hidden rounded-xl transform-gpu transition-transform duration-700 ease-in-out hover:rotate-y-6 hover:scale-[1.05]">
                         <Image
                           src={slide.image}
@@ -114,6 +107,31 @@ export default function HeroSection() {
             </div>
           </SwiperSlide>
         ))}
+
+        {/* Custom Navigation Buttons */}
+        <div className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-[#1daa61] text-[#1daa61] hover:text-white p-2 rounded-full shadow-md transition-all cursor-pointer">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </div>
+
+        <div className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-[#1daa61] text-[#1daa61] hover:text-white p-2 rounded-full shadow-md transition-all cursor-pointer">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
       </Swiper>
     </section>
   );
