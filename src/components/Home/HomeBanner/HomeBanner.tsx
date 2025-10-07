@@ -63,7 +63,7 @@ export default function HeroSection() {
       >
         {slides.map((slide) => (
           <SwiperSlide key={slide.id}>
-            <div className="relative pt-2 md:py-10 transition-all duration-700">
+          <div className="relative pt-2 md:py-10 transition-all duration-700">
               <div className="absolute inset-0 bg-[#1daa61]/5"></div>
 
               <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -1,4 +1,4 @@
-import { selectTotalPrice } from "@/redux/features/cart-slice";
+import { selectTotalPrice } from "@/redux/features/cartSlice";
 import { useAppSelector } from "@/redux/store";
 import React from "react";
 import { useSelector } from "react-redux";

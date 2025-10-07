@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import {
   removeItemFromCart,
   updateCartItemQuantity,
-} from "@/redux/features/cart-slice";
+} from "@/redux/features/cartSlice";
 
 import Image from "next/image";
 
