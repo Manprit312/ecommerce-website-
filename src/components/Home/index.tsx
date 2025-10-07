@@ -93,13 +93,14 @@ import HomeBanner from "./HomeBanner/HomeBanner";
 import Categories from "../Categories";
 import ProductsGrid from "./ProductsGrid";
 import ProductDetails from "./ProductDetails";
+import type { RootState } from "@/redux/store"; // ✅ import the type
 
 export default function EcommerceWebsite() {
   const dispatch = useDispatch();
   const router = useRouter();
 
   const { filtered, currentCategory, selectedProduct } = useSelector(
-    (state) => state?.products
+    (state: RootState) => state.products // ✅ Type-safe access
   );
   // const favorites = useSelector((state) => state.favorites.ids);
 

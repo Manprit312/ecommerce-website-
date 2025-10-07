@@ -1,34 +1,34 @@
 "use client";
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import productReducer from "./features/productSlice";
-import cartReducer from "./features/cartSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-// ✅ Combine reducers properly (no extra key)
+import productReducer from "./features/productSlice";
+import cartReducer from "./features/cartSlice";
+// import favoriteReducer from "./features/favoriteSlice";
+
 const rootReducer = combineReducers({
   products: productReducer,
   cart: cartReducer,
+  // favorites: favoriteReducer,
 });
 
-// ✅ Persist configuration
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["cart"], // only persist cart (remove favorites if not defined)
+  whitelist: ["cart", "favorites"],
 };
 
-// ✅ Apply persist
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// ✅ Configure store
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+    getDefaultMiddleware({ serializableCheck: false }),
 });
 
-// ✅ Create persistor
 export const persistor = persistStore(store);
+
+// ✅ Export types for useSelector & useDispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
