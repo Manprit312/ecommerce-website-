@@ -78,14 +78,14 @@ export default function HeroSection() {
                     <p className="text-base md:text-lg mb-5 text-gray-600 max-w-md">
                       {slide.description}
                     </p>
-                    <div className="flex gap-3">
+                    {/* <div className="flex gap-3">
                       <button className="bg-[#1daa61] text-white px-6 py-3 rounded-lg font-semibold text-base hover:bg-[#189c57] transform hover:scale-105 transition-all shadow-lg">
                         Shop Now
                       </button>
                       <button className="border-2 border-[#1daa61] text-[#1daa61] px-6 py-3 rounded-lg font-semibold text-base hover:bg-[#f5fff9] transition-all">
                         View Gifts
                       </button>
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Right Section with 3D Effect Image */}

@@ -8,7 +8,7 @@ interface HeaderProps {
   setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function Header({ cart, menuOpen, setMenuOpen }: HeaderProps) {
- const [hoveredMenu, setHoveredMenu] = useState(null);
+  const [hoveredMenu, setHoveredMenu] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const menus = [
@@ -20,13 +20,13 @@ export default function Header({ cart, menuOpen, setMenuOpen }: HeaderProps) {
   ];
 
   return (
-    <header className="w-full border-gray-200 shadow-sm pt-4 relative overflow-visible z-50 bg-white">
+    <header className="w-full border-gray-200 shadow-sm pt-2 relative overflow-visible z-50 bg-white ">
       {/* --- MAIN HEADER --- */}
-      <div className="bg-white py-3">
+      <div className="bg-white py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-20 relative">
+          <div className="flex items-center ">
+            {/* <div className="w-20 relative">
               <Image
                 src="/images/logo.png"
                 alt="Logo"
@@ -34,20 +34,34 @@ export default function Header({ cart, menuOpen, setMenuOpen }: HeaderProps) {
                 height={260}
                 className="object-cover"
               />
-            </div>
-            <span className="text-lg font-semibold text-gray-800 text-[#1daa61]">
-              Arya Enterprises
+            </div> */}
+            <span className="text-[#1daa61] font-bold text-lg leading-tight text-center">
+              Arya<br />
+              <span className="text-gray-800 font-medium">Enterprises</span>
             </span>
+
           </div>
 
-          {/* Search */}
+          {/* Search (Desktop) */}
           <div className="hidden md:flex flex-1 max-w-xl mx-8 relative">
             <input
               type="text"
               placeholder="Search Products"
-              className="w-full border border-gray-300 rounded-full py-2 pl-5 pr-10 text-gray-700 focus:ring-2 focus:ring-[#1daa61] focus:outline-none placeholder-[#1daa61]-400"
+              className="w-full border border-gray-300 rounded-full py-1 pl-5 pr-10 text-gray-700 focus:ring-2 focus:ring-[#1daa61] focus:outline-none placeholder-gray-400"
             />
-            <Search className="absolute right-3 top-2.5 text-gray-500 w-5 h-5" />
+            <Search className="absolute right-3 top-2 text-gray-500 w-4 h-4" />
+          </div>
+
+          {/* Search (Mobile) */}
+          <div className="md:hidden mt-3 px-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search Products"
+                className="w-full border border-gray-300 rounded-full py-2 pl-4 pr-10 text-gray-700 focus:ring-2 focus:ring-[#1daa61] focus:outline-none placeholder-gray-400"
+              />
+              <Search className="absolute right-3 top-2.5 text-gray-500 w-5 h-5" />
+            </div>
           </div>
 
           {/* Icons */}
@@ -93,11 +107,10 @@ export default function Header({ cart, menuOpen, setMenuOpen }: HeaderProps) {
 
               {/* Dropdown */}
               <div
-                className={`absolute left-1/2 -translate-x-1/2 top-[calc(100%+6px)] w-52 bg-white rounded-2xl border border-[#1daa61]-100 shadow-[0_6px_25px_rgba(0,0,0,0.1)] transition-all duration-300 ease-out z-50 ${
-                  hoveredMenu === menu.name
-                    ? "opacity-100 visible translate-y-0"
-                    : "opacity-0 invisible -translate-y-2"
-                }`}
+                className={`absolute left-1/2 -translate-x-1/2 top-[calc(100%+6px)] w-52 bg-white rounded-2xl border border-[#1daa61]-100 shadow-[0_6px_25px_rgba(0,0,0,0.1)] transition-all duration-300 ease-out z-50 ${hoveredMenu === menu.name
+                  ? "opacity-100 visible translate-y-0"
+                  : "opacity-0 invisible -translate-y-2"
+                  }`}
               >
                 <div className="py-3">
                   {menu.subItems.map((item, i) => (
@@ -123,9 +136,8 @@ export default function Header({ cart, menuOpen, setMenuOpen }: HeaderProps) {
 
       {/* --- MOBILE MENU --- */}
       <div
-        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${
-          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
