@@ -12,11 +12,11 @@ import NetworkBackground from "../background";
 import "swiper/css/pagination"
 export default function ProductDetails({
   product,
-  addToCart,
+  // addToCart,
   toggleFavorite,
   favorites = [],
   goBack,
-  cart = [],
+  // cart = [],
   related = [], // optional related products
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -40,7 +40,7 @@ export default function ProductDetails({
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 " >
       {/* Header */}
       <NetworkBackground/>
-      <header className="bg-white/90 backdrop-blur-lg shadow-md sticky top-0 z-50">
+      {/* <header className="bg-white/90 backdrop-blur-lg shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <button
@@ -63,10 +63,17 @@ export default function ProductDetails({
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
 
       {/* Product Detail Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <button
+              onClick={goBack}
+              className="flex items-center space-x-2 text-gray-700 hover:text-amber-600 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 " />
+              <span className="font-medium text-[#1daa61]">Back to Shop</span>
+            </button>
         <div className="backdrop-transparent-lg rounded-3xl  overflow-hidden">
           <div className="grid md:grid-cols-2 gap-8 p-6 md:p-8">
             {/* Left: Gallery + Thumbs */}

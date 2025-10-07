@@ -22,11 +22,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const [loading, setLoading] = useState<boolean>(true);
-
+ const [cart, setCart] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);
-
+const addToCart = (p) => setCart([...cart, p]);
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body>
@@ -39,7 +40,8 @@ export default function RootLayout({
               <CartModalProvider>
                 <ModalProvider>
                   <PreviewSliderProvider>
-                    {/* <Header /> */}
+                         <Header cart={cart} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+                   
 
                     {children}
 
