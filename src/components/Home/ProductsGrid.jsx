@@ -6,7 +6,7 @@ export default function ProductsGrid({ products, ...handlers }) {
     <>
     <NetworkBackground/>
        <section
-      className="relative w-full py-16 overflow-hidden"
+      className="relative w-full py-6 overflow-hidden"
      
     >
       
