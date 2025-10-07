@@ -1,0 +1,52 @@
+.loader-container {
+  @apply flex flex-col items-center justify-center h-screen bg-gradient-to-br from-[#f5fff9] to-[#e8fff1] text-center;
+}
+
+/* Animate rotation for some letters */
+.spin-slow {
+  animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Draw stroke animation */
+.dash {
+  stroke-dasharray: 360;
+  stroke-dashoffset: 360;
+  animation: dash 3s ease-in-out infinite;
+}
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 360;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 360;
+  }
+}
+
+/* Fade-in animation for ENTERPRISES text */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 1.5s ease-out forwards;
+}
