@@ -1,12 +1,12 @@
 import React from "react";
-import Breadcrumb from "../Common/Breadcrumb";
+// import Breadcrumb from "../Common/Breadcrumb";
 import BlogItem from "../Blog/BlogItem";
 import blogData from "../BlogGrid/blogData"; 
 import SearchForm from "../Blog/SearchForm"; 
 import LatestPosts from "../Blog/LatestPosts";
 import LatestProducts from "../Blog/LatestProducts";
 import Categories from "../Blog/Categories";
-import shopData from "../Shop/shopData"; 
+// import shopData from "../Shop/shopData"; 
  
 const BlogGridWithSidebar = () => {
   const categories = [
@@ -38,7 +38,7 @@ const BlogGridWithSidebar = () => {
 
   return (
     <>
-      <Breadcrumb title={"Blog Grid Sidebar"} pages={["blog grid sidebar"]} />
+      {/* <Breadcrumb title={"Blog Grid Sidebar"} pages={["blog grid sidebar"]} /> */}
 
       <section className="overflow-hidden py-20 bg-gray-2">
         <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
@@ -179,7 +179,7 @@ const BlogGridWithSidebar = () => {
               <LatestPosts blogs={blogData} />
 
               {/* <!-- Latest Products box --> */}
-              <LatestProducts products={shopData} />
+              {/* <LatestProducts products={shopData} /> */}
 
               {/* <!-- Popular Category box --> */}
               <Categories categories={categories} />
