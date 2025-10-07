@@ -7,22 +7,26 @@ import { ShoppingCart, Star, Heart, ArrowLeft, ChevronLeft, ChevronRight } from 
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
+import { useDispatch } from "react-redux";
 import "swiper/css";
+import { addToCart } from "@/redux/features/cartSlice";
 import NetworkBackground from "../background";
 import "swiper/css/pagination"
 export default function ProductDetails({
   product,
   // addToCart,
-  toggleFavorite,
-  favorites = [],
+  // toggleFavorite,
+  // favorites = [],
   goBack,
   // cart = [],
   related = [], // optional related products
 }) {
+  const dispatch = useDispatch();
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || "");
   const [quantity, setQuantity] = useState(1);
-  const isFav = favorites.includes(product?.id);
+  // const isFav = favorites.includes(product?.id);
 
   const total = useMemo(() => (product?.price || 0) * quantity, [product, quantity]);
 
@@ -39,7 +43,7 @@ export default function ProductDetails({
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 " >
       {/* Header */}
-      <NetworkBackground/>
+      <NetworkBackground />
       {/* <header className="bg-white/90 backdrop-blur-lg shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
@@ -68,12 +72,12 @@ export default function ProductDetails({
       {/* Product Detail Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <button
-              onClick={goBack}
-              className="flex items-center space-x-2 text-gray-700 hover:text-amber-600 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5 " />
-              <span className="font-medium text-[#1daa61]">Back to Shop</span>
-            </button>
+          onClick={goBack}
+          className="flex items-center space-x-2 text-gray-700 hover:text-amber-600 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 " />
+          <span className="font-medium text-[#1daa61]">Back to Shop</span>
+        </button>
         <div className="backdrop-transparent-lg rounded-3xl  overflow-hidden">
           <div className="grid md:grid-cols-2 gap-8 p-6 md:p-8">
             {/* Left: Gallery + Thumbs */}
@@ -120,9 +124,8 @@ export default function ProductDetails({
                     <button
                       key={i}
                       onClick={() => setActiveIndex(i)}
-                      className={`rounded-lg overflow-hidden border-2 ${
-                        i === activeIndex ? "border-amber-400" : "border-transparent"
-                      }`}>
+                      className={`rounded-lg overflow-hidden border-2 ${i === activeIndex ? "border-amber-400" : "border-transparent"
+                        }`}>
                       <Image src={img} alt={`thumb-${i}`} width={80} height={80} className="object-cover" />
                     </button>
                   ))}
@@ -202,7 +205,17 @@ export default function ProductDetails({
               {/* Action Buttons */}
               <div className="space-y-3">
                 <button
-                  onClick={() => addToCart({ ...product, selectedColor, quantity })}
+                  onClick={() =>
+                    dispatch(
+                      addToCart({
+                        ...product,
+                        selectedColor,
+                        quantity,
+                        image: product.images?.[0], // optional safety
+                      })
+                    )
+                  }
+
                   className="w-full  bg-[#1daa61] text-whitepy-2 rounded-lg font-semibold 
                        hover:bg-[#189c57] hover:shadow-[0_8px_20px_rgba(29,170,97,0.3)] transform hover:scale-[1.03] 
                        transition-all text-sm flex items-center justify-center gap-2 text-white
@@ -211,13 +224,13 @@ export default function ProductDetails({
                   <ShoppingCart className="w-5 h-5" /> Add to Cart
                 </button>
 
-                <button
+                {/* <button
                   onClick={() => toggleFavorite(product.id)}
                   className="w-full border-2 border-amber-500 text-amber-600 px-6 py-3 rounded-xl font-bold text-lg hover:bg-amber-50 transition-all flex items-center justify-center gap-3"
                 >
                   <Heart className={`w-5 h-5 ${isFav ? "fill-amber-600" : ""}`} />
                   {isFav ? "Remove from Favorites" : "Add to Favorites"}
-                </button>
+                </button> */}
 
                 <div className="flex items-center justify-between text-sm text-gray-600 mt-2">
                   <div>Free Shipping</div>
@@ -229,213 +242,209 @@ export default function ProductDetails({
           </div>
 
           {/* Tabs: Description / Specifications / Reviews */}
-      {/* Tabs: Description / Specifications / Reviews */}
-<div className="border-t">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    {/* Tabs Header */}
-    <div className="flex items-center gap-6 border-b pb-4">
-      <button
-        onClick={() => setTab("description")}
-        className={`pb-2 ${
-          tab === "description"
-            ? "border-b-2 border-amber-500 font-semibold text-amber-600"
-            : "text-gray-600"
-        }`}
-      >
-        Description
-      </button>
-      <button
-        onClick={() => setTab("specs")}
-        className={`pb-2 ${
-          tab === "specs"
-            ? "border-b-2 border-amber-500 font-semibold text-amber-600"
-            : "text-gray-600"
-        }`}
-      >
-        Specifications
-      </button>
-      <button
-        onClick={() => setTab("reviews")}
-        className={`pb-2 ${
-          tab === "reviews"
-            ? "border-b-2 border-amber-500 font-semibold text-amber-600"
-            : "text-gray-600"
-        }`}
-      >
-        Reviews
-      </button>
-    </div>
+          {/* Tabs: Description / Specifications / Reviews */}
+          <div className="border-t">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              {/* Tabs Header */}
+              <div className="flex items-center gap-6 border-b pb-4">
+                <button
+                  onClick={() => setTab("description")}
+                  className={`pb-2 ${tab === "description"
+                      ? "border-b-2 border-amber-500 font-semibold text-amber-600"
+                      : "text-gray-600"
+                    }`}
+                >
+                  Description
+                </button>
+                <button
+                  onClick={() => setTab("specs")}
+                  className={`pb-2 ${tab === "specs"
+                      ? "border-b-2 border-amber-500 font-semibold text-amber-600"
+                      : "text-gray-600"
+                    }`}
+                >
+                  Specifications
+                </button>
+                <button
+                  onClick={() => setTab("reviews")}
+                  className={`pb-2 ${tab === "reviews"
+                      ? "border-b-2 border-amber-500 font-semibold text-amber-600"
+                      : "text-gray-600"
+                    }`}
+                >
+                  Reviews
+                </button>
+              </div>
 
-    {/* Tab Content */}
-    <div className="py-6">
-      <AnimatePresence mode="wait">
-        {tab === "description" && (
-          <motion.div
-            key="desc"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-          >
-            <h3 className="font-bold text-lg mb-3">Product Description</h3>
-            <p className="text-gray-600">
-              {product?.description ||
-                "Premium product with elegant design and high-quality materials."}
-            </p>
-            <ul className="mt-4 space-y-2 text-gray-700">
-              {(product?.keyFeatures || product?.specs?.features || []).map(
-                (f, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="mt-1 text-amber-500">•</span>
-                    <span>{f}</span>
-                  </li>
-                )
-              )}
-            </ul>
-          </motion.div>
-        )}
-
-        {tab === "specs" && (
-          <motion.div
-            key="specs"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-          >
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-bold mb-3">Specifications</h4>
-                <div className="space-y-3 text-gray-700">
-                  {product?.specs ? (
-                    Object.entries(product.specs).map(([k, v]) => (
-                      <div key={k} className="flex">
-                        <div className="min-w-[140px] font-semibold capitalize">
-                          {k.replace(/_/g, " ")}:
-                        </div>
-                        <div>{Array.isArray(v) ? v.join(", ") : v}</div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-gray-500">
-                      No specifications available.
-                    </div>
+              {/* Tab Content */}
+              <div className="py-6">
+                <AnimatePresence mode="wait">
+                  {tab === "description" && (
+                    <motion.div
+                      key="desc"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                    >
+                      <h3 className="font-bold text-lg mb-3">Product Description</h3>
+                      <p className="text-gray-600">
+                        {product?.description ||
+                          "Premium product with elegant design and high-quality materials."}
+                      </p>
+                      <ul className="mt-4 space-y-2 text-gray-700">
+                        {(product?.keyFeatures || product?.specs?.features || []).map(
+                          (f, i) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <span className="mt-1 text-amber-500">•</span>
+                              <span>{f}</span>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </motion.div>
                   )}
-                </div>
-              </div>
 
-              <div>
-                <h4 className="font-bold mb-3">Shipping & Returns</h4>
-                <div className="text-gray-600">
-                  <p>Shipping: {product?.shipping || "₹99"}</p>
-                  <p>Warranty: {product?.warranty || "1 year"}</p>
-                  <p>
-                    Returnable:{" "}
-                    {product?.returnable === false
-                      ? "No"
-                      : "Within 30 days"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
+                  {tab === "specs" && (
+                    <motion.div
+                      key="specs"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                    >
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                          <h4 className="font-bold mb-3">Specifications</h4>
+                          <div className="space-y-3 text-gray-700">
+                            {product?.specs ? (
+                              Object.entries(product.specs).map(([k, v]) => (
+                                <div key={k} className="flex">
+                                  <div className="min-w-[140px] font-semibold capitalize">
+                                    {k.replace(/_/g, " ")}:
+                                  </div>
+                                  <div>{Array.isArray(v) ? v.join(", ") : v}</div>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-gray-500">
+                                No specifications available.
+                              </div>
+                            )}
+                          </div>
+                        </div>
 
-        {tab === "reviews" && (
-          <motion.div
-            key="reviews"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-          >
-            <div className="space-y-4">
-              {(product?.reviewsList || []).length === 0 && (
-                <div className="text-gray-500">
-                  No reviews yet. Be the first to review this product.
-                </div>
-              )}
-
-              {(product?.reviewsList || []).map((rv, i) => (
-                <div key={i} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                        {(rv.name || "U").charAt(0)}
+                        <div>
+                          <h4 className="font-bold mb-3">Shipping & Returns</h4>
+                          <div className="text-gray-600">
+                            <p>Shipping: {product?.shipping || "₹99"}</p>
+                            <p>Warranty: {product?.warranty || "1 year"}</p>
+                            <p>
+                              Returnable:{" "}
+                              {product?.returnable === false
+                                ? "No"
+                                : "Within 30 days"}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-semibold">{rv.name}</div>
-                        <div className="text-xs text-gray-500">{rv.date}</div>
+                    </motion.div>
+                  )}
+
+                  {tab === "reviews" && (
+                    <motion.div
+                      key="reviews"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                    >
+                      <div className="space-y-4">
+                        {(product?.reviewsList || []).length === 0 && (
+                          <div className="text-gray-500">
+                            No reviews yet. Be the first to review this product.
+                          </div>
+                        )}
+
+                        {(product?.reviewsList || []).map((rv, i) => (
+                          <div key={i} className="border rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                  {(rv.name || "U").charAt(0)}
+                                </div>
+                                <div>
+                                  <div className="font-semibold">{rv.name}</div>
+                                  <div className="text-xs text-gray-500">{rv.date}</div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                {[...Array(5)].map((_, s) => (
+                                  <Star
+                                    key={s}
+                                    className={`w-4 h-4 ${s < rv.rating
+                                        ? "fill-yellow-400 text-yellow-400"
+                                        : "text-gray-300"
+                                      }`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                            <div className="text-gray-700">{rv.comment}</div>
+                          </div>
+                        ))}
                       </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, s) => (
-                        <Star
-                          key={s}
-                          className={`w-4 h-4 ${
-                            s < rv.rating
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <div className="text-gray-700">{rv.comment}</div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* ✅ Related Products Section */}
+            <div className="border-t bg-transparent backdrop-blur-md mt-8 rounded-b-3xl py-10">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h4 className="font-bold mb-6 text-gray-800 text-lg">You Might Also Like</h4>
+
+                {/* Swiper Slider for Related Products */}
+                <div className="relative">
+                  <Swiper
+                    slidesPerView={1.5}
+                    spaceBetween={16}
+                    breakpoints={{
+                      640: { slidesPerView: 2.5, spaceBetween: 20 },
+                      1024: { slidesPerView: 4, spaceBetween: 24 },
+                    }}
+                    loop
+                    autoplay={{ delay: 4000, disableOnInteraction: false }}
+                    className="pb-6"
+                  >
+                    {(related?.length ? related : new Array(4).fill(product)).map((r, i) => (
+                      <SwiperSlide key={i}>
+                        <div className=" rounded-2xl m-2 shadow-md  overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                          <div className="relative h-22 bg-transparent-50 flex items-center justify-center overflow-hidden">
+                            <Image
+                              src={r.images?.[0] || product.images?.[0] || "/placeholder.png"}
+                              alt={r.name || product.name}
+                              width={200}
+                              height={200}
+                              className="object-contain transition-transform duration-500 hover:scale-105 rounded-xl"
+                            />
+                          </div>
+                          <div className="p-4 text-center">
+                            <h5 className="text-gray-800 font-semibold text-sm truncate mb-1">
+                              {r.name || product.name}
+                            </h5>
+                            <p className="text-[#1daa61] font-bold text-base">
+                              ₹{r.price || product.price}
+                            </p>
+                          </div>
+                        </div>
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
                 </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  </div>
-  
-{/* ✅ Related Products Section */}
-<div className="border-t bg-transparent backdrop-blur-md mt-8 rounded-b-3xl py-10">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h4 className="font-bold mb-6 text-gray-800 text-lg">You Might Also Like</h4>
-
-    {/* Swiper Slider for Related Products */}
-    <div className="relative">
-      <Swiper
-        slidesPerView={1.5}
-        spaceBetween={16}
-        breakpoints={{
-          640: { slidesPerView: 2.5, spaceBetween: 20 },
-          1024: { slidesPerView: 4, spaceBetween: 24 },
-        }}
-        loop
-        autoplay={{ delay: 4000, disableOnInteraction: false }}
-        className="pb-6"
-      >
-        {(related?.length ? related : new Array(4).fill(product)).map((r, i) => (
-          <SwiperSlide key={i}>
-            <div className=" rounded-2xl m-2 shadow-md  overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-              <div className="relative h-22 bg-transparent-50 flex items-center justify-center overflow-hidden">
-                <Image
-                  src={r.images?.[0] || product.images?.[0] || "/placeholder.png"}
-                  alt={r.name || product.name}
-                width={200}
-                height={200}
-                  className="object-contain transition-transform duration-500 hover:scale-105 rounded-xl"
-                />
-              </div>
-              <div className="p-4 text-center">
-                <h5 className="text-gray-800 font-semibold text-sm truncate mb-1">
-                  {r.name || product.name}
-                </h5>
-                <p className="text-[#1daa61] font-bold text-base">
-                  ₹{r.price || product.price}
-                </p>
               </div>
             </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </div>
-  </div>
-</div>
 
 
-</div>
+          </div>
 
         </div>
       </div>

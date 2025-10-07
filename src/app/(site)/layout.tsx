@@ -8,26 +8,28 @@ import Footer from "../../components/Footer";
 import { ModalProvider } from "../context/QuickViewModalContext";
 import { CartModalProvider } from "../context/CartSidebarModalContext";
 import { ReduxProvider } from "@/redux/provider";
-import QuickViewModal from "@/components/Common/QuickViewModal";
-import CartSidebarModal from "@/components/Common/CartSidebarModal";
+import { usePathname } from "next/navigation";
 import { PreviewSliderProvider } from "../context/PreviewSliderContext";
-import PreviewSliderModal from "@/components/Common/PreviewSlider";
 
 import ScrollToTop from "@/components/Common/ScrollToTop";
 import PreLoader from "@/components/Common/PreLoader";
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [loading, setLoading] = useState<boolean>(true);
- const [cart, setCart] = useState([]);
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+const pathname = usePathname(); // 🔍 Get current route path
+  const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const cart: any[] = []; // Example placeholder
+
   useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
+    const timer = setTimeout(() => setLoading(false), 1000); // example preloader delay
+    return () => clearTimeout(timer);
   }, []);
-const addToCart = (p) => setCart([...cart, p]);
+
+  // 🚫 Hide header & footer on /login or /signin routes
+  const hideLayout =
+    pathname === "/login" ||
+    pathname === "/signin" ||
+    pathname?.startsWith("/auth");
+
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body>
@@ -35,25 +37,29 @@ const addToCart = (p) => setCart([...cart, p]);
           <PreLoader />
         ) : (
           <>
-          {/* <ElegantDottedBackground/> */}
             <ReduxProvider>
               <CartModalProvider>
                 <ModalProvider>
                   <PreviewSliderProvider>
-                         <Header cart={cart} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-                   
+                    {/* Only show Header & Footer if not on login */}
+                    {!hideLayout && (
+                      <Header
+                        cart={cart}
+                        menuOpen={menuOpen}
+                        setMenuOpen={setMenuOpen}
+                      />
+                    )}
 
+                    {/* Page content */}
                     {children}
 
-                    <QuickViewModal />
-                    <CartSidebarModal />
-                    <PreviewSliderModal />
+                    {!hideLayout && <Footer />}
                   </PreviewSliderProvider>
                 </ModalProvider>
               </CartModalProvider>
             </ReduxProvider>
-            <ScrollToTop />
-            <Footer />
+
+            {!hideLayout && <ScrollToTop />}
           </>
         )}
       </body>
