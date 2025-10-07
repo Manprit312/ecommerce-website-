@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import NetworkBackground from "./background";
-
 const categories = [
   { name: "Trending", image: "/images/trending.png" },
   { name: "Romantic", image: "/images/romantic.png" },
@@ -11,8 +10,13 @@ const categories = [
   { name: "Luxury", image: "/images/luxury.png" },
   { name: "Festive", image: "/images/festive.png" },
   { name: "Office", image: "/images/office.png" },
+  { name: "Electronics", image: "/images/electronics.png" },
+  { name: "Fashion", image: "/images/fashion.png" },
+  { name: "Brands", image: "/images/brands.png" },
+  { name: "Collections", image: "/images/gifts.png" },
+  { name: "Home & Kitchen", image: "/images/kitchen.png" },
+  { name: "Gifts", image: "/images/gifts.png" },
 ];
-
 export default function Categories({
   onCategorySelect,
 }: {
@@ -33,7 +37,7 @@ export default function Categories({
     <section className="w-full bg-gradient-to-b from-[#f5fff9] to-white py-3 shadow-inner">
         <NetworkBackground/>
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+        <h2 className="text-xl font-semibold text-gray-800 ">
           Shop by Category
         </h2>
 

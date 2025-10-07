@@ -56,7 +56,9 @@ export default function HeroSection() {
         autoplay={{ delay: 4000, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         loop
-        className="w-full"
+       
+        
+        className="w-full pb-6"
       >
         {slides.map((slide) => (
           <SwiperSlide key={slide.id}>
