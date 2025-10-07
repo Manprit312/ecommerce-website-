@@ -1,31 +1,29 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import {
-  User,
   Mail,
   MapPin,
   Phone,
-  Edit3,
+  LogOut,
   Package,
   Calendar,
-  LogOut,
-  UserRound
+  UserRound,
 } from "lucide-react";
-import Image from "next/image";
+import { useSelector, useDispatch } from "react-redux";
+import { clearUser } from "@/redux/features/userSlice";
+import { auth } from "@/firebase/config";
+import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
+  const dispatch = useDispatch();
   const router = useRouter();
 
-  const [user] = useState({
-    name: "Manprit Kaur",
-    email: "manprit@example.com",
-    phone: "+91 98765 43210",
-    address: "Mohali, Punjab, India",
-    avatar: "/images/avatar.jpg",
-  });
+  // 🧩 Get user from Redux
+  const user = useSelector((state: any) => state.user.user);
 
+  // 🛍️ Example order history (you can later fetch dynamically)
   const orders = [
     {
       id: "ORD-1243",
@@ -43,15 +41,21 @@ export default function ProfilePage() {
     },
   ];
 
-  // 🔐 Handle logout logic
-  const handleLogout = () => {
-    // Example logout flow:
-    // - Clear user session (localStorage, Redux, Firebase signOut)
-    // - Redirect to /login
+  // 🔐 Logout logic
+  const handleLogout = async () => {
+    await signOut(auth);
+    dispatch(clearUser());
     localStorage.removeItem("user");
-    console.log("User logged out");
     router.push("/signin");
   };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-600 text-lg">
+        Loading user data...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f5fff9] via-white to-[#e6fff1] py-16 px-4 md:px-8">
@@ -73,7 +77,7 @@ export default function ProfilePage() {
           transition={{ duration: 0.6 }}
           className="bg-white shadow-xl rounded-2xl p-8 border border-[#1daa61]/10 mb-10 relative"
         >
-          {/* Logout button */}
+          {/* Logout Button */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -86,34 +90,41 @@ export default function ProfilePage() {
 
           <div className="flex flex-col md:flex-row items-center md:items-start md:space-x-10">
             {/* Avatar */}
-            <div className="relative h-50">
-                <UserRound width={120} height={120}/>
-              {/* <Image
-                src={user.avatar}
-                alt={user.name}
-                width={120}
-                height={120}
-                className="rounded-full border-4 border-[#1daa61]/30 object-cover"
-              /> */}
-              {/* <button className="absolute bottom-2 right-2 bg-[#1daa61] text-white p-1.5 rounded-full shadow-md hover:bg-[#179e56] transition">
-                <Edit3 size={16} />
-              </button> */}
+            <div className="relative">
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || "User Avatar"}
+                  className="w-32 h-32 rounded-full border-4 border-[#1daa61]/30 object-cover"
+                />
+              ) : (
+                <UserRound width={120} height={120} className="text-gray-400" />
+              )}
             </div>
 
-            {/* Info */}
+            {/* User Info */}
             <div className="mt-6 md:mt-0 text-center md:text-left space-y-3">
               <h2 className="text-2xl font-semibold text-gray-800">
-                {user.name}
+                {user.displayName || "Guest User"}
               </h2>
-              <div className="flex items-center justify-center md:justify-start gap-2 text-gray-600">
-                <Mail size={16} /> <span>{user.email}</span>
-              </div>
-              <div className="flex items-center justify-center md:justify-start gap-2 text-gray-600">
-                <Phone size={16} /> <span>{user.phone}</span>
-              </div>
-              <div className="flex items-center justify-center md:justify-start gap-2 text-gray-600">
-                <MapPin size={16} /> <span>{user.address}</span>
-              </div>
+
+              {user.email && (
+                <div className="flex items-center justify-center md:justify-start gap-2 text-gray-600">
+                  <Mail size={16} /> <span>{user.email}</span>
+                </div>
+              )}
+
+              {user.phoneNumber && (
+                <div className="flex items-center justify-center md:justify-start gap-2 text-gray-600">
+                  <Phone size={16} /> <span>{user.phoneNumber}</span>
+                </div>
+              )}
+
+              {user.address && (
+                <div className="flex items-center justify-center md:justify-start gap-2 text-gray-600">
+                  <MapPin size={16} /> <span>{user.address}</span>
+                </div>
+              )}
             </div>
           </div>
         </motion.div>
@@ -132,9 +143,7 @@ export default function ProfilePage() {
                 className="bg-white border border-[#1daa61]/10 rounded-2xl shadow-sm p-6 hover:shadow-lg transition"
               >
                 <div className="flex justify-between items-center mb-3">
-                  <h4 className="font-semibold text-gray-800">
-                    {order.id}
-                  </h4>
+                  <h4 className="font-semibold text-gray-800">{order.id}</h4>
                   <span
                     className={`text-sm font-medium px-3 py-1 rounded-full ${
                       order.status === "Delivered"
