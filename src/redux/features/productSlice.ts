@@ -99,6 +99,23 @@ const products = [
     images: ["/images/product3.jpeg"],
     inStock: true,
   },
+    {
+    id: 4,
+    name: "Wooden LED Table Lamp",
+    price: 38.99,
+    category: "Trending",
+    rating: 4.7,
+    reviews: 189,
+    description:
+      "Aesthetic wooden table lamp that complements any modern decor. Perfect for cozy corners and reading spaces.",
+    specs: {
+      material: "Natural Wood + LED",
+      power: "USB Powered",
+      features: ["Adjustable Brightness", "Modern Design", "Energy Efficient"],
+    },
+    images: ["/images/product3.jpeg"],
+    inStock: true,
+  },
 
   // 💡 Smart Lights
   {
@@ -126,6 +143,23 @@ const products = [
     name: "Star Projector Night Light",
     price: 35.99,
     category: "Smart Lights",
+    rating: 4.8,
+    reviews: 421,
+    description:
+      "Transforms any room into a starry sky with rotating projection and soothing light effects.",
+    specs: {
+      material: "Plastic Housing",
+      power: "AC Adapter",
+      features: ["Star Projection", "Rotating", "Multiple Colors"],
+    },
+    images: ["/images/product7.jpeg"],
+    inStock: true,
+  },
+{
+    id: 6,
+    name: "Star Projector Night Light",
+    price: 35.99,
+    category: "Trending",
     rating: 4.8,
     reviews: 421,
     description:
@@ -192,6 +226,23 @@ const products = [
       features: ["Touch Control", "16 Colors", "Portable"],
     },
     images: ["/images/product5.jpeg"],
+    inStock: true,
+  },
+ {
+    id: 7,
+    name: "Vintage Edison LED Lamp",
+    price: 44.99,
+    category: "Trending",
+    rating: 4.9,
+    reviews: 356,
+    description:
+      "Classic Edison bulb design infused with LED technology. A luxurious touch to modern interiors.",
+    specs: {
+      material: "Glass + Wood Base",
+      power: "AC Powered",
+      features: ["Vintage Style", "LED Technology", "Dimmable"],
+    },
+    images: ["/images/product8.jpeg"],
     inStock: true,
   },
   {
