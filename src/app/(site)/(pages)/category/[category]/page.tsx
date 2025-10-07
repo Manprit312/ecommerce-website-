@@ -33,8 +33,8 @@ export default function CategoryPage() {
           <ProductsGrid
             products={products}
             addToCart={() => {}}
-            toggleFavorite={() => {}}
-            favorites={[]}
+            // toggleFavorite={() => {}}
+            // favorites={[]}
             viewProductDetails={() => {}}
           />
         ) : (

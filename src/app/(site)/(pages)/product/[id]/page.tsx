@@ -37,8 +37,8 @@ export default function ProductPage() {
   return (
     <ProductDetails
       product={product}
-      toggleFavorite={() => {}}
-      favorites={[]}
+    //   toggleFavorite={() => {}}
+    //   favorites={[]}
       goBack={() => router.back()}
       
     />
