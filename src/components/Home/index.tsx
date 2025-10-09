@@ -86,7 +86,7 @@
 "use client";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { filterByCategory, selectProduct, clearSelectedProduct } from "@/redux/features/productSlice";
+import {  selectProduct, clearSelectedProduct } from "@/redux/features/productSlice";
 // import { toggleFavorite } from "@/redux/slices/favoriteSlice";
 import { useRouter } from "next/navigation";
 import HomeBanner from "./HomeBanner/HomeBanner";
@@ -104,9 +104,7 @@ export default function EcommerceWebsite() {
   );
   // const favorites = useSelector((state) => state.favorites.ids);
 
-  const handleCategorySelect = (category) => {
-    dispatch(filterByCategory(category));
-  };
+
 
   const handleViewAll = () => {
     const encoded = encodeURIComponent(JSON.stringify(filtered));
@@ -123,7 +121,7 @@ export default function EcommerceWebsite() {
   ) : (
     <>
       <HomeBanner />
-      <Categories onCategorySelect={handleCategorySelect} />
+      <Categories  />
       <div className="relative">
         <ProductsGrid
           products={filtered}
