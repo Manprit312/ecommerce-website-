@@ -5,29 +5,27 @@ import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, Star, Heart, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
-import { useDispatch } from "react-redux";
-import "swiper/css";
 import { addToCart } from "@/redux/features/cartSlice";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { useDispatch } from "react-redux";
+import { Autoplay } from "swiper/modules";
+import "swiper/css";
 import NetworkBackground from "../background";
 import "swiper/css/pagination"
 export default function ProductDetails({
   product,
   // addToCart,
-  // toggleFavorite,
-  // favorites = [],
+  toggleFavorite,
+  favorites = [],
   goBack,
   // cart = [],
   related = [], // optional related products
 }) {
-  const dispatch = useDispatch();
-
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || "");
   const [quantity, setQuantity] = useState(1);
-  // const isFav = favorites.includes(product?.id);
-
+  const isFav = favorites.includes(product?.id);
+  const dispatch = useDispatch()
   const total = useMemo(() => (product?.price || 0) * quantity, [product, quantity]);
 
   const images = product?.images?.length ? product.images : ["/placeholder.png"];
@@ -90,13 +88,13 @@ export default function ProductDetails({
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -30 }}
                     transition={{ duration: 0.35 }}
-                    className="w-full h-96 flex items-center justify-center rounded-xl"
+                    className="w-full flex items-center justify-center rounded-xl"
                   >
                     <Image
                       src={images[activeIndex]}
                       alt={`${product?.name} ${activeIndex + 1}`}
-                      width={600}
-                      height={600}
+                      width={300}
+                      height={300}
                       className="object-contain max-h-[360px] rounded-xl "
                     />
                   </motion.div>
@@ -211,11 +209,10 @@ export default function ProductDetails({
                         ...product,
                         selectedColor,
                         quantity,
-                        image: product.images?.[0], // optional safety
+                        image: product.images?.[0],
                       })
                     )
                   }
-
                   className="w-full  bg-[#1daa61] text-whitepy-2 rounded-lg font-semibold 
                        hover:bg-[#189c57] hover:shadow-[0_8px_20px_rgba(29,170,97,0.3)] transform hover:scale-[1.03] 
                        transition-all text-sm flex items-center justify-center gap-2 text-white
@@ -224,13 +221,6 @@ export default function ProductDetails({
                   <ShoppingCart className="w-5 h-5" /> Add to Cart
                 </button>
 
-                {/* <button
-                  onClick={() => toggleFavorite(product.id)}
-                  className="w-full border-2 border-amber-500 text-amber-600 px-6 py-3 rounded-xl font-bold text-lg hover:bg-amber-50 transition-all flex items-center justify-center gap-3"
-                >
-                  <Heart className={`w-5 h-5 ${isFav ? "fill-amber-600" : ""}`} />
-                  {isFav ? "Remove from Favorites" : "Add to Favorites"}
-                </button> */}
 
                 <div className="flex items-center justify-between text-sm text-gray-600 mt-2">
                   <div>Free Shipping</div>

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React,{useEffect, useState} from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 // import Header from "@/";
 import ProductsGrid from "@/components/Home/ProductsGrid";
@@ -7,11 +7,32 @@ import ProductsGrid from "@/components/Home/ProductsGrid";
 export default function CategoryPage() {
   const { category } = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [products, setProducts] = useState([]);
 
-  // Decode products from URL
-  const data = searchParams.get("data");
-  const products = data ? JSON.parse(decodeURIComponent(data)) : [];
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      // 👇 Correct API endpoint for category
+      const res = await fetch(`http://213.210.36.79:5000/api/products?category=${category}`);
+      if (!res.ok) throw new Error("Failed to fetch products");
+
+      const data = await res.json();
+      setProducts(data);
+    } catch (err) {
+      console.error("❌ Fetch error:", err.message);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(()=>{
+    fetchProducts()
+    console.log(products)
+  },[])
 
   return (
     <>

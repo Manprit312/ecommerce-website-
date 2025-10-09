@@ -1,28 +1,52 @@
 "use client";
-import React from "react";
-import { useSearchParams, useParams, useRouter } from "next/navigation";
-import ProductDetails from "@/components/Home/ProductDetails"; // adjust path
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import ProductDetails from "@/components/Home/ProductDetails"; // ✅ your original styled component
+import ThreeDLoader from "@/components/Loader"; // ✅ your mint 3D loader
 
 export default function ProductPage() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
   const { id } = useParams();
+  const router = useRouter();
 
-  const encoded = searchParams.get("data");
-  let product = null;
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  try {
-    product = encoded ? JSON.parse(decodeURIComponent(encoded)) : null;
-  } catch (error) {
-    console.error("Failed to decode product data:", error);
-  }
+  // ✅ Fetch single product dynamically from your backend
+  useEffect(() => {
+    if (!id) return;
 
-  // fallback
-  if (!product) {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`http://213.210.36.79:5000/api/products/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch product");
+        const data = await res.json();
+        setProduct(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  // 🌀 Loading state with mint theme
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5fff9] to-white">
+        <ThreeDLoader />
+      </div>
+    );
+
+  // ⚠️ Error or not found
+  if (error || !product)
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-          Product not found
+          {error ? "Failed to load product." : "Product not found."}
         </h2>
         <button
           onClick={() => router.push("/")}
@@ -32,15 +56,14 @@ export default function ProductPage() {
         </button>
       </div>
     );
-  }
 
+  // ✅ Render the original styled ProductDetails with backend data
   return (
     <ProductDetails
       product={product}
-    //   toggleFavorite={() => {}}
-    //   favorites={[]}
       goBack={() => router.back()}
-      
+      toggleFavorite={() => {}}
+      favorites={[]}
     />
   );
 }

@@ -212,7 +212,7 @@ console.log()
                   </div>
                 </div>
                 <button className="text-gray-500 hover:text-red-500 transition">
-                  <Trash2 className="w-5 h-5"  onClick={() => dispatch(removeFromCart(item.id))} />
+                  <Trash2 className="w-5 h-5"  onClick={() => dispatch(removeFromCart(item._id))} />
                 </button>
               </div>
             ))
