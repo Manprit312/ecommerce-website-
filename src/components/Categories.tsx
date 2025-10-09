@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useDispatch } from "react-redux";
 import { fetchProducts } from "@/redux/features/productSlice";
 import NetworkBackground from "./background";
@@ -22,7 +23,7 @@ const categories = [
 ];
 
 export default function Categories() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [selectedCategory, setSelectedCategory] = useState("Trending");
 
   // ✅ Fetch "Trending" by default when component loads

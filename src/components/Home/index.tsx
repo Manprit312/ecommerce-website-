@@ -124,10 +124,10 @@ export default function EcommerceWebsite() {
       <Categories  />
       <div className="relative">
         <ProductsGrid
-          products={filtered}
+        
           // toggleFavorite={(id) => dispatch(toggleFavorite(id))}
           // favorites={favorites}
-          viewProductDetails={(p) => dispatch(selectProduct(p))}
+        
         />
 
         <div className="flex justify-end px-6 mb-12">
