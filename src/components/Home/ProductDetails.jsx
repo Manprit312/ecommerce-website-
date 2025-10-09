@@ -16,13 +16,12 @@ import "swiper/css/pagination"
 export default function ProductDetails({
   product,
   // addToCart,
-  toggleFavorite,
+
   favorites = [],
   goBack,
   // cart = [],
   related = [], // optional related products
 }) {
-
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || "");

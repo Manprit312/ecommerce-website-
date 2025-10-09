@@ -52,11 +52,10 @@ export default function CategoryPage() {
 
         {products.length > 0 ? (
           <ProductsGrid
-            products={products}
-            addToCart={() => {}}
-            // toggleFavorite={() => {}}
-            // favorites={[]}
-            viewProductDetails={() => {}}
+            
+         
+          
+          
           />
         ) : (
           <p className="text-gray-600 text-center py-10">
