@@ -10,6 +10,7 @@ import {
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
+import toast from "react-hot-toast";
 import { useSelector ,useDispatch} from "react-redux";
 import { useRouter } from "next/navigation";
 interface HeaderProps {
@@ -212,7 +213,19 @@ console.log()
                   </div>
                 </div>
                 <button className="text-gray-500 hover:text-red-500 transition">
-                  <Trash2 className="w-5 h-5"  onClick={() => dispatch(removeFromCart(item._id))} />
+                  <Trash2 className="w-5 h-5"   onClick={() => {
+    dispatch(removeFromCart(item._id || item.id));
+    toast.error(`${item.name} removed from cart 🗑️`, {
+      style: {
+        background: "#dc2626",
+        color: "#fff",
+        borderRadius: "8px",
+        fontWeight: 600,
+        padding: "12px 20px",
+        boxShadow: "0 6px 20px rgba(220,38,38,0.3)",
+      },
+    });
+  }} />
                 </button>
               </div>
             ))
