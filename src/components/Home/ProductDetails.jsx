@@ -10,6 +10,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { useDispatch } from "react-redux";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
+import toast from "react-hot-toast"; 
 import NetworkBackground from "../background";
 import "swiper/css/pagination"
 export default function ProductDetails({
@@ -21,6 +22,8 @@ export default function ProductDetails({
   // cart = [],
   related = [], // optional related products
 }) {
+
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || "");
   const [quantity, setQuantity] = useState(1);
@@ -202,24 +205,25 @@ export default function ProductDetails({
 
               {/* Action Buttons */}
               <div className="space-y-3">
-                <button
-                  onClick={() =>
-                    dispatch(
-                      addToCart({
-                        ...product,
-                        selectedColor,
-                        quantity,
-                        image: product.images?.[0],
-                      })
-                    )
-                  }
-                  className="w-full  bg-[#1daa61] text-whitepy-2 rounded-lg font-semibold 
-                       hover:bg-[#189c57] hover:shadow-[0_8px_20px_rgba(29,170,97,0.3)] transform hover:scale-[1.03] 
-                       transition-all text-sm flex items-center justify-center gap-2 text-white
-                  px-6 py-3 rounded-xl font-bold text-lg hover:shadow-lg transform hover:scale-102 transition-all"
-                >
-                  <ShoppingCart className="w-5 h-5" /> Add to Cart
-                </button>
+            <button
+  onClick={() => {
+    dispatch(
+      addToCart({
+        ...product,
+        selectedColor,
+        quantity,
+        image: product.images?.[0],
+      })
+    );
+    toast.success(`${product.name} added to cart! 🛒`);
+  }}
+  className="w-full bg-[#1daa61] text-white py-3 rounded-xl font-bold text-lg 
+             hover:bg-[#189c57] hover:shadow-[0_8px_20px_rgba(29,170,97,0.3)]
+             transform hover:scale-[1.03] transition-all flex items-center 
+             justify-center gap-2"
+>
+  <ShoppingCart className="w-5 h-5" /> Add to Cart
+</button>
 
 
                 <div className="flex items-center justify-between text-sm text-gray-600 mt-2">

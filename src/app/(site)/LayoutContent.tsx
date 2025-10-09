@@ -6,7 +6,7 @@ import Footer from "../../components/Footer";
 import { ModalProvider } from "../context/QuickViewModalContext";
 import { CartModalProvider } from "../context/CartSidebarModalContext";
 import { PreviewSliderProvider } from "../context/PreviewSliderContext";
-
+import { Toaster } from "react-hot-toast";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { setUser, clearUser } from "@/redux/features/userSlice";
 import { onAuthStateChanged } from "firebase/auth";
@@ -97,7 +97,7 @@ export default function LayoutContent({ children }: { children: React.ReactNode 
                     )}
 
                     {children}
-
+  <Toaster position="top-right" toastOptions={{ duration: 2000 }} />
                     {!hideLayout && <Footer />}
                 </PreviewSliderProvider>
             </ModalProvider>
