@@ -37,7 +37,7 @@ export const fetchProducts = createAsyncThunk<
   "products/fetchProducts",
   async (category, { rejectWithValue }) => {
     try {
-      const baseUrl = "http://213.210.36.79:5000/api/products";
+      const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/products`;
       const url = category
         ? `${baseUrl}?categories=${encodeURIComponent(category)}`
         : baseUrl;
