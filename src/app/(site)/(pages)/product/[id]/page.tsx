@@ -19,7 +19,7 @@ export default function ProductPage() {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://213.210.36.79:5000/api/products/${id}`);
+        const res = await fetch(`https://api.nextjs.aydpm.in/api/products/${id}`);
         if (!res.ok) throw new Error("Failed to fetch product");
         const data = await res.json();
         setProduct(data);

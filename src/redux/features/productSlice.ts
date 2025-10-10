@@ -37,7 +37,7 @@ export const fetchProducts = createAsyncThunk<
   "products/fetchProducts",
   async (category, { rejectWithValue }) => {
     try {
-      const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/products`;
+      const baseUrl = `https://api.nextjs.aydpm.in/api/products`;
       const url = category
         ? `${baseUrl}?categories=${encodeURIComponent(category)}`
         : baseUrl;

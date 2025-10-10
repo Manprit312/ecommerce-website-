@@ -17,7 +17,7 @@ export default function CategoryPage() {
       setError("");
 
       // 👇 Correct API endpoint for category
-      const res = await fetch(`http://213.210.36.79:5000/api/products?category=${category}`);
+      const res = await fetch(`https://api.nextjs.aydpm.in/api/products?category=${category}`);
       if (!res.ok) throw new Error("Failed to fetch products");
 
       const data = await res.json();
