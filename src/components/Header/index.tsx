@@ -214,6 +214,40 @@ useEffect(() => {
           ))}
         </div>
       </nav>
+  <div
+        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-[60] ${
+          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex justify-between items-center p-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
+          <button onClick={() => setMobileMenuOpen(false)}>
+            <X className="w-6 h-6 text-gray-700" />
+          </button>
+        </div>
+
+        <div className="flex flex-col p-4 space-y-4 overflow-y-auto">
+          {menus.map((menu, index) => (
+            <details key={index} className="group">
+              <summary className="flex items-center justify-between cursor-pointer font-medium text-gray-800 hover:text-[#1daa61]">
+                {menu.name}
+                <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
+              </summary>
+              <div className="mt-2 ml-2 flex flex-col space-y-2 border-l pl-3 border-gray-200">
+                {menu.subItems.map((item, i) => (
+                  <a
+                    key={i}
+                    href="#"
+                    className="text-gray-600 hover:text-[#1daa61] text-sm"
+                  >
+                    {item}
+                  </a>
+                ))}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
 
       {/* --- CART SIDEBAR --- */}
       <div

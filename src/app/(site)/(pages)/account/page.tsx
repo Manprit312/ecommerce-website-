@@ -57,7 +57,7 @@ const handleViewDetails = async (orderId: string) => {
         .then((res) => res.json())
         .then((data) => {
           console.log(data)
-            setOrders(data);
+            setOrders(data.orders);
           
         })
         .catch((err) => console.error("Error fetching orders:", err))
