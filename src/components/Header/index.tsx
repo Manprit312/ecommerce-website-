@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect ,useRef} from "react";
 import {
   Search,
   ShoppingCart,
@@ -11,23 +11,81 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { useSelector ,useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
+import { removeFromCart } from "@/redux/features/cartSlice";
+import Link from "next/link";
+
 interface HeaderProps {
   cart: any[];
   menuOpen: boolean;
   setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-import { removeFromCart } from "@/redux/features/cartSlice";
-import Link from "next/link";
-export default function Header({  menuOpen, setMenuOpen }: HeaderProps) {
+
+export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
   const router = useRouter();
-const dispatch = useDispatch();
+  const dispatch = useDispatch();
+
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
- const cart = useSelector((state: any) => state.cart.items);
-  const totalQuantity = useSelector((state: any) => state.cart.totalQuantity);
+const searchRef = useRef<HTMLDivElement | null>(null);
+
+  const cart = useSelector((state: any) => state.cart.items);
+  const total = cart
+    .reduce((sum, item) => sum + item.price * item.quantity, 0)
+    .toFixed(2);
+
+  // 🟢 SEARCH STATES
+  const [query, setQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // 🔍 Handle live search (fetch from backend)
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (query.trim().length > 1) {
+        try {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/products?search=${encodeURIComponent(
+              query
+            )}`
+          );
+          const data = await res.json();
+          setSearchResults(data);
+          setSearchOpen(true);
+        } catch (err) {
+          console.error("Search failed", err);
+        }
+      } else {
+        setSearchResults([]);
+        setSearchOpen(false);
+      }
+    }, 400); // debounce
+
+    return () => clearTimeout(delayDebounce);
+  }, [query]);
+useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(e.target as Node)
+      ) {
+        setSearchOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  const handleSearchSelect = (productId: string) => {
+    setQuery("");
+    setSearchResults([]);
+    setSearchOpen(false);
+    router.push(`/product/${productId}`);
+  };
+
+  const handleCheckout = () => router.push("/checkout");
+
   const menus = [
     { name: "Electronics", subItems: ["Speakers", "Smart Lights", "Headphones", "Smart Watches"] },
     { name: "Decor", subItems: ["LED Frames", "Table Lamps", "Wall Lights", "Gift Sets"] },
@@ -36,15 +94,13 @@ const dispatch = useDispatch();
     { name: "Collections", subItems: ["Festive", "Minimalist", "Romantic", "Office"] },
   ];
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2);
-console.log()
   return (
     <header className="w-full border-gray-200 shadow-sm relative overflow-visible z-50 bg-white">
       {/* --- MAIN HEADER --- */}
       <div className="bg-white py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4">
           {/* Logo */}
-          <Link  href="/"className="flex items-center">
+          <Link href="/" className="flex items-center">
             <span className="text-[#1daa61] font-bold text-lg leading-tight text-center">
               Arya<br />
               <span className="text-gray-800 font-medium">Enterprises</span>
@@ -52,22 +108,46 @@ console.log()
           </Link>
 
           {/* Search (Desktop) */}
-          <div className="hidden md:flex flex-1 max-w-xl mx-8 relative">
+          <div className="hidden md:flex flex-1 max-w-xl mx-8 relative" ref={searchRef}>
             <input
               type="text"
-              placeholder="Search Products"
+              placeholder="Search products..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               className="w-full border border-gray-300 rounded-full py-1 pl-5 pr-10 text-gray-700 focus:ring-2 focus:ring-[#1daa61] focus:outline-none placeholder-gray-400"
             />
             <Search className="absolute right-3 top-2 text-gray-500 w-4 h-4" />
+
+            {/* 🔽 SEARCH RESULTS DROPDOWN */}
+            {searchOpen && searchResults.length > 0 && (
+              <div className="absolute top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-y-auto z-50">
+                {searchResults.map((product: any) => (
+                  <div
+                    key={product._id}
+                    onClick={() => handleSearchSelect(product._id)}
+                    className="flex items-center gap-3 p-2 hover:bg-[#f5fff9] cursor-pointer"
+                  >
+                    <Image
+                      src={product.images?.[0] || "/placeholder.png"}
+                      alt={product.name}
+                      width={40}
+                      height={40}
+                      className="rounded-lg object-cover"
+                    />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-800">{product.name}</p>
+                      <p className="text-xs text-[#1daa61] font-medium">₹{product.price}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Icons */}
           <div className="flex items-center space-x-5">
             {/* 🛒 CART ICON */}
-            <button
-              className="relative"
-              onClick={() => setCartOpen(true)} // ✅ Opens  on click
-            >
+            <button className="relative" onClick={() => setCartOpen(true)}>
               <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-[#1daa61]" />
               <span className="absolute -top-1 -right-2 bg-[#1daa61] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
                 {cart.length}
@@ -75,8 +155,8 @@ console.log()
             </button>
 
             {/* 👤 USER */}
-            <button >
-              <User onClick={()=>router.push("/account")} className="w-6 h-6 text-gray-700 hover:text-[#1daa61]" />
+            <button onClick={() => router.push("/account")}>
+              <User className="w-6 h-6 text-gray-700 hover:text-[#1daa61]" />
             </button>
 
             {/* ☰ MENU ICON (Mobile) */}
@@ -135,43 +215,7 @@ console.log()
         </div>
       </nav>
 
-      {/* --- MOBILE MENU SIDEBAR --- */}
-      <div
-        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-[60] ${
-          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="flex justify-between items-center p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
-          <button onClick={() => setMobileMenuOpen(false)}>
-            <X className="w-6 h-6 text-gray-700" />
-          </button>
-        </div>
-
-        <div className="flex flex-col p-4 space-y-4 overflow-y-auto">
-          {menus.map((menu, index) => (
-            <details key={index} className="group">
-              <summary className="flex items-center justify-between cursor-pointer font-medium text-gray-800 hover:text-[#1daa61]">
-                {menu.name}
-                <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
-              </summary>
-              <div className="mt-2 ml-2 flex flex-col space-y-2 border-l pl-3 border-gray-200">
-                {menu.subItems.map((item, i) => (
-                  <a
-                    key={i}
-                    href="#"
-                    className="text-gray-600 hover:text-[#1daa61] text-sm"
-                  >
-                    {item}
-                  </a>
-                ))}
-              </div>
-            </details>
-          ))}
-        </div>
-      </div>
-
-      {/* --- CART PREVIEW SIDEBAR --- */}
+      {/* --- CART SIDEBAR --- */}
       <div
         className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-[70] ${
           cartOpen ? "translate-x-0" : "translate-x-full"
@@ -208,24 +252,27 @@ console.log()
                     </h3>
                     <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                     <p className="text-[#1daa61] font-semibold text-sm">
-                      ${item.price}
+                      ₹{item.price}
                     </p>
                   </div>
                 </div>
                 <button className="text-gray-500 hover:text-red-500 transition">
-                  <Trash2 className="w-5 h-5"   onClick={() => {
-    dispatch(removeFromCart(item._id || item.id));
-    toast.error(`${item.name} removed from cart 🗑️`, {
-      style: {
-        background: "#dc2626",
-        color: "#fff",
-        borderRadius: "8px",
-        fontWeight: 600,
-        padding: "12px 20px",
-        boxShadow: "0 6px 20px rgba(220,38,38,0.3)",
-      },
-    });
-  }} />
+                  <Trash2
+                    className="w-5 h-5"
+                    onClick={() => {
+                      dispatch(removeFromCart(item._id || item.id));
+                      toast.error(`${item.name} removed from cart 🗑️`, {
+                        style: {
+                          background: "#dc2626",
+                          color: "#fff",
+                          borderRadius: "8px",
+                          fontWeight: 600,
+                          padding: "12px 20px",
+                          boxShadow: "0 6px 20px rgba(220,38,38,0.3)",
+                        },
+                      });
+                    }}
+                  />
                 </button>
               </div>
             ))
@@ -237,16 +284,19 @@ console.log()
           <div className="p-4 border-t border-gray-200">
             <div className="flex justify-between text-gray-700 text-sm mb-3">
               <span>Subtotal</span>
-              <span className="font-semibold">${total}</span>
+              <span className="font-semibold">₹{total}</span>
             </div>
-            <button className="w-full bg-[#1daa61] text-white py-2 rounded-full font-semibold hover:bg-[#179d56] transition">
+            <button
+              onClick={handleCheckout}
+              className="w-full bg-[#1daa61] text-white py-2 rounded-full font-semibold hover:bg-[#179d56] transition"
+            >
               Checkout
             </button>
           </div>
         )}
       </div>
 
-      {/* Overlay for Cart or Mobile Menu */}
+      {/* Overlay */}
       {(mobileMenuOpen || cartOpen) && (
         <div
           className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[50]"

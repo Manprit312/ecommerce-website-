@@ -1,4 +1,3 @@
-
 "use client";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
@@ -36,23 +35,26 @@ export const fetchProducts = createAsyncThunk<
 >(
   "products/fetchProducts",
   async (category, { rejectWithValue }) => {
-    try {
-      const baseUrl = `https://api.nextjs.aydpm.in/api/products`;
-      const url = category
-        ? `${baseUrl}?categories=${encodeURIComponent(category)}`
-        : baseUrl;
+  try {
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/products`;
+    const url = category
+      ? `${baseUrl}?categories=${encodeURIComponent(category)}`
+      : baseUrl;
 
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
-      }
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Failed to fetch products");
 
-      const data: Product[] = await response.json();
-      return { data, category };
-    } catch (error: any) {
-      return rejectWithValue(error.message);
-    }
+    const data: Product[] = await response.json();
+
+    console.log("📦 Products fetched for category:", category || "All", data.length);
+
+    return { data, category };
+  } catch (error: any) {
+    console.error("❌ Product fetch error:", error);
+    return rejectWithValue(error.message || "Unexpected error occurred");
   }
+}
+
 );
 
 // 🧠 Redux State Type
@@ -63,6 +65,7 @@ interface ProductState {
   selectedProduct: Product | null;
   loading: boolean;
   error: string | null;
+  lastFetchedCategory: string | null; // 👈 Added to prevent duplicate calls
 }
 
 // 🧱 Initial State
@@ -73,6 +76,7 @@ const initialState: ProductState = {
   selectedProduct: null,
   loading: false,
   error: null,
+  lastFetchedCategory: null,
 };
 
 // 🧩 Slice Definition
@@ -89,15 +93,20 @@ const productSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProducts.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+      .addCase(fetchProducts.pending, (state, action) => {
+        // 🛑 Avoid clearing old data if same category is re-fetched
+        const category = action.meta.arg;
+        if (state.lastFetchedCategory !== category) {
+          state.loading = true;
+          state.error = null;
+        }
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
         state.allProducts = action.payload.data;
         state.filtered = action.payload.data;
         state.currentCategory = action.payload.category || "All";
+        state.lastFetchedCategory = action.payload.category || "All";
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;

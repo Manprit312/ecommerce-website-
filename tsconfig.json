@@ -33,7 +33,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "src/components/Home/ProductsGrid.jsx"  ],
+, "src/components/Home/ProductsGrid.jsx", "src/app/(site)/(pages)/category/[category]/page.jsx"  ],
   "exclude": [
     "node_modules"
   ]
