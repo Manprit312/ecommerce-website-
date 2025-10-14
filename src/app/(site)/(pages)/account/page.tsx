@@ -53,7 +53,7 @@ const handleViewDetails = async (orderId: string) => {
   // 🧠 Fetch user orders
   useEffect(() => {
     if (user?.email) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders?${user.email}`)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${user.email}`)
         .then((res) => res.json())
         .then((data) => {
           console.log(data)
