@@ -1,5 +1,7 @@
 "use client";
-import React from "react";
+import React,{
+  useEffect,useState
+} from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
@@ -8,38 +10,54 @@ import "swiper/css/navigation";
 import "./hero-swiper.css"; // Keep your styling
 
 export default function HeroSection() {
-  const slides = [
-    {
-      id: 1,
-      title: "Illuminate Your Special Moments",
-      subtitle: "Perfect Gift Ideas",
-      description:
-        "Elegant LED photo frames and warm lighting solutions to make every occasion memorable.",
-      image: "/images/banner1.png",
-      product: "Swan LED Photo Frame",
-      tag: "Wedding Gift Special",
-    },
-    {
-      id: 2,
-      title: "Bring Magic to Your Home Decor",
-      subtitle: "Handcrafted Designs",
-      description:
-        "Beautifully crafted LED lamps designed with simplicity, nature, and luxury in mind.",
-      image: "/images/banner2.png",
-      product: "Wooden LED Table Lamp",
-      tag: "Minimal & Elegant",
-    },
-    {
-      id: 3,
-      title: "Light That Speaks Love",
-      subtitle: "Romantic Lighting Gifts",
-      description:
-        "Gift moments of warmth and light with heart-shaped LED frames for your loved ones.",
-      image: "/images/banner3.png",
-      product: "Crystal Heart Frame",
-      tag: "Best Seller",
-    },
-  ];
+  // const slides = [
+  //   {
+  //     id: 1,
+  //     title: "Illuminate Your Special Moments",
+  //     subtitle: "Perfect Gift Ideas",
+  //     description:
+  //       "Elegant LED photo frames and warm lighting solutions to make every occasion memorable.",
+  //     image: "/images/banner1.png",
+  //     product: "Swan LED Photo Frame",
+  //     tag: "Wedding Gift Special",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Bring Magic to Your Home Decor",
+  //     subtitle: "Handcrafted Designs",
+  //     description:
+  //       "Beautifully crafted LED lamps designed with simplicity, nature, and luxury in mind.",
+  //     image: "/images/banner2.png",
+  //     product: "Wooden LED Table Lamp",
+  //     tag: "Minimal & Elegant",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Light That Speaks Love",
+  //     subtitle: "Romantic Lighting Gifts",
+  //     description:
+  //       "Gift moments of warmth and light with heart-shaped LED frames for your loved ones.",
+  //     image: "/images/banner3.png",
+  //     product: "Crystal Heart Frame",
+  //     tag: "Best Seller",
+  //   },
+  // ];
+ const [slides, setSlides] = useState<any[]>([]);
+
+useEffect(() => {
+  const fetchSlides = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sliders`);
+      if (!res.ok) throw new Error("Failed to fetch slides");
+      const data = await res.json();
+      setSlides(data);
+    } catch (error) {
+      console.error("❌ Failed to load slides:", error);
+    }
+  };
+
+  fetchSlides();
+}, []);
 
   return (
     <section
@@ -85,13 +103,13 @@ export default function HeroSection() {
 
                   {/* Right Section */}
                   <div className="hidden md:flex justify-center">
-                    <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-[#1daa61]/20 flex flex-col items-center transform perspective-[1000px]">
-                      <div className="relative w-70 h-54 md:w-96 md:h-72 mb-3 overflow-hidden rounded-xl transform-gpu transition-transform duration-700 ease-in-out hover:rotate-y-6 hover:scale-[1.05]">
+                    <div className="relative bg-grey/80 backdrop-blur-3xl rounded-2xl p-6 border border-[#1daa61]/20 flex flex-col items-center transform perspective-[1000px]">
+                      <div className="relative  md:w-96 md:h-72 mb-3 overflow-hidden rounded-xl transform-gpu transition-transform duration-700 ease-in-out hover:rotate-y-6 hover:scale-[1.05]">
                         <Image
                           src={slide.image}
                           alt={slide.product}
                           fill
-                          className="object-contain transition-transform duration-[6000ms] ease-in-out"
+                          className="object-cover rounded-2xl transition-transform duration-[6000ms] ease-in-out"
                         />
                       </div>
                       <h3 className="text-xl font-bold mb-1 text-gray-800">

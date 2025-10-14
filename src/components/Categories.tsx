@@ -1,44 +1,57 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "@/redux/hooks";
 import { fetchProducts } from "@/redux/features/productSlice";
 import NetworkBackground from "./background";
 
-const categories = [
-  { name: "Trending", image: "/images/trending.png" },
-  { name: "Romantic", image: "/images/romantic.png" },
-  { name: "Decor", image: "/images/decor.png" },
-  { name: "Smart Lights", image: "/images/lights.png" },
-  { name: "Luxury", image: "/images/luxury.png" },
-  { name: "Festive", image: "/images/festive.png" },
-  { name: "Office", image: "/images/office.png" },
-  { name: "Electronics", image: "/images/electronics.png" },
-  { name: "Fashion", image: "/images/fashion.png" },
-  { name: "Brands", image: "/images/brands.png" },
-  { name: "Collections", image: "/images/gifts.png" },
-  { name: "Home & Kitchen", image: "/images/kitchen.png" },
-  { name: "Gifts", image: "/images/gifts.png" },
-];
-
 export default function Categories() {
   const dispatch = useAppDispatch();
+  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("Trending");
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch "Trending" by default when component loads
+useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
+      if (!res.ok) throw new Error("Failed to fetch categories");
+
+      const data = await res.json();
+      setCategories(data);
+    } catch (error) {
+      console.error("❌ Error loading categories:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCategories();
+}, []);
+
+  // ✅ Fetch products for default category
   useEffect(() => {
-    dispatch(fetchProducts("Trending"));
-  }, [dispatch]);
+    if (selectedCategory) {
+      dispatch(fetchProducts(selectedCategory));
+    }
+  }, [dispatch, selectedCategory]);
 
-  // ✅ Handle click and trigger API fetch
+  // ✅ Handle click
   const handleClick = (name) => {
     setSelectedCategory(name);
     dispatch(fetchProducts(name));
   };
 
+  if (loading)
+    return (
+      <section className="relative w-full bg-gradient-to-b from-[#f5fff9] to-white shadow-inner">
+        <NetworkBackground />
+        <div className="text-center py-6 text-gray-500">Loading categories...</div>
+      </section>
+    );
+
   return (
-    <section className="relative w-full bg-gradient-to-b from-[#f5fff9] to-white  shadow-inner">
+    <section className="relative w-full bg-gradient-to-b from-[#f5fff9] to-white shadow-inner">
       <NetworkBackground />
 
       <div className="max-w-7xl mx-auto">

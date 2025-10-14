@@ -10,31 +10,85 @@ export default function ContactPage() {
     message: "",
   });
 
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
+  // 🧩 Validate fields before sending
+  const validateForm = () => {
+    let newErrors = { name: "", email: "", message: "" };
+    let valid = true;
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+      valid = false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+      valid = false;
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+      valid = false;
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = "Message cannot be empty";
+      valid = false;
+    } else if (formData.message.length < 10) {
+      newErrors.message = "Message must be at least 10 characters";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
+  // 🔥 Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" })); // clear errors on type
   };
 
+  // 🚀 Submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.message) {
+    if (!validateForm()) {
       setStatus("error");
       return;
     }
 
-    setStatus("loading");
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setStatus("success");
-    setFormData({ name: "", email: "", message: "" });
-    setTimeout(() => setStatus("idle"), 3000);
+    try {
+      setStatus("loading");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inquiries`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Failed to send inquiry");
+
+      setStatus("success");
+      setFormData({ name: "", email: "", message: "" });
+      setTimeout(() => setStatus("idle"), 3000);
+    } catch (error) {
+      console.error(error);
+      setStatus("error");
+    }
   };
 
   return (
     <section className="min-h-screen bg-gradient-to-b from-[#f5fff9] via-white to-[#e8f9f1] py-10 relative overflow-hidden">
-      {/* Background Glow Elements */}
+      {/* Background Glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           className="absolute w-72 h-72 bg-[#1daa61]/15 rounded-full top-10 -left-20 blur-3xl"
@@ -68,41 +122,66 @@ export default function ContactPage() {
             transition={{ delay: 0.2 }}
             className="bg-white/90 backdrop-blur-md border border-[#1daa61]/10 rounded-3xl shadow-lg p-6 sm:p-8 flex flex-col gap-5"
           >
-            <h2 className="text-xl font-semibold text-gray-800 mb-1 text-center sm:text-left">
+            <h2 className="text-xl font-semibold text-gray-800 mb-1">
               Send us a Message ✍️
             </h2>
-            <p className="text-gray-500 text-sm mb-2 text-center sm:text-left">
+            <p className="text-gray-500 text-sm mb-2">
               We’ll get back to you within 24 hours.
             </p>
 
+            {/* Name + Email */}
             <div className="grid sm:grid-cols-2 gap-4">
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Your Name"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1daa61] focus:ring-1 focus:ring-[#1daa61] outline-none text-gray-700 shadow-sm"
-              />
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Your Email"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1daa61] focus:ring-1 focus:ring-[#1daa61] outline-none text-gray-700 shadow-sm"
-              />
+              <div>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Your Name"
+                  className={`w-full px-4 py-3 rounded-xl border ${
+                    errors.name ? "border-red-400" : "border-gray-200"
+                  } focus:border-[#1daa61] focus:ring-1 focus:ring-[#1daa61] outline-none text-gray-700 shadow-sm`}
+                />
+                {errors.name && (
+                  <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                )}
+              </div>
+
+              <div>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Your Email"
+                  className={`w-full px-4 py-3 rounded-xl border ${
+                    errors.email ? "border-red-400" : "border-gray-200"
+                  } focus:border-[#1daa61] focus:ring-1 focus:ring-[#1daa61] outline-none text-gray-700 shadow-sm`}
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                )}
+              </div>
             </div>
 
-            <textarea
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              placeholder="Your Message..."
-              rows={4}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1daa61] focus:ring-1 focus:ring-[#1daa61] outline-none text-gray-700 shadow-sm"
-            ></textarea>
+            {/* Message */}
+            <div>
+              <textarea
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                placeholder="Your Message..."
+                rows={4}
+                className={`w-full px-4 py-3 rounded-xl border ${
+                  errors.message ? "border-red-400" : "border-gray-200"
+                } focus:border-[#1daa61] focus:ring-1 focus:ring-[#1daa61] outline-none text-gray-700 shadow-sm`}
+              ></textarea>
+              {errors.message && (
+                <p className="text-red-500 text-xs mt-1">{errors.message}</p>
+              )}
+            </div>
 
+            {/* Submit Button */}
             <motion.button
               type="submit"
               whileTap={{ scale: 0.97 }}
@@ -120,6 +199,7 @@ export default function ContactPage() {
               )}
             </motion.button>
 
+            {/* Status Messages */}
             {status === "success" && (
               <p className="text-green-600 text-center font-medium mt-2 animate-fade-in">
                 ✅ Message sent successfully!
@@ -127,7 +207,7 @@ export default function ContactPage() {
             )}
             {status === "error" && (
               <p className="text-red-500 text-center font-medium mt-2 animate-fade-in">
-                ⚠️ Please fill all the fields.
+                ⚠️ Please check all fields and try again.
               </p>
             )}
           </motion.form>

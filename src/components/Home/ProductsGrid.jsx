@@ -34,7 +34,7 @@ export default function ProductsGrid() {
         No products available.
       </div>
     );
-
+console.log(filtered)
   return (
     <>
       <NetworkBackground />

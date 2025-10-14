@@ -50,34 +50,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Products */}
-          {/* <div>
-            <h4 className="text-lg font-semibold mb-4 text-[#1daa61]">Products</h4>
-            <ul className="space-y-2 text-gray-300">
-              <li>
-                <a href="#" className="hover:text-[#1daa61] transition-colors">
-                  LED Photo Frames
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-[#1daa61] transition-colors">
-                  Smart Night Lamps
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-[#1daa61] transition-colors">
-                  Decorative Lights
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-[#1daa61] transition-colors">
-                  Gift Sets
-                </a>
-              </li>
-            </ul>
-          </div> */}
-
-          {/* Support */}
+         
           <div>
             <h4 className="text-lg font-semibold mb-4 text-[#1daa61]">Support</h4>
             <ul className="space-y-2 text-gray-300">
@@ -90,6 +63,10 @@ export default function Footer() {
                 <Link href="/shipping" className="hover:text-[#1daa61] transition-colors">
                   Shipping Info
                 </Link>
+              </li>
+              <li>
+                <Link href="/blogs" className="hover:text-[#1daa61] transition-colors">
+                  Blogs                 </Link>
               </li>
               <li>
                 <Link href="/return&refund" className="hover:text-[#1daa61] transition-colors">
@@ -156,7 +133,7 @@ export default function Footer() {
           <p>
             Designed & Developed by{" "}
             <a
-              href="https://aydsoftware.com"
+              href="https://www.aydpm.in/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#1daa61] hover:text-[#17c36e] font-semibold transition-colors"

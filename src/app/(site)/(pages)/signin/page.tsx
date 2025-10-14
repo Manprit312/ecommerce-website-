@@ -14,35 +14,39 @@ export default function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(false);
 
-  const handleGoogleLogin = async () => {
-    try {
-      setLoading(true);
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+const handleGoogleLogin = async () => {
+  try {
+    setLoading(true);
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
 
-      // Extract useful info
-      const userData = {
-        uid: user.uid,
-        displayName: user.displayName || "",
-        email: user.email || "",
-        photoURL: user.photoURL || "",
-      };
+    const userData = {
+      uid: user.uid,
+      displayName: user.displayName || "",
+      email: user.email || "",
+      photoURL: user.photoURL || "",
+    };
 
-      // ✅ Save in Redux
-      dispatch(setUser(userData));
+    // ✅ Save in Redux & localStorage
+    dispatch(setUser(userData));
+    localStorage.setItem("user", JSON.stringify(userData));
 
-      // ✅ Save in localStorage for manual reference if needed
-      localStorage.setItem("user", JSON.stringify(userData));
+    // ✅ Send to backend to track user
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
 
-      console.log("✅ Google Login Success:", userData.displayName);
-      router.push("/");
-    } catch (error) {
-      console.error("❌ Login failed:", error);
-      alert("Login failed, please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    console.log("✅ Google Login Success:", userData.displayName);
+    router.push("/");
+  } catch (error) {
+    console.error("❌ Login failed:", error);
+    alert("Login failed, please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5fff9] via-white to-[#e6fff1] relative overflow-hidden">
