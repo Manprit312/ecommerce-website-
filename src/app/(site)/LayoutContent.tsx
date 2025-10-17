@@ -48,33 +48,33 @@ export default function LayoutContent({ children }: { children: React.ReactNode 
     }, [dispatch]);
 
     // 🔒 Route protection and redirection logic
-    useEffect(() => {
-        if (loading) return;
+    // useEffect(() => {
+    //     if (loading) return;
 
-        const protectedRoutes = ["/account", "/","/privacy_policy","/contact","/refund&return","/shipping"];
-        const authRoutes = [ "/signin"];
+    //     const protectedRoutes = ["/account", "/","/privacy_policy","/contact","/refund&return","/shipping"];
+    //     const authRoutes = [ "/signin"];
 
-        const isProtected = protectedRoutes.some((route) =>
-            pathname.startsWith(route)
-        );
-        const isAuthPage = authRoutes.some((route) =>
-            pathname.startsWith(route)
-        );
+    //     const isProtected = protectedRoutes.some((route) =>
+    //         pathname.startsWith(route)
+    //     );
+    //     const isAuthPage = authRoutes.some((route) =>
+    //         pathname.startsWith(route)
+    //     );
 
-        // 🚫 Redirect unauthenticated users from protected pages
-        if (!user && isProtected) {
-            router.push("/signin");
-        } console.log(user)
-        // ✅ Redirect logged-in users away from auth pages
-        if (user && isAuthPage) {
-            router.push("/");
-        }
+    //     // 🚫 Redirect unauthenticated users from protected pages
+    //     if (!user && isProtected) {
+    //         router.push("/signin");
+    //     } console.log(user)
+    //     // ✅ Redirect logged-in users away from auth pages
+    //     if (user && isAuthPage) {
+    //         router.push("/");
+    //     }
 
-        // ✅ Default logged-in users to "/" if they hit root
-        if (user && pathname === "/") {
-            router.push("/");
-        }
-    }, [pathname, user, router, loading]);
+    //     // ✅ Default logged-in users to "/" if they hit root
+    //     if (user && pathname === "/") {
+    //         router.push("/");
+    //     }
+    // }, [pathname, user, router, loading]);
 
     // 🚫 Hide layout on auth pages
     const hideLayout =
