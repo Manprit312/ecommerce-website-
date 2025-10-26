@@ -66,12 +66,51 @@ const handleViewDetails = async (orderId: string) => {
   }, [user]);
 
   if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-gray-600 text-lg">
-        Loading user data...
-      </div>
-    );
-  }
+  return (
+    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-[#f8fff9] via-white to-[#f3fff7] px-4 md:px-8">
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-md md:max-w-lg border border-[#1daa61]/20 rounded-2xl bg-white p-8 md:p-10 text-center"
+      >
+        {/* Icon */}
+        <div className="flex justify-center mb-5">
+          <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#1daa61]/10 border border-[#1daa61]/20">
+            <UserRound size={36} className="text-[#1daa61]" />
+          </div>
+        </div>
+
+        {/* Heading */}
+        <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-2">
+          Welcome to Your Account
+        </h2>
+
+        {/* Description */}
+        <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-8 max-w-md mx-auto">
+          You need to be logged in to access your profile, order history, and personalized experience.
+        </p>
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+          <button
+            onClick={() => router.push("/signin")}
+            className="bg-[#1daa61] text-white px-6 md:px-8 py-2.5 rounded-full text-sm md:text-base font-medium hover:bg-[#179d56] transition"
+          >
+            Login Now
+          </button>
+          <button
+            onClick={() => router.push("/")}
+            className="border border-[#1daa61] text-[#1daa61] px-6 md:px-8 py-2.5 rounded-full text-sm md:text-base font-medium hover:bg-[#1daa61]/10 transition"
+          >
+            Back to Home
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 console.log(orders)
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f5fff9] via-white to-[#e6fff1] py-16 px-4 md:px-8" >

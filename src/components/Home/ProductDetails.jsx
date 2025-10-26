@@ -5,11 +5,13 @@ import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, Star, Heart, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
+
 import { addToCart } from "@/redux/features/cartSlice";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useDispatch } from "react-redux";
-import { Autoplay } from "swiper/modules";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+;
 import "swiper/css";
+import { addToCartBackend } from "@/redux/features/cartSlice";
 import toast from "react-hot-toast"; 
 import NetworkBackground from "../background";
 import "swiper/css/pagination"
@@ -22,12 +24,12 @@ export default function ProductDetails({
   // cart = [],
   related = [], // optional related products
 }) {
-
+ const user = useAppSelector((state) => state.user.user);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || "");
   const [quantity, setQuantity] = useState(1);
   const isFav = favorites.includes(product?.id);
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const total = useMemo(() => (product?.price || 0) * quantity, [product, quantity]);
 
   const images = product?.images?.length ? product.images : ["/placeholder.png"];
@@ -205,7 +207,23 @@ export default function ProductDetails({
               {/* Action Buttons */}
               <div className="space-y-3">
             <button
-  onClick={() => {
+onClick={() => {
+  if (user) {
+    // 👤 Logged-in user — sync with backend
+dispatch(
+      addToCartBackend({
+        uid: user.uid,
+        product: {
+          ...product,
+          selectedColor,
+          quantity,
+          image: product.images?.[0],
+        },
+      })
+)
+    // toast.success(`${product.name} added to your account cart! 🛒`);
+  } else {
+    // 🧍 Guest user — local Redux only
     dispatch(
       addToCart({
         ...product,
@@ -215,7 +233,9 @@ export default function ProductDetails({
       })
     );
     toast.success(`${product.name} added to cart! 🛒`);
-  }}
+  }
+}}
+
   className="w-full bg-[#1daa61] text-white py-3 rounded-xl font-bold text-lg 
              hover:bg-[#189c57] hover:shadow-[0_8px_20px_rgba(29,170,97,0.3)]
              transform hover:scale-[1.03] transition-all flex items-center 

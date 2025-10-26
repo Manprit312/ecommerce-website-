@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect ,useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Search,
   ShoppingCart,
@@ -11,11 +11,13 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { useSelector, useDispatch } from "react-redux";
+
+import { getUserCart } from "@/redux/features/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 import { removeFromCart } from "@/redux/features/cartSlice";
 import Link from "next/link";
-
+import { removeFromCartBackend } from "@/redux/features/cartSlice";
 interface HeaderProps {
   cart: any[];
   menuOpen: boolean;
@@ -24,18 +26,36 @@ interface HeaderProps {
 
 export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
   const router = useRouter();
-  const dispatch = useDispatch();
+
+  const dispatch = useAppDispatch();
+
+
 
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-const searchRef = useRef<HTMLDivElement | null>(null);
+  const searchRef = useRef<HTMLDivElement | null>(null);
 
-  const cart = useSelector((state: any) => state.cart.items);
-  const total = cart
-    .reduce((sum, item) => sum + item.price * item.quantity, 0)
-    .toFixed(2);
+  const user = useAppSelector((state: any) => state.user.user);
+const localCart = useAppSelector((state: any) => state.cart.items);
+const backendCart = useAppSelector((state: any) => state.cart);
 
+// ✅ Determine cart items based on user login
+const cart = user ? backendCart.items || [] : localCart;
+
+// ✅ Compute total based on login state
+const total = user
+  ? backendCart.totalAmount?.toFixed(2) || "0.00"
+  : cart.length > 0
+  ? cart
+      .reduce((sum: number, item: any) => sum + item.price * (item.quantity || 1), 0)
+      .toFixed(2)
+  : "0.00";
+useEffect(() => {
+  if (user) {
+    dispatch(getUserCart(user.uid)); // keeps cart in sync after login
+  }
+}, [user, dispatch]);
   // 🟢 SEARCH STATES
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -65,7 +85,7 @@ const searchRef = useRef<HTMLDivElement | null>(null);
 
     return () => clearTimeout(delayDebounce);
   }, [query]);
-useEffect(() => {
+  useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (
         searchRef.current &&
@@ -84,7 +104,13 @@ useEffect(() => {
     router.push(`/product/${productId}`);
   };
 
-  const handleCheckout = () => router.push("/checkout");
+  const handleCheckout = () => {
+    if (!user) {
+      toast.error("Please log in to continue checkout.");
+      router.push("/signin"); // or your login page route
+      return;
+    } router.push("/checkout");
+  }
 
   const menus = [
     { name: "Electronics", subItems: ["Speakers", "Smart Lights", "Headphones", "Smart Watches"] },
@@ -149,9 +175,13 @@ useEffect(() => {
             {/* 🛒 CART ICON */}
             <button className="relative" onClick={() => setCartOpen(true)}>
               <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-[#1daa61]" />
-              <span className="absolute -top-1 -right-2 bg-[#1daa61] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                {cart.length}
-              </span>
+            <span className="absolute -top-1 -right-2 bg-[#1daa61] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+  {user
+  ? backendCart.totalQuantity || 0
+  : cart.reduce((sum, i) => sum + (i.quantity || 1), 0)}
+
+</span>
+
             </button>
 
             {/* 👤 USER */}
@@ -190,11 +220,10 @@ useEffect(() => {
               </div>
 
               <div
-                className={`absolute left-1/2 -translate-x-1/2 top-[calc(100%+6px)] w-52 bg-white rounded-2xl border border-[#1daa61]/20 shadow-[0_6px_25px_rgba(0,0,0,0.1)] transition-all duration-300 ease-out z-50 ${
-                  hoveredMenu === menu.name
+                className={`absolute left-1/2 -translate-x-1/2 top-[calc(100%+6px)] w-52 bg-white rounded-2xl border border-[#1daa61]/20 shadow-[0_6px_25px_rgba(0,0,0,0.1)] transition-all duration-300 ease-out z-50 ${hoveredMenu === menu.name
                     ? "opacity-100 visible translate-y-0"
                     : "opacity-0 invisible -translate-y-2"
-                }`}
+                  }`}
               >
                 <div className="py-3">
                   {menu.subItems.map((item, i) => (
@@ -214,10 +243,9 @@ useEffect(() => {
           ))}
         </div>
       </nav>
-  <div
-        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-[60] ${
-          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+      <div
+        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-[60] ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
@@ -251,9 +279,8 @@ useEffect(() => {
 
       {/* --- CART SIDEBAR --- */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-[70] ${
-          cartOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-[70] ${cartOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         {/* Header */}
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
@@ -270,47 +297,65 @@ useEffect(() => {
               Your cart is empty.
             </p>
           ) : (
-            cart.map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-4">
-                <div className="flex items-center space-x-3">
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={50}
-                    height={50}
-                    className="rounded-lg object-cover border"
-                  />
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-800">
-                      {item.name}
-                    </h3>
-                    <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
-                    <p className="text-[#1daa61] font-semibold text-sm">
-                      ₹{item.price}
-                    </p>
-                  </div>
-                </div>
-                <button className="text-gray-500 hover:text-red-500 transition">
-                  <Trash2
-                    className="w-5 h-5"
-                    onClick={() => {
-                      dispatch(removeFromCart(item._id || item.id));
-                      toast.error(`${item.name} removed from cart 🗑️`, {
-                        style: {
-                          background: "#dc2626",
-                          color: "#fff",
-                          borderRadius: "8px",
-                          fontWeight: 600,
-                          padding: "12px 20px",
-                          boxShadow: "0 6px 20px rgba(220,38,38,0.3)",
-                        },
-                      });
-                    }}
-                  />
-                </button>
-              </div>
-            ))
-          )}
+      cart.map((item, index) => {
+  const product = item.productId || item; // handle both local + backend
+  const imageSrc =
+    product.images?.[0] || item.image || "/placeholder.png";
+  const name = product.name || item.name || "Unnamed Product";
+  const price = product.price || item.price || 0;
+
+  return (
+    <div key={index} className="flex items-center justify-between p-4">
+      <div className="flex items-center space-x-3">
+        <Image
+          src={imageSrc}
+          alt={name}
+          width={50}
+          height={50}
+          className="rounded-lg object-cover border"
+        />
+        <div>
+          <h3 className="text-sm font-semibold text-gray-800">{name}</h3>
+          <p className="text-xs text-gray-500">
+            Qty: {item.quantity || 1}
+          </p>
+          <p className="text-[#1daa61] font-semibold text-sm">
+            ₹{price}
+          </p>
+        </div>
+      </div>
+
+      {/* 🗑️ Remove Button */}
+      <button className="text-gray-500 hover:text-red-500 transition">
+        <Trash2
+          className="w-5 h-5"
+          onClick={() => {
+            if (user) {console.log(product)
+              dispatch(
+                removeFromCartBackend({
+                  uid: user.uid,
+                  productId: product
+                })
+              )
+                .unwrap()
+                .then(() => {
+                  toast.error(`${name} removed from your account cart 🗑️`);
+                })
+                .catch((err: any) => {
+                  toast.error(err.message || "Failed to remove item ❌");
+                });
+            } else {
+              dispatch(removeFromCart(item._id || item.id));
+              toast.error(`${name} removed from cart 🗑️`);
+            }
+          }}
+        />
+      </button>
+    </div>
+  );
+
+
+}))}
         </div>
 
         {/* Footer */}

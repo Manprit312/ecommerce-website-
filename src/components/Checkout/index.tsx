@@ -201,7 +201,7 @@ export default function CheckoutPage() {
               <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
                 {items.map((item) => (
                   <div
-                    key={item.id}
+                    key={item._id}
                     className="flex justify-between items-center border-b border-gray-100 pb-3"
                   >
                     <div>
