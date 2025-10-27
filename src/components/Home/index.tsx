@@ -10,7 +10,7 @@ import Categories from "../Categories";
 import ProductsGrid from "./ProductsGrid";
 import ProductDetails from "./ProductDetails";
 import type { RootState } from "@/redux/store"; // ✅ import the type
-
+import SalePopup from "./SalePopup";
 export default function EcommerceWebsite() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -36,6 +36,7 @@ export default function EcommerceWebsite() {
     />
   ) : (
     <>
+     <SalePopup />
       <HomeBanner />
       <Categories  />
       <div className="relative">
