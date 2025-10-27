@@ -194,18 +194,21 @@ const handleMouseUp = (e) => {
   }
   setIsDragging(false);
 };
-
-  // Touch support
 const handleTouchStart = (e) => {
+  if (!e.touches || e.touches.length === 0) return;
   e.stopPropagation();
+  e.preventDefault(); // ✅ prevent scroll
+
+  const touch = e.touches[0];
   setIsDragging(true);
   setDragged(false);
-  const touch = e.touches[0];
   dragStart.current = { x: touch.clientX, y: touch.clientY };
 };
 
 const handleTouchMove = (e) => {
-  if (!isDragging || !meshRef.current) return;
+  if (!isDragging || !meshRef.current || !e.touches || e.touches.length === 0) return;
+  e.stopPropagation();
+  e.preventDefault(); // ✅ prevent scroll
 
   const touch = e.touches[0];
   const deltaX = touch.clientX - dragStart.current.x;
@@ -220,12 +223,24 @@ const handleTouchMove = (e) => {
 };
 
 const handleTouchEnd = (e) => {
-  if (dragged) {
-    e.stopPropagation();
-  }
+  e.stopPropagation();
+  e.preventDefault();
+  if (dragged) return; // 🧠 Don't trigger click if dragged
   setIsDragging(false);
 };
 
+
+useEffect(() => {
+  const canvas = canvasRef.current;
+  if (!canvas) return;
+
+  const preventTouchScroll = (e) => e.preventDefault();
+  canvas.addEventListener("touchmove", preventTouchScroll, { passive: false });
+
+  return () => {
+    canvas.removeEventListener("touchmove", preventTouchScroll);
+  };
+}, []);
 
   return (
     <div
@@ -241,7 +256,7 @@ const handleTouchEnd = (e) => {
   ref={canvasRef}
   width={600}
   height={450}
-  className={`w-full h-full ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+className={`w-full h-full touch-none ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
   onMouseDown={handleMouseDown}
   onMouseMove={handleMouseMove}
   onMouseUp={handleMouseUp}
