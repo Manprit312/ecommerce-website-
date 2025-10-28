@@ -39,9 +39,18 @@ export default function ProductDetails({
 
   const goPrev = () => setActiveIndex((i) => (i - 1 + images.length) % images.length);
   const goNext = () => setActiveIndex((i) => (i + 1) % images.length);
-
+console.log(product)
   const [tab, setTab] = useState("description");
+const fetchimage=async(product)=>{
+  const res = await fetch("/api/meshy", {
+  method: "POST",
+  body: JSON.stringify({ imageUrl: "https://res.cloudinary.com/dnvhetnud/image/upload/v1759901843/swanledphotoframs_x92deh.jpg" }),
+});
+const modelData = await res.json();
+console.log(modelData); // contains .glb URL when ready
 
+}
+fetchimage(product)
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 " >
       {/* Header */}

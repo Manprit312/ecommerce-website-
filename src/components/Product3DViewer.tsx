@@ -1,87 +1,90 @@
 "use client";
+import React, { useRef, useState, useEffect } from "react";
+import { RotateCw } from "lucide-react";
+import Image from "next/image";
 
-import React, { Suspense } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, useGLTF, Environment } from "@react-three/drei";
-import * as THREE from "three";
-
-interface Product3DViewerProps {
-  modelUrl?: string; // Path to .glb/.gltf file
-  images?: string[]; // [front, back]
+interface Product360ViewerProps {
+  images: string[];
+  autoRotate?: boolean;
+  rotationSpeed?: number;
 }
 
-/**
- * ✅ Load and render a 3D model (GLB/GLTF)
- */
-function Model({ url }: { url: string }) {
-  const { scene } = useGLTF(url);
-  return <primitive object={scene} scale={1.5} />;
-}
+export default function Product360Viewer({
+  images = [],
+  autoRotate = false,
+  rotationSpeed = 100,
+}: Product360ViewerProps) {
+  const [frame, setFrame] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef<number | null>(null);
+  const autoRotateRef = useRef<NodeJS.Timeout | null>(null);
 
-/**
- * ✅ Display 2D product as a box with front & back textures
- */
-function ImageBox({ front, back }: { front: string; back?: string }) {
-  const textureLoader = new THREE.TextureLoader();
-  const frontTexture = textureLoader.load(front);
-  const backTexture = textureLoader.load(back || front);
+  // 🔄 Auto-rotation (optional)
+  useEffect(() => {
+    if (autoRotate && images.length > 1) {
+      autoRotateRef.current = setInterval(() => {
+        setFrame((prev) => (prev + 1) % images.length);
+      }, rotationSpeed);
+    }
+    return () => {
+      if (autoRotateRef.current) clearInterval(autoRotateRef.current);
+    };
+  }, [autoRotate, rotationSpeed, images.length]);
 
-  const materials = [
-    new THREE.MeshStandardMaterial({ color: 0xffffff }), // right
-    new THREE.MeshStandardMaterial({ color: 0xffffff }), // left
-    new THREE.MeshStandardMaterial({ color: 0xffffff }), // top
-    new THREE.MeshStandardMaterial({ color: 0xffffff }), // bottom
-    new THREE.MeshStandardMaterial({ map: frontTexture }), // front
-    new THREE.MeshStandardMaterial({ map: backTexture }), // back
-  ];
+  // 🖱️ Mouse & Touch Drag Controls
+  const handleStart = (clientX: number) => {
+    if (autoRotateRef.current) clearInterval(autoRotateRef.current);
+    setIsDragging(true);
+    dragStart.current = clientX;
+  };
 
-  const geometry = new THREE.BoxGeometry(2.5, 3, 0.3);
-  return <mesh geometry={geometry} material={materials} />;
-}
+  const handleMove = (clientX: number) => {
+    if (!isDragging || dragStart.current === null) return;
+    const deltaX = clientX - dragStart.current;
+    const sensitivity = 5;
 
-/**
- * 🎨 Main 3D Product Viewer Component
- */
-const Product3DViewer: React.FC<Product3DViewerProps> = ({ modelUrl, images = [] }) => {
-  const isModel = !!(modelUrl && (modelUrl.endsWith(".glb") || modelUrl.endsWith(".gltf")));
+    if (Math.abs(deltaX) > sensitivity) {
+      const direction = deltaX > 0 ? -1 : 1;
+      setFrame((prev) => (prev + direction + images.length) % images.length);
+      dragStart.current = clientX;
+    }
+  };
+
+  const handleEnd = () => {
+    setIsDragging(false);
+    dragStart.current = null;
+  };
+
+  if (!images.length) {
+    return (
+      <div className="flex items-center justify-center h-64 bg-gray-100 text-gray-400 italic">
+        No 360° images available
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full aspect-[4/3] bg-[#f5fff9] rounded-xl overflow-hidden relative">
-      <Canvas
-        camera={{ position: [0, 0, 5], fov: 45 }}
-        className="touch-none"
-      >
-        {/* 💡 Lights */}
-        <ambientLight intensity={0.8} />
-        <directionalLight position={[5, 5, 5]} intensity={1.2} />
-        <directionalLight position={[-5, -5, -5]} intensity={0.4} />
-        <Environment preset="sunset" />
+    <div
+      className="relative w-full aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden select-none rounded-xl "
+      onMouseDown={(e) => handleStart(e.clientX)}
+      onMouseMove={(e) => handleMove(e.clientX)}
+      onMouseUp={handleEnd}
+      onMouseLeave={handleEnd}
+      onTouchStart={(e) => handleStart(e.touches[0].clientX)}
+      onTouchMove={(e) => handleMove(e.touches[0].clientX)}
+      onTouchEnd={handleEnd}
+    >
+      <Image
+        src={images[frame]}
+        alt={`Product view ${frame + 1}`}
+        className={`w-full h-full object-cover transition-transform duration-100 ${
+          isDragging ? "cursor-grabbing" : "cursor-grab"
+        }`}
+        fill
+        draggable={false}
+      />
 
-        <Suspense
-          fallback={
-            <mesh>
-              <boxGeometry args={[1, 1, 1]} />
-              <meshStandardMaterial color="lightgray" />
-            </mesh>
-          }
-        >
-          {/* 🧩 Load 3D model or fallback to image box */}
-          {isModel ? (
-            <Model url={modelUrl!} />
-          ) : (
-            images.length > 0 && <ImageBox front={images[0]} back={images[1]} />
-          )}
-        </Suspense>
-
-        {/* 🎮 OrbitControls: smooth drag rotation, no zoom */}
-        <OrbitControls enableZoom={false} enablePan={false} />
-      </Canvas>
-
-      <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
-        Drag to rotate
-      </div>
+ 
     </div>
   );
-};
-
-export default Product3DViewer;
+}

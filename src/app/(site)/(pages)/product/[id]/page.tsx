@@ -36,9 +36,9 @@ export default function ProductPage() {
   // 🌀 Loading state with mint theme
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5fff9] to-white">
+      
         <ThreeDLoader />
-      </div>
+      
     );
 
   // ⚠️ Error or not found

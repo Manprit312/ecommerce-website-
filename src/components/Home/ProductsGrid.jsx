@@ -16,9 +16,9 @@ export default function ProductsGrid() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-[80vh]">
+      
         <ThreeDLoader />
-      </div>
+     
     );
 
   if (error)
