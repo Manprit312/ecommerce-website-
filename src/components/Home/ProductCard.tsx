@@ -36,7 +36,7 @@ const handleViewDetails = (e: React.MouseEvent<HTMLElement>) => {
 const is3D =
   product.model3D &&
     (product.model3D.endsWith(".glb") || product.model3D.endsWith(".gltf"));
-
+console.log(product.model3D, is3D);
   return (
      <div
       className="relative bg-white rounded-2xl shadow-md overflow-hidden border border-[#e7f6ed]
@@ -44,7 +44,7 @@ const is3D =
                  hover:scale-[1.02] transition-all duration-300"
     >
       {/* === 3D Viewer or Fallback === */}
-      {is3D ? (
+      {/* {is3D ? ( */}
         <model-viewer
           src={product.model3D}
           alt={product.name}
@@ -57,7 +57,7 @@ const is3D =
             borderBottom: "1px solid #e7f6ed",
           }}
         ></model-viewer>
-      ) : product.images?.length ? (
+      {/* ) : product.images?.length ? (
         <img
           src={product.images[0]}
           alt={product.name}
@@ -67,7 +67,7 @@ const is3D =
         <div className="aspect-[4/3] flex items-center justify-center text-gray-400 text-sm italic bg-[#f5fff9]">
           No Image
         </div>
-      )}
+      )} */}
 
       {/* === Product Info === */}
       <div className="p-4 sm:p-5">
