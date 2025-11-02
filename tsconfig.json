@@ -29,12 +29,12 @@
     }
   },
   "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-, "src/components/Home/ProductsGrid.jsx", "src/app/(site)/(pages)/category/[category]/page.tsx", "src/components/Home/ProductCard.jsx", "src/components/Home/ProductCard.jsx"  ],
-  "exclude": [
+  "next-env.d.ts",
+  "src/types/**/*.d.ts",
+  "**/*.ts",
+  "**/*.tsx",
+  ".next/types/**/*.ts"
+], "exclude": [
     "node_modules"
   ]
 }

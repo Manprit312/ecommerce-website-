@@ -1,28 +1,32 @@
 "use client";
 import React from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Product3DViewer from "@/components/Product3DViewer";
 
-interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  modelUrl?: string;
-  images?: string[];
-}
 
-export default function ProductCard({ product }: { product: Product }) {
+
+
+
+
+
+export default function ProductCard({ product }) {
+  useEffect(() => {
+  if (typeof window !== "undefined") {
+    import("@google/model-viewer");
+  }
+}, []);
+
   const router = useRouter();
-const handleViewDetails = (e: React.MouseEvent<HTMLElement>) => {
+const handleViewDetails = (e) => {
   e.stopPropagation();
   if (!product?._id) return;
   router.push(`/product/${product._id}`);
 };
 
 
-  const is3D =
-    !!product.modelUrl &&
-    (product.modelUrl.endsWith(".glb") || product.modelUrl.endsWith(".gltf"));
+const is3D =
+    !!product.model3D &&
+    (product.model3D.endsWith(".glb") || product.model3D.endsWith(".gltf"));
 
   return (
      <div
@@ -31,10 +35,24 @@ const handleViewDetails = (e: React.MouseEvent<HTMLElement>) => {
                  hover:scale-[1.02] transition-all duration-300"
     >
       {/* === 3D Viewer or Fallback === */}
-      {is3D || product.images?.length ? (
-        <Product3DViewer
-
-          images={product.images}
+      {is3D ? (
+        <model-viewer
+          src={product.model3D}
+          alt={product.name}
+          camera-controls
+          auto-rotate
+          style={{
+            width: "100%",
+            height: "220px",
+            background: "#f5fff9",
+            borderBottom: "1px solid #e7f6ed",
+          }}
+        ></model-viewer>
+      ) : product.images?.length ? (
+        <img
+          src={product.images[0]}
+          alt={product.name}
+          className="w-full h-[220px] object-cover border-b border-[#e7f6ed]"
         />
       ) : (
         <div className="aspect-[4/3] flex items-center justify-center text-gray-400 text-sm italic bg-[#f5fff9]">

@@ -23,8 +23,8 @@ export default function CategoryPage() {
       const data = await res.json();
       setProducts(data);
     } catch (err) {
-      console.error("❌ Fetch error:", err.message);
-      setError(err.message);
+      const errObj = err as Error;
+      setError(errObj.message);
     } finally {
       setLoading(false);
     }

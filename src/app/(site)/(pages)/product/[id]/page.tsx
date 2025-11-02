@@ -24,7 +24,8 @@ export default function ProductPage() {
         const data = await res.json();
         setProduct(data);
       } catch (err) {
-        setError(err.message);
+        // setError(err.message);
+        console.error("❌ Fetch error:", err);
       } finally {
         setLoading(false);
       }
