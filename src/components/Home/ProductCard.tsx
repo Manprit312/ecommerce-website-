@@ -34,7 +34,7 @@ const handleViewDetails = (e: React.MouseEvent<HTMLElement>) => {
 
 
 const is3D =
-    !!product.model3D &&
+  product.model3D &&
     (product.model3D.endsWith(".glb") || product.model3D.endsWith(".gltf"));
 
   return (
