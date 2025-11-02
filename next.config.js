@@ -5,13 +5,14 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
+         pathname: "/**",
       },
     ],
   },
-  webpack: (config) => {
+ webpack: (config) => {
     config.module.rules.push({
       test: /\.glb$/,
-      type: 'asset/resource'
+      type: "asset/resource",
     });
     return config;
   },
@@ -27,7 +28,8 @@ const nextConfig = {
           {
             key: 'Cross-Origin-Embedder-Policy',
             value: 'require-corp'
-          }
+          },
+           { key: "Access-Control-Allow-Origin", value: "*" },
         ]
       }
     ];
