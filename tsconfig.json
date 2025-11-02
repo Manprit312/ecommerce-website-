@@ -22,17 +22,23 @@
         "name": "next"
       }
     ],
-    "paths": {
+   "paths": {
       "@/*": [
         "./src/*"
       ]
     }
+  
   },
+  "files": [
+  "src/types/model-viewer.d.ts" // Add the specific file path here
+],
   "include": [
   "next-env.d.ts",
   "src/types/**/*.d.ts",
+  "src/types/**/*.d.ts",
   "**/*.ts",
   "**/*.tsx",
+   "**/*.tsx",
   ".next/types/**/*.ts"
 ], "exclude": [
     "node_modules"

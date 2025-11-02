@@ -8,16 +8,25 @@ import { useRouter } from "next/navigation";
 
 
 
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  modelUrl?: string;
+  images?: string[];
+  model3D?: string;
+}
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product }: { product: Product }) {
   useEffect(() => {
   if (typeof window !== "undefined") {
-    import("@google/model-viewer");
+    import("@google/model-viewer"); // <--- This line runs in the browser to define the tag
   }
 }, []);
 
+
   const router = useRouter();
-const handleViewDetails = (e) => {
+const handleViewDetails = (e: React.MouseEvent<HTMLElement>) => {
   e.stopPropagation();
   if (!product?._id) return;
   router.push(`/product/${product._id}`);
