@@ -3,7 +3,8 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {  selectProduct, clearSelectedProduct } from "@/redux/features/productSlice";
-// import { toggleFavorite } from "@/redux/slices/favoriteSlice";
+import ProductCard from "./ProductCard";
+import NetworkBackground from "../background";
 import { useRouter } from "next/navigation";
 import HomeBanner from "./HomeBanner/HomeBanner";
 import Categories from "../Categories";
@@ -11,6 +12,7 @@ import ProductsGrid from "./ProductsGrid";
 import ProductDetails from "./ProductDetails";
 import type { RootState } from "@/redux/store"; // ✅ import the type
 import SalePopup from "./SalePopup";
+import UncategorizedProducts from "./UncategorizedProducts";
 export default function EcommerceWebsite() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -36,6 +38,7 @@ export default function EcommerceWebsite() {
     />
   ) : (
     <>
+     <NetworkBackground />
      <SalePopup />
       <HomeBanner />
       <Categories  />
@@ -55,6 +58,7 @@ export default function EcommerceWebsite() {
           </button>
         </div>
       </div>
+      <UncategorizedProducts/>
     </>
   );
 }

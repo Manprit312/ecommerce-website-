@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ProductCard from "./ProductCard";
-import NetworkBackground from "../background";
+
 import { fetchProducts } from "@/redux/features/productSlice";
 import ThreeDLoader from "../Loader";
 
@@ -34,10 +34,10 @@ export default function ProductsGrid() {
         No products available.
       </div>
     );
-console.log(filtered)
+
   return (
     <>
-      <NetworkBackground />
+     
       <section className="relative w-full py-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/20 pointer-events-none"></div>
 

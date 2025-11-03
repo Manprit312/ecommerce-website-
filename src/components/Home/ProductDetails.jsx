@@ -3,9 +3,9 @@
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Star, Heart, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { ShoppingCart, Star, Heart, ArrowLeft, ChevronLeft, ChevronRight, Router } from "lucide-react";
 import Image from "next/image";
-
+import { useRouter } from "next/navigation";
 import { addToCart } from "@/redux/features/cartSlice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -22,10 +22,10 @@ export default function ProductDetails({
   related = [], // optional related products
 }) {
   useEffect(() => {
-  if (typeof window !== "undefined") {
-    import("@google/model-viewer");
-  }
-}, []);
+    if (typeof window !== "undefined") {
+      import("@google/model-viewer");
+    }
+  }, []);
   const user = useAppSelector((state) => state.user.user);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || "");
@@ -33,7 +33,7 @@ export default function ProductDetails({
   const isFav = favorites.includes(product?.id);
   const dispatch = useAppDispatch()
   const total = useMemo(() => (product?.price || 0) * quantity, [product, quantity]);
-
+  const router = useRouter();
   const images = product?.images
 
   const inc = () => setQuantity((q) => Math.min(q + 1, 99));
@@ -225,6 +225,65 @@ export default function ProductDetails({
 
               {/* Action Buttons */}
               <div className="space-y-3">
+                {/* 🟢 BUY NOW BUTTON */}
+                <button
+                  onClick={async () => {
+                    try {
+                      // 1️⃣ Add to Cart (backend or local)
+                      if (user) {
+                        await dispatch(
+                          addToCartBackend({
+                            uid: user.uid,
+                            product: {
+                              ...product,
+                              selectedColor,
+                              quantity,
+                              image: product.images?.[0],
+                            },
+                          })
+                        );
+                      } else {
+                        dispatch(
+                          addToCart({
+                            ...product,
+                            selectedColor,
+                            quantity,
+                            image: product.images?.[0],
+                          })
+                        );
+                      }
+
+                      // 2️⃣ Notify user
+                      toast.success(`Redirecting to checkout... 🛍️`);
+
+                      // 3️⃣ Redirect to checkout
+                      router.push("/checkout") // ✅ adjust path if your checkout route differs
+
+                    } catch (err) {
+                      console.error("❌ Buy Now failed:", err);
+                      toast.error("Failed to process checkout");
+                    }
+                  }}
+                  className="w-full bg-[#1daa61] text-white py-3 rounded-xl 
+      font-bold text-lg shadow-md hover:shadow-lg hover:scale-[1.03] transition-all 
+      flex items-center justify-center gap-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 10h18M7 15h10M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"
+                    />
+                  </svg> Buy Now
+                </button>
+
                 <button
                   onClick={() => {
                     if (user) {

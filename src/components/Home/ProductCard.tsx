@@ -76,7 +76,7 @@ console.log(product.model3D, is3D);
       )} 
 
       {/* === Product Info === */}
-      <div className="p-4 sm:p-5">
+      <div className="p-4 sm:p-5 cursor-pointer"  onClick={handleViewDetails}>
         <h3 className="text-sm sm:text-base font-semibold text-gray-800 mb-1">
           {product.name}
         </h3>
@@ -85,7 +85,7 @@ console.log(product.model3D, is3D);
             ₹{product.price}
           </span>
          <button
-           onClick={handleViewDetails}
+          
             className="px-3 py-1.5 text-xs sm:text-sm font-semibold text-white bg-[#1daa61] rounded-full shadow-md 
                        hover:bg-[#189c57] hover:shadow-[0_4px_12px_rgba(29,170,97,0.3)] transition-all"
           >
