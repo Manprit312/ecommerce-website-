@@ -50,7 +50,7 @@ export default function Footer() {
             </p>
           </div>
 
-         
+
           <div>
             <h4 className="text-lg font-semibold mb-4 text-[#1daa61]">Support</h4>
             <ul className="space-y-2 text-gray-300">
@@ -68,7 +68,7 @@ export default function Footer() {
                 <Link href="/blogs" className="hover:text-[#1daa61] transition-colors">
                   Blogs                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/return&refund" className="hover:text-[#1daa61] transition-colors">
                   Returns & Refunds
                 </Link>
@@ -77,45 +77,26 @@ export default function Footer() {
                  <Link href="/privacy_policy" className="hover:text-[#1daa61] transition-colors">
                   Privacy Policy
                 </Link>
+              </li> * */}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-lg font-semibold mb-4 text-[#1daa61]">Support</h4>
+            <ul className="space-y-2 text-gray-300">
+
+              <li>
+                <Link href="/return&refund" className="hover:text-[#1daa61] transition-colors">
+                  Returns & Refunds
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy_policy" className="hover:text-[#1daa61] transition-colors">
+                  Privacy Policy
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* Newsletter */}
-         <div className="bg-transparent">
-      <h4 className="text-lg font-semibold mb-4 text-[#1daa61]">
-        Join Our Newsletter
-      </h4>
-      <p className="text-gray-300 mb-3 text-sm">
-        Get updates on new collections and exclusive offers.
-      </p>
-
-      <form onSubmit={handleSubscribe} className="flex flex-col space-y-3 text-black">
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-2 rounded-lg bg-[rgb(147 151 164)] focus:ring-2 focus:ring-[#1daa61] focus:outline-none text-black"
-        />
-        <button
-          type="submit"
-          className="w-full bg-[#1daa61] hover:bg-[#179c58] text-white px-4 py-2 rounded-lg font-semibold transition-all"
-        >
-          Subscribe
-        </button>
-      </form>
-
-      {message && (
-        <p
-          className={`mt-3 text-sm ${
-            status === "success" ? "text-green-400" : "text-red-400"
-          }`}
-        >
-          {message}
-        </p>
-      )}
-    </div>
         </div>
 
         {/* Divider */}
@@ -123,8 +104,8 @@ export default function Footer() {
           <p>&copy; 2025 Arya Enterprises. All rights reserved.</p>
           <div className="flex gap-5 mt-4 md:mt-0">
             <Link href="/contact" className="hover:text-[#1daa61] transition-colors">Facebook</Link>
-           <Link href="#" className="hover:text-[#1daa61] transition-colors">Instagram</Link>
-           <Link href="#" className="hover:text-[#1daa61] transition-colors">LinkedIn</Link>
+            <Link href="#" className="hover:text-[#1daa61] transition-colors">Instagram</Link>
+            <Link href="#" className="hover:text-[#1daa61] transition-colors">LinkedIn</Link>
           </div>
         </div>
 

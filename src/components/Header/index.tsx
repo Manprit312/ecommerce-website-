@@ -10,6 +10,7 @@ import {
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
+
 import toast from "react-hot-toast";
 
 import { getUserCart } from "@/redux/features/cartSlice";
@@ -18,6 +19,19 @@ import { useRouter } from "next/navigation";
 import { removeFromCart } from "@/redux/features/cartSlice";
 import Link from "next/link";
 import { removeFromCartBackend } from "@/redux/features/cartSlice";
+interface MenuItem {
+  name: string;
+  subItems: string[];
+}
+
+interface DropdownProduct {
+  _id?: string;
+  id?: string;
+  name: string;
+  price?: number;
+  images?: string[];
+  model3D?: string;
+}
 interface HeaderProps {
   cart: any[];
   menuOpen: boolean;
@@ -25,37 +39,134 @@ interface HeaderProps {
 }
 
 export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      import("@google/model-viewer");
+    }
+  }, []);
+
   const router = useRouter();
 
   const dispatch = useAppDispatch();
 
+  const [loadingDropdown, setLoadingDropdown] = useState(false);
 
+  const [menus, setMenus] = useState<MenuItem[]>([]);
+  const [dropdownProducts, setDropdownProducts] = useState<Record<string, DropdownProduct[]>>({});
+  const [dropdownPositions, setDropdownPositions] = useState<Record<string, { top: number; left: number }>>({});
+  const menuRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);;
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const fetchCategoryProducts = async (category: string) => {
+    if (!category) return;
+    if (dropdownProducts[category]) return;
 
+    try {
+      setLoadingDropdown(true);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products?categories=${encodeURIComponent(category)}`
+      );
+
+      if (!res.ok) throw new Error("Failed to fetch products");
+
+      const data = await res.json();
+      console.log(`📦 Products for ${category}:`, data);
+
+      setDropdownProducts((prev) => ({
+        ...prev,
+        [category]: data || [],
+      }));
+    } catch (err) {
+      console.error(`❌ Error fetching ${category} products:`, err);
+    } finally {
+      setLoadingDropdown(false);
+    }
+  };
+
+  const handleProductClick = (productId: string) => {
+    if (!productId) return;
+    router.push(`/product/${productId}`);
+  };
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement | null>(null);
 
   const user = useAppSelector((state: any) => state.user.user);
-const localCart = useAppSelector((state: any) => state.cart.items);
-const backendCart = useAppSelector((state: any) => state.cart);
+  const localCart = useAppSelector((state: any) => state.cart.items);
+  const backendCart = useAppSelector((state: any) => state.cart);
 
-// ✅ Determine cart items based on user login
-const cart = user ? backendCart.items || [] : localCart;
+  // ✅ Determine cart items based on user login
+  const cart = user ? backendCart.items || [] : localCart;
+  useEffect(() => {
+    if (hoveredMenu && menuRefs.current[hoveredMenu]) {
+      const rect = menuRefs.current[hoveredMenu].getBoundingClientRect();
+      setDropdownPositions(prev => ({
+        ...prev,
+        [hoveredMenu]: {
+          top: rect.bottom,
+          left: rect.left
+        }
+      }));
+    }
+  }, [hoveredMenu]);
+  useEffect(() => {
+    if (hoveredMenu) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [hoveredMenu]);
+  const handleMouseEnter = (menuName: string) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setHoveredMenu(menuName);
 
-// ✅ Compute total based on login state
-const total = user
-  ? backendCart.totalAmount?.toFixed(2) || "0.00"
-  : cart.length > 0
-  ? cart
-      .reduce((sum: number, item: any) => sum + item.price * (item.quantity || 1), 0)
-      .toFixed(2)
-  : "0.00";
-useEffect(() => {
-  if (user) {
-    dispatch(getUserCart(user.uid)); // keeps cart in sync after login
-  }
-}, [user, dispatch]);
+    // 👇 Fetch products for hovered category
+    fetchCategoryProducts(menuName);
+
+    if (menuRefs.current[menuName]) {
+      const rect = menuRefs.current[menuName].getBoundingClientRect();
+      setDropdownPositions((prev) => ({
+        ...prev,
+        [menuName]: {
+          top: rect.bottom,
+          left: rect.left,
+        },
+      }));
+    }
+  };
+
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setHoveredMenu(null);
+    }, 150);
+  };
+
+  const handleDropdownEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
+
+  const handleDropdownLeave = () => {
+    setHoveredMenu(null);
+  };
+  // ✅ Compute total based on login state
+  const total = user
+    ? backendCart.totalAmount?.toFixed(2) || "0.00"
+    : cart.length > 0
+      ? cart
+        .reduce((sum: number, item: any) => sum + item.price * (item.quantity || 1), 0)
+        .toFixed(2)
+      : "0.00";
+  useEffect(() => {
+    if (user) {
+      dispatch(getUserCart(user.uid)); // keeps cart in sync after login
+    }
+  }, [user, dispatch]);
   // 🟢 SEARCH STATES
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -112,13 +223,47 @@ useEffect(() => {
     } router.push("/checkout");
   }
 
-  const menus = [
-    { name: "Electronics", subItems: ["Speakers", "Smart Lights", "Headphones", "Smart Watches"] },
-    { name: "Decor", subItems: ["LED Frames", "Table Lamps", "Wall Lights", "Gift Sets"] },
-    { name: "Luxury", subItems: ["Premium Gifts", "Exclusive Series", "Crystal Edition"] },
-    { name: "Brands", subItems: ["Lumina", "GlowArt", "Decora", "EliteLight"] },
-    { name: "Collections", subItems: ["Festive", "Minimalist", "Romantic", "Office"] },
-  ];
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
+        if (!res.ok) throw new Error("Failed to fetch categories");
+
+        const data = await res.json();
+        console.log("📂 Fetched categories:", data);
+        // 🧩 Normalize to match your UI structure
+        const formattedMenus = data.map((cat: any) => ({
+          name: cat.name || "Unnamed Category",
+          subItems:
+            cat.subcategories?.length > 0
+              ? cat.subcategories.map((sub: any) => sub.name || sub)
+              : ["All Products"],
+        }));
+
+        setMenus(formattedMenus);
+      } catch (error) {
+        console.error("❌ Error loading categories:", error);
+        setMenus([]); // fallback
+      } finally {
+        setLoading(false);
+      }
+    };
+  const fetchLogo = async () => {
+      try {
+       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logo`);
+        if (!res.ok) throw new Error("Failed to fetch logo");
+        const data = await res.json();
+        if (data?.logoUrl) setLogoUrl(data.logoUrl);
+      } catch (err) {
+        console.error("❌ Failed to fetch logo:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLogo();
+    fetchCategories();
+  }, []);
 
   return (
     <header className="w-full border-gray-200 shadow-sm relative overflow-visible z-50 bg-white">
@@ -126,14 +271,31 @@ useEffect(() => {
       <div className="bg-white py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <span className="text-[#1daa61] font-bold text-lg leading-tight text-center">
-              Arya<br />
-              <span className="text-gray-800 font-medium">Enterprises</span>
-            </span>
+          <Link
+            href="/"
+            className="flex items-center gap-2 group transition-all"
+          >
+            {!loading && logoUrl ? (
+              <div className="relative w-[42px] h-[42px] sm:w-[48px] sm:h-[48px]">
+                <Image
+                  src={logoUrl}
+                  alt="Company Logo"
+                  fill
+                  sizes="48px"
+                  className="object-contain rounded-md transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+            ) : (
+
+              <span className="text-[#1daa61] font-bold text-lg leading-tight text-center">
+                Arya
+                <br />
+                <span className="text-gray-800 font-medium">Enterprises</span>
+              </span>
+            )}
           </Link>
 
-          {/* Search (Desktop) */}
+          {/* Search (Desktop)x */}
           <div className="hidden md:flex flex-1 max-w-xl mx-8 relative" ref={searchRef}>
             <input
               type="text"
@@ -146,7 +308,7 @@ useEffect(() => {
 
             {/* 🔽 SEARCH RESULTS DROPDOWN */}
             {searchOpen && searchResults.length > 0 && (
-              <div className="absolute top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-y-auto z-50">
+              <div className="absolute top-full mt-18 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-y-auto z-100">
                 {searchResults.map((product: any) => (
                   <div
                     key={product._id}
@@ -175,12 +337,12 @@ useEffect(() => {
             {/* 🛒 CART ICON */}
             <button className="relative" onClick={() => setCartOpen(true)}>
               <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-[#1daa61]" />
-            <span className="absolute -top-1 -right-2 bg-[#1daa61] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-  {user
-  ? backendCart.totalQuantity || 0
-  : cart.reduce((sum, i) => sum + (i.quantity || 1), 0)}
+              <span className="absolute -top-1 -right-2 bg-[#1daa61] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                {user
+                  ? backendCart.totalQuantity || 0
+                  : cart.reduce((sum, i) => sum + (i.quantity || 1), 0)}
 
-</span>
+              </span>
 
             </button>
 
@@ -205,42 +367,105 @@ useEffect(() => {
       </div>
 
       {/* --- NAVIGATION (Desktop) --- */}
-      <nav className="hidden md:block border-t border-gray-100 bg-white relative">
-        <div className="max-w-7xl mx-auto flex items-center justify-start space-x-10 px-6">
-          {menus.map((menu, index) => (
-            <div
-              key={index}
-              className="relative py-4 group"
-              onMouseEnter={() => setHoveredMenu(menu.name)}
-              onMouseLeave={() => setHoveredMenu(null)}
-            >
-              <div className="flex items-center space-x-1 cursor-pointer text-[15px] font-semibold text-gray-700 transition-all duration-200 group-hover:text-[#1daa61]">
-                <span>{menu.name}</span>
-                <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
-              </div>
+      <nav className="hidden md:block border-t border-gray-100 bg-white relative overflow-visible z-50 px-20">
+        <div className="relative">
+          {/* Scrollable container */}
+          <div className="menu-scroll-wrapper overflow-x-auto overflow-y-visible">
+            <div className="menu-scroll flex items-center justify-start space-x-10 px-6 max-w-7xl mx-auto">
+              {menus.map((menu, index) => (
+                <div
+                  key={index}
+                  ref={(el) => {
+                    menuRefs.current[menu.name] = el;
+                  }}
 
-              <div
-                className={`absolute left-1/2 -translate-x-1/2 top-[calc(100%+6px)] w-52 bg-white rounded-2xl border border-[#1daa61]/20 shadow-[0_6px_25px_rgba(0,0,0,0.1)] transition-all duration-300 ease-out z-50 ${hoveredMenu === menu.name
-                    ? "opacity-100 visible translate-y-0"
-                    : "opacity-0 invisible -translate-y-2"
-                  }`}
-              >
-                <div className="py-3">
-                  {menu.subItems.map((item, i) => (
-                    <a
-                      key={i}
-                      href="#"
-                      className="block px-5 py-2 text-[15px] text-gray-700 hover:text-[#1daa61] hover:bg-[#f5fff9] transition-all"
-                    >
-                      {item}
-                    </a>
-                  ))}
+                  className="relative py-4 group"
+                  onMouseEnter={() => handleMouseEnter(menu.name)}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <div className="flex items-center space-x-1 cursor-pointer text-[15px] font-semibold text-gray-700 transition-all duration-200 group-hover:text-[#1daa61]">
+                    <span>{menu.name}</span>
+                    <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
+                  </div>
+                  <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#1daa61] transition-all duration-300 group-hover:w-full"></div>
                 </div>
+              ))}
+            </div>
+          </div>
+          {/* Dropdowns - rendered outside scroll container */}
+          {hoveredMenu && dropdownPositions[hoveredMenu] && (
+            <div
+              className="fixed w-52 bg-white rounded-2xl border border-[#1daa61]/20 shadow-[0_6px_25px_rgba(0,0,0,0.1)] z-[9999]"
+              style={{
+                top: `${dropdownPositions[hoveredMenu].top + 8}px`,
+                left: `${dropdownPositions[hoveredMenu].left}px`
+              }}
+              onMouseEnter={handleDropdownEnter}
+              onMouseLeave={handleDropdownLeave}
+            >
+              <div
+                className="py-3 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                style={{
+                  overscrollBehavior: "contain", // prevent page from scrolling
+                }}
+              >
+                {loadingDropdown ? (
+                  <p className="px-4 py-3 text-gray-500 text-sm">Loading...</p>
+                ) : dropdownProducts[hoveredMenu]?.length ? (
+                  dropdownProducts[hoveredMenu].map((product, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleProductClick(product._id || product.id)}
+                      className="w-full text-left px-4 py-2 flex items-center gap-3 hover:bg-[#f5fff9] transition-all"
+                    >
+                      {product.images?.length > 0 ? (
+                        // 🖼️ Show first image if available
+                        <Image
+                          src={product.images[0]}
+                          alt={product.name}
+                          width={30}
+                          height={30}
+                          className="rounded-md object-cover"
+                        />
+                      ) : product.model3D ? (
+                        // 🧩 Show 3D model preview if no images but model3D exists
+                        <model-viewer
+                          src={product.model3D}
+                          alt={product.name}
+                          camera-controls
+                          auto-rotate
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "0.25rem",
+                            background: "#f9fafb",
+                            border: "1px solid #e5e7eb",
+                          }}
+                        ></model-viewer>
+                      ) : (
+                        // 🪫 Fallback placeholder
+                        <Image
+                          src="/placeholder.png"
+                          alt={product.name}
+                          width={30}
+                          height={30}
+                          className="rounded-md object-cover"
+                        />
+                      )}
+
+                      <div className="flex flex-col items-start">
+                        <span className="text-[14px] text-gray-700">{product.name}</span>
+                      </div>
+                    </button>
+
+                  ))
+                ) : (
+                  <p className="px-4 py-3 text-gray-500 text-sm">No products found</p>
+                )}
               </div>
 
-              <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#1daa61] transition-all duration-300 group-hover:w-full"></div>
             </div>
-          ))}
+          )}
         </div>
       </nav>
       <div
@@ -297,65 +522,101 @@ useEffect(() => {
               Your cart is empty.
             </p>
           ) : (
-      cart.map((item, index) => {
-  const product = item.productId || item; // handle both local + backend
-  const imageSrc =
-    product.images?.[0] || item.image || "/placeholder.png";
-  const name = product.name || item.name || "Unnamed Product";
-  const price = product.price || item.price || 0;
+            cart.map((item, index) => {
+              const product = item.productId || item; // handle both local + backend
+              const imageSrc =
+                product.images?.[0] || item.image || "/placeholder.png";
+              const name = product.name || item.name || "Unnamed Product";
+              const price = product.price || item.price || 0;
 
-  return (
-    <div key={index} className="flex items-center justify-between p-4">
-      <div className="flex items-center space-x-3">
-        <Image
-          src={imageSrc}
-          alt={name}
-          width={50}
-          height={50}
-          className="rounded-lg object-cover border"
-        />
-        <div>
-          <h3 className="text-sm font-semibold text-gray-800">{name}</h3>
-          <p className="text-xs text-gray-500">
-            Qty: {item.quantity || 1}
-          </p>
-          <p className="text-[#1daa61] font-semibold text-sm">
-            ₹{price}
-          </p>
-        </div>
-      </div>
+              return (
+                <div key={index} className="flex items-center justify-between p-4">
+                  <div className="flex items-center space-x-3">
+                    {product.images?.length > 0 ? (
+                      <Image
+                        src={product.images[0]}
+                        alt={name}
+                        width={50}
+                        height={50}
+                        className="rounded-lg object-cover border"
+                      />
+                    ) : product.model3D ? (
+                      <div className="relative w-[50px] h-[50px]">
+                        {/* 3D Model Viewer */}
+                        <model-viewer
+                          src={product.model3D}
+                          alt={name}
+                          camera-controls
+                          auto-rotate
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            borderRadius: "0.5rem",
+                            background: "#f9fafb",
+                            border: "1px solid #e5e7eb",
+                          }}
+                        ></model-viewer>
 
-      {/* 🗑️ Remove Button */}
-      <button className="text-gray-500 hover:text-red-500 transition">
-        <Trash2
-          className="w-5 h-5"
-          onClick={() => {
-            if (user) {console.log(product)
-              dispatch(
-                removeFromCartBackend({
-                  uid: user.uid,
-                  productId: product
-                })
-              )
-                .unwrap()
-                .then(() => {
-                  toast.error(`${name} removed from your account cart 🗑️`);
-                })
-                .catch((err: any) => {
-                  toast.error(err.message || "Failed to remove item ❌");
-                });
-            } else {
-              dispatch(removeFromCart(item._id || item.id));
-              toast.error(`${name} removed from cart 🗑️`);
-            }
-          }}
-        />
-      </button>
-    </div>
-  );
+                        {/* 🌀 Floating “3D” Badge */}
+                        <span
+                          className="absolute bottom-0 right-0 bg-[#1daa61] text-white text-[10px] font-bold px-0.8 py-[0.5px] rounded-tl-md shadow-sm"
+                        >
+                          3D
+                        </span>
+                      </div>
+                    ) : (
+                      <Image
+                        src="/placeholder.png"
+                        alt={name}
+                        width={50}
+                        height={50}
+                        className="rounded-lg object-cover border"
+                      />
+                    )}
+
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-800">{name}</h3>
+                      <p className="text-xs text-gray-500">
+                        Qty: {item.quantity || 1}
+                      </p>
+                      <p className="text-[#1daa61] font-semibold text-sm">
+                        ₹{price}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 🗑️ Remove Button */}
+                  <button className="text-gray-500 hover:text-red-500 transition">
+                    <Trash2
+                      className="w-5 h-5"
+                      onClick={() => {
+                        if (user) {
+                          console.log(product)
+                          dispatch(
+                            removeFromCartBackend({
+                              uid: user.uid,
+                              productId: product
+                            })
+                          )
+                            .unwrap()
+                            .then(() => {
+                              toast.error(`${name} removed from your account cart 🗑️`);
+                            })
+                            .catch((err: any) => {
+                              toast.error(err.message || "Failed to remove item ❌");
+                            });
+                        } else {
+                          dispatch(removeFromCart(item._id || item.id));
+                          toast.error(`${name} removed from cart 🗑️`);
+                        }
+                      }}
+                    />
+                  </button>
+                </div>
+              );
 
 
-}))}
+            }))}
         </div>
 
         {/* Footer */}
@@ -385,6 +646,54 @@ useEffect(() => {
           }}
         ></div>
       )}
+      <style jsx>{`
+  .menu-scroll-wrapper {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  .menu-scroll {
+    display: inline-flex;
+    white-space: nowrap;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Hide scrollbar */
+  .menu-scroll-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+  .menu-scroll-wrapper {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+@keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-out;
+        }
+  /* Prevent vertical expansion */
+  nav {
+    overflow-y: visible !important;
+  }
+`}</style>
+
+
+
+
     </header>
   );
 }
+

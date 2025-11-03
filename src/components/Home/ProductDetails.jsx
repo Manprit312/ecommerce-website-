@@ -1,7 +1,7 @@
 
 
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, Star, Heart, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
@@ -12,19 +12,21 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 ;
 import "swiper/css";
 import { addToCartBackend } from "@/redux/features/cartSlice";
-import toast from "react-hot-toast"; 
+import toast from "react-hot-toast";
 import NetworkBackground from "../background";
 import "swiper/css/pagination"
 export default function ProductDetails({
   product,
-  // addToCart,
-
   favorites = [],
   goBack,
-  // cart = [],
   related = [], // optional related products
 }) {
- const user = useAppSelector((state) => state.user.user);
+  useEffect(() => {
+  if (typeof window !== "undefined") {
+    import("@google/model-viewer");
+  }
+}, []);
+  const user = useAppSelector((state) => state.user.user);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || "");
   const [quantity, setQuantity] = useState(1);
@@ -32,53 +34,29 @@ export default function ProductDetails({
   const dispatch = useAppDispatch()
   const total = useMemo(() => (product?.price || 0) * quantity, [product, quantity]);
 
-  const images = product?.images?.length ? product.images : ["/placeholder.png"];
+  const images = product?.images
 
   const inc = () => setQuantity((q) => Math.min(q + 1, 99));
   const dec = () => setQuantity((q) => Math.max(1, q - 1));
 
   const goPrev = () => setActiveIndex((i) => (i - 1 + images.length) % images.length);
   const goNext = () => setActiveIndex((i) => (i + 1) % images.length);
-console.log(product)
+  console.log(product)
   const [tab, setTab] = useState("description");
-const fetchimage=async(product)=>{
-  const res = await fetch("/api/meshy", {
-  method: "POST",
-  body: JSON.stringify({ imageUrl: "https://res.cloudinary.com/dnvhetnud/image/upload/v1759901843/swanledphotoframs_x92deh.jpg" }),
-});
-const modelData = await res.json();
-console.log(modelData); // contains .glb URL when ready
+  const fetchimage = async (product) => {
+    const res = await fetch("/api/meshy", {
+      method: "POST",
+      body: JSON.stringify({ imageUrl: "https://res.cloudinary.com/dnvhetnud/image/upload/v1759901843/swanledphotoframs_x92deh.jpg" }),
+    });
+    const modelData = await res.json();
+    console.log(modelData); // contains .glb URL when ready
 
-}
-fetchimage(product)
+  }
+  fetchimage(product)
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 " >
       {/* Header */}
       <NetworkBackground />
-      {/* <header className="bg-white/90 backdrop-blur-lg shadow-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <button
-              onClick={goBack}
-              className="flex items-center space-x-2 text-gray-700 hover:text-amber-600 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5 " />
-              <span className="font-medium text-[#1daa61]">Back to Shop</span>
-            </button>
-
-            <div className="flex items-center space-x-4">
-              <button className="relative p-2 hover:bg-amber-100 rounded-lg transition-colors">
-                <ShoppingCart className="w-5 h-5 text-gray-700" />
-                {cart.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                    {cart.length}
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </header> */}
 
       {/* Product Detail Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -103,44 +81,76 @@ fetchimage(product)
                     transition={{ duration: 0.35 }}
                     className="w-full flex items-center justify-center rounded-xl"
                   >
-                    <Image
-                      src={images[activeIndex]}
-                      alt={`${product?.name} ${activeIndex + 1}`}
-                      width={300}
-                      height={300}
-                      className="object-contain max-h-[360px] rounded-xl "
-                    />
+                    {product?.model3D ? (
+                      // ✅ Show 3D Model Viewer if available
+                      <model-viewer
+                        src={product.model3D}
+                        alt={product.name}
+                        camera-controls
+                        auto-rotate
+                        style={{
+                          width: "100%",
+                          height: "360px",
+                          background: "#f5fff9",
+                          borderRadius: "1rem",
+                          border: "1px solid #e5e7eb",
+                        }}
+                      ></model-viewer>
+                    ) : (
+                      // 🖼️ Fallback: Image Carousel
+                      <Image
+                        src={images[activeIndex]}
+                        alt={`${product?.name} ${activeIndex + 1}`}
+                        width={300}
+                        height={300}
+                        className="object-contain max-h-[360px] rounded-xl "
+                      />
+                    )}
+
                   </motion.div>
                 </AnimatePresence>
-
-                {/* Arrows */}
-                <button
-                  onClick={goPrev}
-                  aria-label="previous"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow hover:scale-105"
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </button>
-                <button
-                  onClick={goNext}
-                  aria-label="next"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow hover:scale-105"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </button>
-
-                {/* Thumbnail strip */}
-                <div className="mt-4 flex items-center gap-3 overflow-x-auto pb-2">
-                  {images.map((img, i) => (
+                {!product?.model3D && (
+                  <>
                     <button
-                      key={i}
-                      onClick={() => setActiveIndex(i)}
-                      className={`rounded-lg overflow-hidden border-2 ${i === activeIndex ? "border-amber-400" : "border-transparent"
-                        }`}>
-                      <Image src={img} alt={`thumb-${i}`} width={80} height={80} className="object-cover" />
+                      onClick={goPrev}
+                      aria-label="previous"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow hover:scale-105"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
                     </button>
-                  ))}
-                </div>
+                    <button
+                      onClick={goNext}
+                      aria-label="next"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow hover:scale-105"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
+
+
+                {/* Thumbnail strip — only show if no 3D model */}
+                {images?.length > 0 && (
+                  <div className="mt-4 flex items-center gap-3 overflow-x-auto pb-2">
+                    {images.map((img, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveIndex(i)}
+                        className={`rounded-lg overflow-hidden border-2 ${i === activeIndex ? "border-amber-400" : "border-transparent"
+                          }`}
+                      >
+                        <Image
+                          src={img}
+                          alt={`thumb-${i}`}
+                          width={80}
+                          height={80}
+                          className="object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+
               </div>
 
               {/* Badge */}
@@ -215,43 +225,43 @@ fetchimage(product)
 
               {/* Action Buttons */}
               <div className="space-y-3">
-            <button
-onClick={() => {
-  if (user) {
-    // 👤 Logged-in user — sync with backend
-dispatch(
-      addToCartBackend({
-        uid: user.uid,
-        product: {
-          ...product,
-          selectedColor,
-          quantity,
-          image: product.images?.[0],
-        },
-      })
-)
-    // toast.success(`${product.name} added to your account cart! 🛒`);
-  } else {
-    // 🧍 Guest user — local Redux only
-    dispatch(
-      addToCart({
-        ...product,
-        selectedColor,
-        quantity,
-        image: product.images?.[0],
-      })
-    );
-    toast.success(`${product.name} added to cart! 🛒`);
-  }
-}}
+                <button
+                  onClick={() => {
+                    if (user) {
+                      // 👤 Logged-in user — sync with backend
+                      dispatch(
+                        addToCartBackend({
+                          uid: user.uid,
+                          product: {
+                            ...product,
+                            selectedColor,
+                            quantity,
+                            image: product.images?.[0],
+                          },
+                        })
+                      )
+                      // toast.success(`${product.name} added to your account cart! 🛒`);
+                    } else {
+                      // 🧍 Guest user — local Redux only
+                      dispatch(
+                        addToCart({
+                          ...product,
+                          selectedColor,
+                          quantity,
+                          image: product.images?.[0],
+                        })
+                      );
+                      toast.success(`${product.name} added to cart! 🛒`);
+                    }
+                  }}
 
-  className="w-full bg-[#1daa61] text-white py-3 rounded-xl font-bold text-lg 
+                  className="w-full bg-[#1daa61] text-white py-3 rounded-xl font-bold text-lg 
              hover:bg-[#189c57] hover:shadow-[0_8px_20px_rgba(29,170,97,0.3)]
              transform hover:scale-[1.03] transition-all flex items-center 
              justify-center gap-2"
->
-  <ShoppingCart className="w-5 h-5" /> Add to Cart
-</button>
+                >
+                  <ShoppingCart className="w-5 h-5" /> Add to Cart
+                </button>
 
 
                 <div className="flex items-center justify-between text-sm text-gray-600 mt-2">
@@ -272,8 +282,8 @@ dispatch(
                 <button
                   onClick={() => setTab("description")}
                   className={`pb-2 ${tab === "description"
-                      ? "border-b-2 border-amber-500 font-semibold text-amber-600"
-                      : "text-gray-600"
+                    ? "border-b-2 border-amber-500 font-semibold text-amber-600"
+                    : "text-gray-600"
                     }`}
                 >
                   Description
@@ -281,8 +291,8 @@ dispatch(
                 <button
                   onClick={() => setTab("specs")}
                   className={`pb-2 ${tab === "specs"
-                      ? "border-b-2 border-amber-500 font-semibold text-amber-600"
-                      : "text-gray-600"
+                    ? "border-b-2 border-amber-500 font-semibold text-amber-600"
+                    : "text-gray-600"
                     }`}
                 >
                   Specifications
@@ -290,8 +300,8 @@ dispatch(
                 <button
                   onClick={() => setTab("reviews")}
                   className={`pb-2 ${tab === "reviews"
-                      ? "border-b-2 border-amber-500 font-semibold text-amber-600"
-                      : "text-gray-600"
+                    ? "border-b-2 border-amber-500 font-semibold text-amber-600"
+                    : "text-gray-600"
                     }`}
                 >
                   Reviews
@@ -402,8 +412,8 @@ dispatch(
                                   <Star
                                     key={s}
                                     className={`w-4 h-4 ${s < rv.rating
-                                        ? "fill-yellow-400 text-yellow-400"
-                                        : "text-gray-300"
+                                      ? "fill-yellow-400 text-yellow-400"
+                                      : "text-gray-300"
                                       }`}
                                   />
                                 ))}

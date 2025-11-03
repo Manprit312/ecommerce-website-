@@ -15,6 +15,7 @@ interface Product {
   modelUrl?: string;
   images?: string[];
   model3D?: string;
+    offer?: string; 
 }
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -43,6 +44,11 @@ console.log(product.model3D, is3D);
                  hover:shadow-[0_10px_25px_rgba(29,170,97,0.25)]
                  hover:scale-[1.02] transition-all duration-300"
     >
+       {product.offer && (
+        <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-[#1daa61] to-[#17c66c] text-white text-[10px] sm:text-xs font-semibold px-3 py-1 rounded-full shadow-lg uppercase tracking-wide">
+          {product.offer}
+        </div>
+      )}
       {/* === 3D Viewer or Fallback === */}
       {is3D ? (
         <model-viewer
