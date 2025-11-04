@@ -485,12 +485,14 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
   <details
     key={index}
     className="group overflow-y-auto"
-     onToggle={(e) => {
-    if (e.target.open) {
-      e.target.scrollIntoView({ behavior: "smooth", block: "start" });
+onToggle={(e) => {
+    const details = e.target as HTMLDetailsElement;
+
+    if (details.open) {
+      details.scrollIntoView({ behavior: "smooth", block: "start" });
       fetchCategoryProducts(menu.name);
     }
-  }}// fetch products when category is opened
+  }}
   >
     <summary className="flex items-center justify-between cursor-pointer font-medium text-gray-800 hover:text-[#1daa61]">
       {menu.name}
