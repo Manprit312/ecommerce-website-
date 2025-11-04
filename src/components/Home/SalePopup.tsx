@@ -32,7 +32,8 @@ export default function SalePopup() {
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] animate-fadeIn">
-      <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden max-w-md w-[90%]">
+<div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden  max-w-2xl md:max-w-2xl">
+
         {/* ✕ Close Button */}
         <button
           onClick={() => setIsOpen(false)}

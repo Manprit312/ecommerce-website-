@@ -9,7 +9,8 @@ import { useRouter } from "next/navigation";
 import { addToCart } from "@/redux/features/cartSlice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-;
+import {Share2Icon } from "lucide-react";
+
 import "swiper/css";
 import { addToCartBackend } from "@/redux/features/cartSlice";
 import toast from "react-hot-toast";
@@ -76,6 +77,7 @@ export default function ProductDetails({
             <div>
               <div className="relative rounded-2xl overflow-hidden bg-amber-100 p-6  rounded-xl">
                 <AnimatePresence initial={false} mode="wait">
+
                   <motion.div
                     key={activeIndex}
                     initial={{ opacity: 0, x: 30 }}
@@ -168,8 +170,19 @@ export default function ProductDetails({
 
             {/* Right: Info + Actions */}
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">{product?.name}</h1>
+              <div className="flex items-start justify-between mb-2 gap-4">
+  <h1 className="text-3xl md:text-4xl font-bold text-gray-800 flex-1">
+    {product?.name}
+  </h1>
 
+  <button
+    onClick={() => setShowShareModal(true)}
+    className="p-2 rounded-lg shadow-sm
+               bg-[#1daa61] text-white transition-all duration-200 shrink-0"
+  >
+    <Share2Icon className="w-5 h-5 text-white hover:text-white" />
+  </button>
+</div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
@@ -227,16 +240,7 @@ export default function ProductDetails({
 
                 </div>
                 <div>
-                  <button
-                    onClick={() => setShowShareModal(true)}
-                    className="w-full text-[#1daa61] py-3   rounded-xl font-bold text-lg 
-          transition-all flex items-center justify-end gap-2"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.48-.54 2.83-1.43 3.88l1.46 1.46C19.2 15.94 20 14.07 20 12c0-4.42-3.58-8-8-8zm-6.59.59L4 6.17C2.78 7.39 2 9.09 2 11c0 4.42 3.58 8 8 8v3l4-4-4-4v3c-3.31 0-6-2.69-6-6 0-1.48.54-2.83 1.41-3.88z" />
-                    </svg>
-                    Share Product
-                  </button>
+
                 </div>
               </div>
 

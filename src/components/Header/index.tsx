@@ -484,8 +484,13 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
       {menus.map((menu, index) => (
   <details
     key={index}
-    className="group"
-    onClick={() => fetchCategoryProducts(menu.name)} // fetch products when category is opened
+    className="group overflow-y-auto"
+     onToggle={(e) => {
+    if (e.target.open) {
+      e.target.scrollIntoView({ behavior: "smooth", block: "start" });
+      fetchCategoryProducts(menu.name);
+    }
+  }}// fetch products when category is opened
   >
     <summary className="flex items-center justify-between cursor-pointer font-medium text-gray-800 hover:text-[#1daa61]">
       {menu.name}
@@ -506,7 +511,11 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
 
     {/* Products */}
     {dropdownProducts[menu.name]?.length > 0 ? (
-      <div className="mt-3 ml-4 flex flex-col space-y-3">
+<div
+  className="mt-3 ml-4 flex flex-col space-y-3 max-h-64 overflow-y-auto pr-2"
+  onWheel={(e) => e.stopPropagation()}   // ✅ prevents page scroll
+>
+
         {dropdownProducts[menu.name].map((product, i) => (
           <button
             key={i}
