@@ -266,7 +266,8 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
   }, []);
 
   return (
-    <header className="w-full border-gray-200 shadow-sm relative overflow-visible z-50 bg-white">
+ <header className="w-full fixed top-0 left-0 border-gray-200 shadow-sm z-[1000] bg-white transition-all duration-300">
+
       {/* --- MAIN HEADER --- */}
       <div className="bg-white py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4">
@@ -480,25 +481,90 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
         </div>
 
         <div className="flex flex-col p-4 space-y-4 overflow-y-auto">
-          {menus.map((menu, index) => (
-            <details key={index} className="group">
-              <summary className="flex items-center justify-between cursor-pointer font-medium text-gray-800 hover:text-[#1daa61]">
-                {menu.name}
-                <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
-              </summary>
-              <div className="mt-2 ml-2 flex flex-col space-y-2 border-l pl-3 border-gray-200">
-                {menu.subItems.map((item, i) => (
-                  <a
-                    key={i}
-                    href="#"
-                    className="text-gray-600 hover:text-[#1daa61] text-sm"
-                  >
-                    {item}
-                  </a>
-                ))}
-              </div>
-            </details>
-          ))}
+      {menus.map((menu, index) => (
+  <details
+    key={index}
+    className="group"
+    onClick={() => fetchCategoryProducts(menu.name)} // fetch products when category is opened
+  >
+    <summary className="flex items-center justify-between cursor-pointer font-medium text-gray-800 hover:text-[#1daa61]">
+      {menu.name}
+      <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
+    </summary>
+
+    {/* Subcategories */}
+    <div className="mt-2 ml-2 flex flex-col space-y-2 border-l pl-3 border-gray-200">
+      {menu.subItems.map((item, i) => (
+        <span
+          key={i}
+          className="text-gray-600 hover:text-[#1daa61] text-sm cursor-pointer"
+        >
+          {item}
+        </span>
+      ))}
+    </div>
+
+    {/* Products */}
+    {dropdownProducts[menu.name]?.length > 0 ? (
+      <div className="mt-3 ml-4 flex flex-col space-y-3">
+        {dropdownProducts[menu.name].map((product, i) => (
+          <button
+            key={i}
+            onClick={() => handleProductClick(product._id || product.id)}
+            className="flex items-center gap-3 text-left hover:bg-[#f5fff9] p-2 rounded-lg"
+          >
+                   {product.images?.length > 0 ? (
+                        // 🖼️ Show first image if available
+                        <Image
+                          src={product.images[0]}
+                          alt={product.name}
+                          width={30}
+                          height={30}
+                          className="rounded-md object-cover"
+                        />
+                      ) : product.model3D ? (
+                        // 🧩 Show 3D model preview if no images but model3D exists
+                        <model-viewer
+                          src={product.model3D}
+                          alt={product.name}
+                          camera-controls
+                          auto-rotate
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "0.25rem",
+                            background: "#f9fafb",
+                            border: "1px solid #e5e7eb",
+                          }}
+                        ></model-viewer>) : (
+                        // 🪫 Fallback placeholder
+                        <Image
+                          src="/placeholder.png"
+                          alt={product.name}
+                          width={30}
+                          height={30}
+                          className="rounded-md object-cover"
+                        />
+                      )}
+            <div>
+              <p className="text-sm font-medium text-gray-800">
+                {product.name.length > 20
+                  ? product.name.substring(0, 20) + "..."
+                  : product.name}
+              </p>
+              <p className="text-xs text-[#1daa61] font-semibold">
+                ₹{product.price}
+              </p>
+            </div>
+          </button>
+        ))}
+      </div>
+    ) : (
+      <p className="text-sm text-gray-500 ml-4 mt-2">No products found</p>
+    )}
+  </details>
+))}
+
         </div>
       </div>
 

@@ -76,7 +76,7 @@ console.log(product.model3D, is3D);
       )} 
 
       {/* === Product Info === */}
-      <div className="p-4 sm:p-5 cursor-pointer"  onClick={handleViewDetails}>
+      <div className="p-4 cursor-pointer"  onClick={handleViewDetails}>
         <h3 className="text-sm sm:text-base font-semibold text-gray-800 mb-1">
           {product.name}
         </h3>

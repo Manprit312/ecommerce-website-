@@ -28,7 +28,7 @@ export default function HeroSection() {
   return (
     <>
       {/* 🎬 Fullscreen video section */}
-      <section className="relative w-full h-screen overflow-hidden">
+      {/* <section className="relative w-full h-screen overflow-hidden">
         <video
           autoPlay
           loop
@@ -48,11 +48,12 @@ export default function HeroSection() {
             Elegant LED photo frames and lighting solutions to make every occasion special.
           </p>
         </div>
-      </section>
+      </section> */}
 
       {/* 🖼️ Swiper Section (scrolls after video) */}
+
       <section
-        className="relative overflow-hidden text-gray-800 bg-white py-16"
+        className="relative pt-[90px] sm:pt-[120px] md:pt-[120px] overflow-hidden text-gray-800 bg-white"
         style={{
           backgroundImage: "url(/images/homebannerback.png)",
           backgroundSize: "cover",

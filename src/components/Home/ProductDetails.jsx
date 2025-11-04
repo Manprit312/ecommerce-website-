@@ -31,6 +31,8 @@ export default function ProductDetails({
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || "");
   const [quantity, setQuantity] = useState(1);
   const isFav = favorites.includes(product?.id);
+  const [showShareModal, setShowShareModal] = useState(false);
+
   const dispatch = useAppDispatch()
   const total = useMemo(() => (product?.price || 0) * quantity, [product, quantity]);
   const router = useRouter();
@@ -54,7 +56,7 @@ export default function ProductDetails({
   }
   fetchimage(product)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 " >
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 mt-20 " >
       {/* Header */}
       <NetworkBackground />
 
@@ -67,6 +69,7 @@ export default function ProductDetails({
           <ArrowLeft className="w-5 h-5 " />
           <span className="font-medium text-[#1daa61]">Back to Shop</span>
         </button>
+
         <div className="backdrop-transparent-lg rounded-3xl  overflow-hidden">
           <div className="grid md:grid-cols-2 gap-8 p-6 md:p-8">
             {/* Left: Gallery + Thumbs */}
@@ -181,9 +184,9 @@ export default function ProductDetails({
 
               <div className="mb-6">
                 <div className="flex items-baseline gap-4">
-                  <div className="text-4xl font-bold text-amber-600">${product?.price}</div>
+                  <div className="text-4xl font-bold text-amber-600">  ₹{product?.price}</div>
                   {product?.originalPrice && (
-                    <div className="text-gray-400 line-through">${product.originalPrice}</div>
+                    <div className="text-gray-400 line-through">  ₹{product.originalPrice}</div>
                   )}
                 </div>
                 {product?.inStock && <p className="text-green-600 font-medium mt-2">In Stock - Ready to Ship</p>}
@@ -219,7 +222,21 @@ export default function ProductDetails({
 
                 <div className="text-lg">
                   <div className="text-sm text-gray-500">Total</div>
-                  <div className="font-bold text-2xl text-amber-600">${total.toFixed(2)}</div>
+
+                  <div className="font-bold text-2xl text-amber-600">₹{total.toFixed(2)}</div>
+
+                </div>
+                <div>
+                  <button
+                    onClick={() => setShowShareModal(true)}
+                    className="w-full text-[#1daa61] py-3   rounded-xl font-bold text-lg 
+          transition-all flex items-center justify-end gap-2"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.48-.54 2.83-1.43 3.88l1.46 1.46C19.2 15.94 20 14.07 20 12c0-4.42-3.58-8-8-8zm-6.59.59L4 6.17C2.78 7.39 2 9.09 2 11c0 4.42 3.58 8 8 8v3l4-4-4-4v3c-3.31 0-6-2.69-6-6 0-1.48.54-2.83 1.41-3.88z" />
+                    </svg>
+                    Share Product
+                  </button>
                 </div>
               </div>
 
@@ -329,6 +346,142 @@ export default function ProductDetails({
                   <div>1 Year Warranty</div>
                 </div>
               </div>
+              {showShareModal && (
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fadeIn">
+                  <div className="relative bg-white rounded-3xl shadow-2xl p-6 sm:p-8 w-[90%] max-w-sm text-center border border-gray-100">
+                    {/* Close Button */}
+                    <button
+                      onClick={() => setShowShareModal(false)}
+                      className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition"
+                    >
+                      ✕
+                    </button>
+
+                    {/* Heading */}
+                    <h3 className="text-xl font-bold text-gray-800 mb-6">
+                      Share this Product
+                    </h3>
+
+                    {/* Icons Grid */}
+                    <div className="grid grid-cols-3 gap-5">
+                      {/* WhatsApp */}
+                      <a
+                        href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                          `Check this out: ${product.name} - ${window.location.origin}/product/${product._id || product.id}`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex flex-col items-center gap-2"
+                      >
+                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#25D366]/10 group-hover:bg-[#25D366]/20 transition">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-6 h-6 text-[#25D366] group-hover:scale-110 transition-transform"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M12.004 2C6.48 2 2 6.48 2 12c0 1.84.5 3.57 1.36 5.08L2 22l5.1-1.33A9.931 9.931 0 0012.004 22c5.52 0 10-4.48 10-10S17.524 2 12.004 2zm5.92 14.58c-.25.7-1.44 1.33-1.99 1.42-.53.08-1.2.12-1.93-.12-.45-.14-1.03-.34-1.77-.67-3.1-1.35-5.12-4.5-5.28-4.72-.16-.22-1.26-1.68-1.26-3.2 0-1.52.8-2.27 1.08-2.59.28-.32.6-.4.8-.4.2 0 .4 0 .57.01.18.01.43-.07.67.5.25.6.85 2.08.93 2.23.08.16.13.34.02.55-.1.2-.15.34-.3.53-.15.18-.32.41-.46.55-.15.14-.3.3-.13.6.18.3.77 1.27 1.66 2.05 1.15 1.02 2.12 1.34 2.42 1.5.3.16.47.13.65-.08.18-.2.75-.87.95-1.17.2-.3.4-.25.67-.15.27.1 1.74.82 2.04.97.3.15.5.22.57.35.07.13.07.73-.17 1.43z" />
+                          </svg>
+                        </div>
+                        <span className="text-xs font-medium text-gray-600">WhatsApp</span>
+                      </a>
+
+                      {/* Facebook */}
+                      <a
+                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                          `${window.location.origin}/product/${product._id || product.id}`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex flex-col items-center gap-2"
+                      >
+                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#1877F2]/10 group-hover:bg-[#1877F2]/20 transition">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                            className="w-6 h-6 text-[#1877F2] group-hover:scale-110 transition-transform"
+                          >
+                            <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12a10 10 0 008.45 9.87v-6.99H8.07v-2.88h2.38v-2.2c0-2.36 1.4-3.66 3.54-3.66 1.02 0 2.1.18 2.1.18v2.31h-1.18c-1.16 0-1.52.72-1.52 1.46v1.91h2.59l-.41 2.88h-2.18v6.99A10 10 0 0022 12z" />
+                          </svg>
+                        </div>
+                        <span className="text-xs font-medium text-gray-600">Facebook</span>
+                      </a>
+
+                      {/* Twitter / X */}
+                      <a
+                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                          `Check out ${product.name} - ${window.location.origin}/product/${product._id || product.id}`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex flex-col items-center gap-2"
+                      >
+                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#1DA1F2]/10 group-hover:bg-[#1DA1F2]/20 transition">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                            className="w-6 h-6 text-[#1DA1F2] group-hover:scale-110 transition-transform"
+                          >
+                            <path d="M22.46 6c-.77.35-1.6.58-2.46.69a4.27 4.27 0 001.88-2.36 8.59 8.59 0 01-2.72 1.04A4.24 4.24 0 0016 4a4.26 4.26 0 00-4.26 4.26c0 .33.03.66.1.97A12.06 12.06 0 013 5.16a4.23 4.23 0 001.32 5.67 4.18 4.18 0 01-1.93-.53v.05a4.26 4.26 0 003.42 4.18 4.21 4.21 0 01-1.92.07 4.26 4.26 0 003.98 2.96A8.52 8.52 0 012 19.54a12.02 12.02 0 006.52 1.91c7.83 0 12.11-6.48 12.11-12.11l-.01-.55A8.58 8.58 0 0022.46 6z" />
+                          </svg>
+                        </div>
+                        <span className="text-xs font-medium text-gray-600">Twitter</span>
+                      </a>
+
+                      {/* Email */}
+                      <a
+                        href={`mailto:?subject=${encodeURIComponent(
+                          product.name
+                        )}&body=${encodeURIComponent(
+                          `Check out this product: ${product.name}\n${window.location.origin}/product/${product._id || product.id}`
+                        )}`}
+                        className="group flex flex-col items-center gap-2"
+                      >
+                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#EA4335]/10 group-hover:bg-[#EA4335]/20 transition">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-6 h-6 text-[#EA4335] group-hover:scale-110 transition-transform"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 2v.01L12 13 4 6.01V6h16z" />
+                          </svg>
+                        </div>
+                        <span className="text-xs font-medium text-gray-600">Email</span>
+                      </a>
+
+                      {/* Copy Link */}
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(
+                            `${window.location.origin}/product/${product._id || product.id}`
+                          );
+                          toast.success("Link copied to clipboard! 📋");
+                          setShowShareModal(false);
+                        }}
+                        className="group flex flex-col items-center gap-2"
+                      >
+                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-200 group-hover:bg-gray-300 transition">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            className="w-6 h-6 text-gray-700 group-hover:scale-110 transition-transform"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M10 13a5 5 0 01.17-1.29l-2.1-2.1a7 7 0 000 6.78l2.1-2.1A5 5 0 0110 13zm4 0a5 5 0 01-.17 1.29l2.1 2.1a7 7 0 000-6.78l-2.1 2.1A5 5 0 0114 13zm-2-3a3 3 0 00-.83 5.9l1.41 1.41A5 5 0 0012 8.1l-1.41 1.41A3 3 0 0012 10z" />
+                          </svg>
+                        </div>
+                        <span className="text-xs font-medium text-gray-600">Copy Link</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+
+
             </div>
           </div>
 

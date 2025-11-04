@@ -88,7 +88,7 @@ useEffect(() => {
                     : "text-gray-700"
                 }`}
               >
-                {category.name}
+               {category.name.substring(0, 8)}
               </span>
             </button>
           ))}

@@ -62,7 +62,7 @@ export default function UncategorizedProducts() {
       {/* ✅ Page Header */}
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-         Have a look 
+         New Arrivals
         </h2>
         <p className="text-sm text-gray-500">
           Showing {products.length} product{products.length !== 1 && "s"}
