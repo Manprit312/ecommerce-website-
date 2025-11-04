@@ -37,7 +37,7 @@ export default function CategoryPage() {
   return (
     <>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto  mt-20 px-6 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 capitalize">
           All  Category Products

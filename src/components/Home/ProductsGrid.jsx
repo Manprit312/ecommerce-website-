@@ -38,7 +38,7 @@ export default function ProductsGrid() {
   return (
     <>
      
-      <section className="relative w-full py-6 overflow-hidden">
+      <section className="relative w-full py-3 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/20 pointer-events-none"></div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">

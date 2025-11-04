@@ -1,9 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { motion } from "framer-motion";
 import { Send, Mail, Phone, MapPin } from "lucide-react";
 
 export default function ContactPage() {
+  const [contact, setContact] = useState<any>(null);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,6 +19,19 @@ export default function ContactPage() {
   });
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  useEffect(() => {
+    const fetchContactData = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contact-settings`);
+        const data = await res.json();
+        setContact(data);
+      } catch (error) {
+        console.error("Failed to load contact settings");
+      }
+    };
+
+    fetchContactData();
+  }, []);
 
   // 🧩 Validate fields before sending
   const validateForm = () => {
@@ -138,9 +153,8 @@ export default function ContactPage() {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Your Name"
-                  className={`w-full px-4 py-3 rounded-xl border ${
-                    errors.name ? "border-red-400" : "border-gray-200"
-                  } focus:border-[#1daa61] focus:ring-1 focus:ring-[#1daa61] outline-none text-gray-700 shadow-sm`}
+                  className={`w-full px-4 py-3 rounded-xl border ${errors.name ? "border-red-400" : "border-gray-200"
+                    } focus:border-[#1daa61] focus:ring-1 focus:ring-[#1daa61] outline-none text-gray-700 shadow-sm`}
                 />
                 {errors.name && (
                   <p className="text-red-500 text-xs mt-1">{errors.name}</p>
@@ -154,9 +168,8 @@ export default function ContactPage() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="Your Email"
-                  className={`w-full px-4 py-3 rounded-xl border ${
-                    errors.email ? "border-red-400" : "border-gray-200"
-                  } focus:border-[#1daa61] focus:ring-1 focus:ring-[#1daa61] outline-none text-gray-700 shadow-sm`}
+                  className={`w-full px-4 py-3 rounded-xl border ${errors.email ? "border-red-400" : "border-gray-200"
+                    } focus:border-[#1daa61] focus:ring-1 focus:ring-[#1daa61] outline-none text-gray-700 shadow-sm`}
                 />
                 {errors.email && (
                   <p className="text-red-500 text-xs mt-1">{errors.email}</p>
@@ -172,9 +185,8 @@ export default function ContactPage() {
                 onChange={handleChange}
                 placeholder="Your Message..."
                 rows={4}
-                className={`w-full px-4 py-3 rounded-xl border ${
-                  errors.message ? "border-red-400" : "border-gray-200"
-                } focus:border-[#1daa61] focus:ring-1 focus:ring-[#1daa61] outline-none text-gray-700 shadow-sm`}
+                className={`w-full px-4 py-3 rounded-xl border ${errors.message ? "border-red-400" : "border-gray-200"
+                  } focus:border-[#1daa61] focus:ring-1 focus:ring-[#1daa61] outline-none text-gray-700 shadow-sm`}
               ></textarea>
               {errors.message && (
                 <p className="text-red-500 text-xs mt-1">{errors.message}</p>
@@ -226,15 +238,18 @@ export default function ContactPage() {
               <div className="space-y-4 text-gray-700 text-sm sm:text-base">
                 <div className="flex items-center justify-center md:justify-start gap-3">
                   <Mail className="text-[#1daa61]" />
-                  <span>aryaenterprises499@gmail.com</span>
+         <span>{contact?.email || "Loading..."}</span>
+
+
+
                 </div>
                 <div className="flex items-center justify-center md:justify-start gap-3">
                   <Phone className="text-[#1daa61]" />
-                  <span>+91 98765 43210</span>
+                <span>{contact?.phone || "Loading..."}</span>
                 </div>
                 <div className="flex items-center justify-center md:justify-start gap-3">
                   <MapPin className="text-[#1daa61]" />
-                  <span>Plot No. 21, Industrial Area Phase 8, Mohali, India</span>
+          <span>{contact?.address || "Loading..."}</span>
                 </div>
               </div>
             </div>

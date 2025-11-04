@@ -1,21 +1,21 @@
 
-
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Star, Heart, ArrowLeft, ChevronLeft, ChevronRight, Router } from "lucide-react";
+import { ShoppingCart, Heart, ArrowLeft, ChevronLeft, ChevronRight, Router } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { addToCart } from "@/redux/features/cartSlice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {Share2Icon } from "lucide-react";
-
+import { Share2Icon } from "lucide-react";
+import { fetchProducts } from "@/redux/features/productSlice";
 import "swiper/css";
 import { addToCartBackend } from "@/redux/features/cartSlice";
 import toast from "react-hot-toast";
 import NetworkBackground from "../background";
 import "swiper/css/pagination"
+import { Star, StarHalf, StarOff } from "lucide-react";
 export default function ProductDetails({
   product,
   favorites = [],
@@ -33,29 +33,93 @@ export default function ProductDetails({
   const [quantity, setQuantity] = useState(1);
   const isFav = favorites.includes(product?.id);
   const [showShareModal, setShowShareModal] = useState(false);
-
+  const [categoryNames, setCategoryNames] = useState([])
+  const [relatedProducts, setRelatedProducts] = useState([])
   const dispatch = useAppDispatch()
   const total = useMemo(() => (product?.price || 0) * quantity, [product, quantity]);
   const router = useRouter();
-  const images = product?.images
+  // Build gallery list – include 3D model as first thumbnail if exists
+  const gallery = [
+    ...(product?.model3D ? [{ type: "3d", src: product.model3D }] : []),
+    ...(product?.images?.map((img) => ({ type: "image", src: img })) || []),
+  ];
+  const handleClick = (name) => {
+
+    dispatch(fetchProducts(name));
+
+    // ✅ Navigate to category page
+    router.push(`/category/${encodeURIComponent(name)}`);
+  };
+  useEffect(() => {
+    const fetchCategoryNames = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
+        const data = await res.json();
+
+        const matchedNames = data
+          .filter((cat) => product.categories.includes(cat._id))
+          .map((cat) => cat.name);
+
+        setCategoryNames(matchedNames);
+        console.log("🏷️ Fetched category names:", matchedNames);
+      } catch (error) {
+        console.error("❌ Failed to fetch categories:", error);
+      }
+    };
+
+    if (product?.categories?.length) {
+      fetchCategoryNames();
+    }
+  }, [product]);
+
 
   const inc = () => setQuantity((q) => Math.min(q + 1, 99));
   const dec = () => setQuantity((q) => Math.max(1, q - 1));
 
-  const goPrev = () => setActiveIndex((i) => (i - 1 + images.length) % images.length);
-  const goNext = () => setActiveIndex((i) => (i + 1) % images.length);
+  const goPrev = () =>
+    setActiveIndex((i) => (i - 1 + gallery.length) % gallery.length);
+
+  const goNext = () =>
+    setActiveIndex((i) => (i + 1) % gallery.length);
+
   console.log(product)
   const [tab, setTab] = useState("description");
-  const fetchimage = async (product) => {
-    const res = await fetch("/api/meshy", {
-      method: "POST",
-      body: JSON.stringify({ imageUrl: "https://res.cloudinary.com/dnvhetnud/image/upload/v1759901843/swanledphotoframs_x92deh.jpg" }),
-    });
-    const modelData = await res.json();
-    console.log(modelData); // contains .glb URL when ready
 
-  }
-  fetchimage(product)
+// ✅ Get related products
+useEffect(() => {
+  if (!product?.categories?.length) return;
+
+  const fetchRelatedProducts = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
+      const data = await res.json();
+
+      const productCategoryIDs = product.categories.map((c) =>
+        typeof c === "string" ? c : c._id
+      );
+
+      const related = data.filter((p) => {
+        const ids = p.categories.map((c) =>
+          typeof c === "string" ? c : c._id
+        );
+
+        return (
+          p._id !== product._id && // exclude same product
+          ids.some((cid) => productCategoryIDs.includes(cid))
+        );
+      });
+
+      setRelatedProducts(related);
+    } catch (err) {
+      console.error("❌ Error fetching related:", err);
+    }
+  };
+
+  fetchRelatedProducts();
+}, [product]);
+
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 mt-20 " >
       {/* Header */}
@@ -86,10 +150,9 @@ export default function ProductDetails({
                     transition={{ duration: 0.35 }}
                     className="w-full flex items-center justify-center rounded-xl"
                   >
-                    {product?.model3D ? (
-                      // ✅ Show 3D Model Viewer if available
+                    {gallery[activeIndex].type === "3d" ? (
                       <model-viewer
-                        src={product.model3D}
+                        src={gallery[activeIndex].src}
                         alt={product.name}
                         camera-controls
                         auto-rotate
@@ -102,15 +165,16 @@ export default function ProductDetails({
                         }}
                       ></model-viewer>
                     ) : (
-                      // 🖼️ Fallback: Image Carousel
                       <Image
-                        src={images[activeIndex]}
+                        src={gallery[activeIndex].src}
                         alt={`${product?.name} ${activeIndex + 1}`}
                         width={300}
                         height={300}
                         className="object-contain max-h-[360px] rounded-xl "
                       />
                     )}
+
+
 
                   </motion.div>
                 </AnimatePresence>
@@ -132,25 +196,39 @@ export default function ProductDetails({
                     </button>
                   </>
                 )}
-
-
-                {/* Thumbnail strip — only show if no 3D model */}
-                {images?.length > 0 && (
+                {gallery.length > 0 && (
                   <div className="mt-4 flex items-center gap-3 overflow-x-auto pb-2">
-                    {images.map((img, i) => (
+                    {gallery.map((item, i) => (
                       <button
                         key={i}
                         onClick={() => setActiveIndex(i)}
                         className={`rounded-lg overflow-hidden border-2 ${i === activeIndex ? "border-amber-400" : "border-transparent"
                           }`}
                       >
-                        <Image
-                          src={img}
-                          alt={`thumb-${i}`}
-                          width={80}
-                          height={80}
-                          className="object-cover"
-                        />
+                        {item.type === "3d" ? (
+                          <div className="w-[80px] h-[80px] flex items-center justify-center bg-gray-100 rounded-md border">
+                            <model-viewer
+                              alt={product.name}
+                              camera-controls
+                              auto-rotate
+                              style={{
+                                width: "100%",
+                                height: "360px",
+                                background: "#f5fff9",
+                                borderRadius: "1rem",
+                                border: "1px solid #e5e7eb",
+                              }}
+                            ></model-viewer>
+                          </div>
+                        ) : (
+                          <Image
+                            src={item.src}
+                            alt={`thumb-${i}`}
+                            width={80}
+                            height={80}
+                            className="object-cover"
+                          />
+                        )}
                       </button>
                     ))}
                   </div>
@@ -169,29 +247,76 @@ export default function ProductDetails({
             </div>
 
             {/* Right: Info + Actions */}
-            <div>
-              <div className="flex items-start justify-between mb-2 gap-4">
-  <h1 className="text-3xl md:text-4xl font-bold text-gray-800 flex-1">
-    {product?.name}
-  </h1>
-
-  <button
-    onClick={() => setShowShareModal(true)}
-    className="p-2 rounded-lg shadow-sm
-               bg-[#1daa61] text-white transition-all duration-200 shrink-0"
-  >
-    <Share2Icon className="w-5 h-5 text-white hover:text-white" />
-  </button>
-</div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-5 h-5 ${i < Math.floor(product?.rating || 0) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
-                    />
+            <div >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {categoryNames.map((cat) => (
+                    <span
+                      key={cat}
+                      onClick={() => handleClick(cat)}
+                      className="cursor-pointer text-xs bg-[#1daa61]/10 text-[#1daa61] px-3 py-1 rounded-full font-medium hover:bg-[#1daa61]/20 transition"
+                    >
+                      {cat}
+                    </span>
                   ))}
                 </div>
+
+                <button
+                  onClick={() => setShowShareModal(true)}
+                  className="p-2 rounded-lg shadow-sm bg-[#1daa61] text-white transition-all duration-200 shrink-0"
+                >
+                  <Share2Icon className="w-5 h-5 text-white hover:text-white" />
+                </button>
+              </div>
+
+
+              <div className="flex items-start justify-between mb-2 gap-4">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-800 flex-1">
+                  {product?.name}
+                </h1>
+
+
+              </div>
+
+              <div className="flex items-center gap-3 mb-4">
+
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, i) => {
+                    const rating = product?.rating || 0;
+
+                    if (i + 1 <= Math.floor(rating)) {
+                      // FULL GOLD STAR
+                      return (
+                        <Star
+                          key={i}
+                          className="w-5 h-5"
+                          style={{ color: "#FFD700", fill: "#FFD700" }}
+                        />
+                      );
+                    }
+
+                    if (i < rating && rating % 1 !== 0) {
+                      // HALF GOLD STAR
+                      return (
+                        <StarHalf
+                          key={i}
+                          className="w-5 h-5"
+                          style={{ color: "#FFD700", fill: "#FFD700" }}
+                        />
+                      );
+                    }
+
+                    // EMPTY STAR (light gray)
+                    return (
+                      <StarOff
+                        key={i}
+                        className="w-5 h-5"
+                        style={{ color: "#D1D5DB" }}
+                      />
+                    );
+                  })}
+                </div>
+
                 <div className="text-sm text-gray-600">{product?.rating} ({product?.reviews} reviews)</div>
               </div>
 
@@ -652,48 +777,50 @@ export default function ProductDetails({
 
                 {/* Swiper Slider for Related Products */}
                 <div className="relative">
-                  <Swiper
-                    slidesPerView={1.5}
-                    spaceBetween={16}
-                    breakpoints={{
-                      640: { slidesPerView: 2.5, spaceBetween: 20 },
-                      1024: { slidesPerView: 4, spaceBetween: 24 },
-                    }}
-                    loop
-                    autoplay={{ delay: 4000, disableOnInteraction: false }}
-                    className="pb-6"
-                  >
-                    {(related?.length ? related : new Array(4).fill(product)).map((r, i) => (
-                      <SwiperSlide key={i}>
-                        <div className=" rounded-2xl m-2 shadow-md  overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                          <div className="relative h-22 bg-transparent-50 flex items-center justify-center overflow-hidden">
-                            <Image
-                              src={r.images?.[0] || product.images?.[0] || "/placeholder.png"}
-                              alt={r.name || product.name}
-                              width={200}
-                              height={200}
-                              className="object-contain transition-transform duration-500 hover:scale-105 rounded-xl"
-                            />
-                          </div>
-                          <div className="p-4 text-center">
-                            <h5 className="text-gray-800 font-semibold text-sm truncate mb-1">
-                              {r.name || product.name}
-                            </h5>
-                            <p className="text-[#1daa61] font-bold text-base">
-                              ₹{r.price || product.price}
-                            </p>
-                          </div>
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
+                <Swiper
+  slidesPerView={1.5}
+  spaceBetween={16}
+  breakpoints={{
+    640: { slidesPerView: 2.5, spaceBetween: 20 },
+    1024: { slidesPerView: 4, spaceBetween: 24 },
+  }}
+  loop
+  autoplay={{ delay: 4000, disableOnInteraction: false }}
+  className="pb-6"
+>
+  {relatedProducts.slice(0, 8).map((item,i) => (
+    <SwiperSlide key={i}>
+      <div
+        onClick={() => router.push(`/product/${item._id}`)}
+        className="cursor-pointer rounded-2xl m-2 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+      >
+        <div className="relative h-40 flex items-center justify-center overflow-hidden">
+          <Image
+            src={item.images?.[0] || "/placeholder.png"}
+            alt={item.name}
+            width={200}
+            height={200}
+            className="object-cover w-full transition-transform duration-300 hover:scale-105"
+          />
+        </div>
+
+        <div className="p-4 text-center">
+          <h5 className="text-gray-800 font-semibold text-sm truncate">
+            {item.name}
+          </h5>
+          <p className="text-[#1daa61] font-bold text-base">₹{item.price}</p>
+        </div>
+      </div>
+    </SwiperSlide>
+  ))}
+</Swiper>
+
                 </div>
               </div>
             </div>
 
 
           </div>
-
         </div>
       </div>
     </div>

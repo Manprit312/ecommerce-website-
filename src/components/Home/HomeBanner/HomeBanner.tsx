@@ -97,7 +97,7 @@ export default function HeroSection() {
 
                     {/* Right Section */}
                     <div className="hidden md:flex justify-center">
-                      <div className="relative bg-white/50 backdrop-blur-xl rounded-2xl p-6 border border-[#1daa61]/20 flex flex-col items-center transform perspective-[1000px]">
+                      <div className="relative bg-white/50 rounded-2x flex flex-col items-center transform perspective-[1000px]">
                         <div className="relative md:w-96 md:h-72 mb-3 overflow-hidden rounded-xl transform-gpu transition-transform duration-700 ease-in-out hover:rotate-y-6 hover:scale-[1.05]">
                           <Image
                             src={slide.image}
@@ -106,12 +106,12 @@ export default function HeroSection() {
                             className="object-cover rounded-2xl transition-transform duration-[6000ms] ease-in-out"
                           />
                         </div>
-                        <h3 className="text-xl font-bold mb-1 text-gray-800">
+                        {/* <h3 className="text-xl font-bold mb-1 text-gray-800">
                           {slide.product}
                         </h3>
                         <p className="text-[#1daa61] font-medium text-sm">
                           {slide.tag}
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                   </div>
