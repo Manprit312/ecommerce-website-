@@ -36,7 +36,13 @@ export const addToCartBackend = createAsyncThunk(
       const url = `${API_URL}/api/users/cart/add`;
       console.log("🌐 [Fetch URL]:", url);
 
-      const body = JSON.stringify({ uid, productId: product._id });
+   const body = JSON.stringify({
+  uid,
+  productId: product._id,
+  quantity: product.quantity,        // ✅ Send quantity
+  image: product.image,
+});
+
       console.log("📦 [Request Body]:", body);
 
       const res = await fetch(url, {

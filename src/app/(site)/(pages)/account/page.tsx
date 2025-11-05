@@ -28,7 +28,7 @@ const handleViewDetails = async (orderId: string) => {
   setShowModal(true);
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/orders/details/${orderId}`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}`
     );
     const data = await res.json();
     if (data.success) {
@@ -53,7 +53,7 @@ const handleViewDetails = async (orderId: string) => {
   // 🧠 Fetch user orders
   useEffect(() => {
     if (user?.email) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${user.email}`)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/user/${user.email}`)
         .then((res) => res.json())
         .then((data) => {
           console.log(data)
@@ -67,7 +67,7 @@ const handleViewDetails = async (orderId: string) => {
 
   if (!user) {
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-[#f8fff9] via-white to-[#f3fff7] px-4 md:px-8">
+    <div className="min-h-[80vh] flex items-center justify-center  bg-gradient-to-br from-[#f8fff9] via-white to-[#f3fff7] px-4 md:px-8">
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -113,7 +113,7 @@ const handleViewDetails = async (orderId: string) => {
 
 console.log(orders)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f5fff9] via-white to-[#e6fff1] py-16 px-4 md:px-8" >
+    <div className="min-h-screen bg-gradient-to-br from-[#f5fff9] via-white to-[#e6fff1] py-16 px-4 md:px-8 mt-20" >
       <div className="max-w-5xl mx-auto" onClick={(e) => e.target === e.currentTarget && setShowModal(false)}>
         {/* Header */}
         <div className="text-center mb-12">
@@ -175,56 +175,70 @@ console.log(orders)
             <Package className="text-[#1daa61]" size={20} /> Order History
           </h3>
 
-          {loadingOrders ? (
-            <p className="text-gray-500">Fetching your orders...</p>
-          ) : orders.length === 0 ? (
-            <p className="text-gray-500">No orders found.</p>
-          ) : (
-            <div className="grid md:grid-cols-2 gap-6">
-              {orders.map((order) => (
-                <motion.div
-                  key={order._id}
-                  whileHover={{ scale: 1.02 }}
-                  className="bg-white border border-[#1daa61]/10 rounded-2xl shadow-sm p-6 hover:shadow-lg transition"
-                >
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="font-semibold text-gray-800">
-                      {order._id.slice(-6).toUpperCase()}
-                    </h4>
-                    <span
-                      className={`text-sm font-medium px-3 py-1 rounded-full ${
-                        order.status === "Delivered"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {order.status}
-                    </span>
-                  </div>
+        {
+  loadingOrders ? (
+    <p className="text-gray-500">Fetching your orders...</p>
+  ) : orders?.length === 0 ? (
+    <p className="text-gray-500">No orders found.</p>
+  ) : (
+    <div className="grid md:grid-cols-2 gap-6">
+      {orders?.map((order: any) => (
+        <motion.div
+          key={order._id}
+          whileHover={{ scale: 1.02 }}
+          className="bg-white border border-[#1daa61]/10 rounded-2xl shadow-sm p-6 hover:shadow-lg transition"
+        >
+          {/* Order header */}
+          <div className="flex justify-between items-center mb-3">
+            <h4 className="font-semibold text-gray-800">
+              {order._id ? order._id.slice(-6).toUpperCase() : "-----"}
+            </h4>
 
-                  <div className="flex items-center justify-between text-sm text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <Calendar size={14} />
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </div>
-                    <span>{order.items.length} items</span>
-                  </div>
+            <span
+              className={`text-sm font-medium px-3 py-1 rounded-full ${
+                order.status === "Delivered"
+                  ? "bg-green-100 text-green-700"
+                  : order.status === "Shipped"
+                  ? "bg-blue-100 text-blue-700"
+                  : order.status === "Processing"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {order.status || "Pending"}
+            </span>
+          </div>
 
-                  <div className="mt-4 flex justify-between items-center">
-                    <p className="font-semibold text-[#1daa61]">
-                      ₹{order.totalAmount}
-                    </p>
-                    <button
-  onClick={() => handleViewDetails(order._id)}
-  className="text-sm font-medium text-[#1daa61] hover:underline"
->
-  View Details
-</button>
-                  </div>
-                </motion.div>
-              ))}
+          {/* Date + item count */}
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <Calendar size={14} />
+              {order.createdAt
+                ? new Date(order.createdAt).toLocaleDateString()
+                : "N/A"}
             </div>
-          )}
+
+            <span>{order.items?.length ?? 0} items</span>
+          </div>
+
+          {/* Amount + view details */}
+          <div className="mt-4 flex justify-between items-center">
+            <p className="font-semibold text-[#1daa61] text-lg">
+              ₹{order.totalAmount?.toFixed(2) ?? "0.00"}
+            </p>
+
+            <button
+              onClick={() => handleViewDetails(order._id)}
+              className="text-sm font-medium text-[#1daa61] hover:underline"
+            >
+              View Details
+            </button>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  )
+}
         </div>
       </div>
       {showModal && (

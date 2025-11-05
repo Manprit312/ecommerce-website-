@@ -10,7 +10,7 @@ import {
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
-
+import { fetchProducts } from "@/redux/features/productSlice";
 import toast from "react-hot-toast";
 
 import { getUserCart } from "@/redux/features/cartSlice";
@@ -222,6 +222,14 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
       return;
     } router.push("/checkout");
   }
+  const handleClick = (name: string) => {
+
+    dispatch(fetchProducts(name));   // ✅ same just like Categories
+    const section = document.getElementById("productgrid");
+  if (section) {
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  };
 
 
   useEffect(() => {
@@ -249,9 +257,9 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
         setLoading(false);
       }
     };
-  const fetchLogo = async () => {
+    const fetchLogo = async () => {
       try {
-       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logo`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logo`);
         if (!res.ok) throw new Error("Failed to fetch logo");
         const data = await res.json();
         if (data?.logoUrl) setLogoUrl(data.logoUrl);
@@ -266,7 +274,7 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
   }, []);
 
   return (
- <header className="w-full fixed top-0 left-0 border-gray-200 shadow-sm z-[1000] bg-white transition-all duration-300">
+    <header className="w-full fixed top-0 left-0 border-gray-200 shadow-sm z-[1000] bg-white transition-all duration-300">
 
       {/* --- MAIN HEADER --- */}
       <div className="bg-white py-2">
@@ -376,20 +384,28 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
               {menus.map((menu, index) => (
                 <div
                   key={index}
-                  ref={(el) => {
+                 ref={(el) => {
                     menuRefs.current[menu.name] = el;
                   }}
-
-                  className="relative py-4 group"
-                  onMouseEnter={() => handleMouseEnter(menu.name)}
-                  onMouseLeave={handleMouseLeave}
+                  className="relative py-4 flex items-center gap-1"
                 >
-                  <div className="flex items-center space-x-1 cursor-pointer text-[15px] font-semibold text-gray-700 transition-all duration-200 group-hover:text-[#1daa61]">
-                    <span>{menu.name}</span>
-                    <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
-                  </div>
-                  <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#1daa61] transition-all duration-300 group-hover:w-full"></div>
+                  {/* ✅ Clicking name calls handleClick (NOT dropdown) */}
+                  <span
+                    className="cursor-pointer text-[15px] font-semibold text-gray-700 hover:text-[#1daa61]"
+                    onClick={() => handleClick(menu.name)}
+                  >
+                    {menu.name}
+                  </span>
+
+                  {/* ✅ Only icon triggers dropdown */}
+                  <ChevronDown
+                    className="w-4 h-4 cursor-pointer text-gray-700 hover:text-[#1daa61] transition-transform duration-300"
+                    onMouseEnter={() => handleMouseEnter(menu.name)}
+                    onClick={() => handleMouseEnter(menu.name)}
+                  />
                 </div>
+
+
               ))}
             </div>
           </div>
@@ -481,50 +497,50 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
         </div>
 
         <div className="flex flex-col p-4 space-y-4 overflow-y-auto">
-      {menus.map((menu, index) => (
-  <details
-    key={index}
-    className="group overflow-y-auto"
-onToggle={(e) => {
-    const details = e.target as HTMLDetailsElement;
+          {menus.map((menu, index) => (
+            <details
+              key={index}
+              className="group overflow-y-auto"
+              onToggle={(e) => {
+                const details = e.target as HTMLDetailsElement;
 
-    if (details.open) {
-      details.scrollIntoView({ behavior: "smooth", block: "start" });
-      fetchCategoryProducts(menu.name);
-    }
-  }}
-  >
-    <summary className="flex items-center justify-between cursor-pointer font-medium text-gray-800 hover:text-[#1daa61]">
-      {menu.name}
-      <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
-    </summary>
+                if (details.open) {
+                  details.scrollIntoView({ behavior: "smooth", block: "start" });
+                  fetchCategoryProducts(menu.name);
+                }
+              }}
+            >
+              <summary className="flex items-center justify-between cursor-pointer font-medium text-gray-800 hover:text-[#1daa61]">
+                {menu.name}
+                <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
+              </summary>
 
-    {/* Subcategories */}
-    <div className="mt-2 ml-2 flex flex-col space-y-2 border-l pl-3 border-gray-200">
-      {menu.subItems.map((item, i) => (
-        <span
-          key={i}
-          className="text-gray-600 hover:text-[#1daa61] text-sm cursor-pointer"
-        >
-          {item}
-        </span>
-      ))}
-    </div>
+              {/* Subcategories */}
+              <div className="mt-2 ml-2 flex flex-col space-y-2 border-l pl-3 border-gray-200">
+                {menu.subItems.map((item, i) => (
+                  <span
+                    key={i}
+                    className="text-gray-600 hover:text-[#1daa61] text-sm cursor-pointer"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
 
-    {/* Products */}
-    {dropdownProducts[menu.name]?.length > 0 ? (
-<div
-  className="mt-3 ml-4 flex flex-col space-y-3 max-h-64 overflow-y-auto pr-2"
-  onWheel={(e) => e.stopPropagation()}   // ✅ prevents page scroll
->
+              {/* Products */}
+              {dropdownProducts[menu.name]?.length > 0 ? (
+                <div
+                  className="mt-3 ml-4 flex flex-col space-y-3 max-h-64 overflow-y-auto pr-2"
+                  onWheel={(e) => e.stopPropagation()}   // ✅ prevents page scroll
+                >
 
-        {dropdownProducts[menu.name].map((product, i) => (
-          <button
-            key={i}
-            onClick={() => handleProductClick(product._id || product.id)}
-            className="flex items-center gap-3 text-left hover:bg-[#f5fff9] p-2 rounded-lg"
-          >
-                   {product.images?.length > 0 ? (
+                  {dropdownProducts[menu.name].map((product, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleProductClick(product._id || product.id)}
+                      className="flex items-center gap-3 text-left hover:bg-[#f5fff9] p-2 rounded-lg"
+                    >
+                      {product.images?.length > 0 ? (
                         // 🖼️ Show first image if available
                         <Image
                           src={product.images[0]}
@@ -557,24 +573,24 @@ onToggle={(e) => {
                           className="rounded-md object-cover"
                         />
                       )}
-            <div>
-              <p className="text-sm font-medium text-gray-800">
-                {product.name.length > 20
-                  ? product.name.substring(0, 20) + "..."
-                  : product.name}
-              </p>
-              <p className="text-xs text-[#1daa61] font-semibold">
-                ₹{product.price}
-              </p>
-            </div>
-          </button>
-        ))}
-      </div>
-    ) : (
-      <p className="text-sm text-gray-500 ml-4 mt-2">No products found</p>
-    )}
-  </details>
-))}
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">
+                          {product.name.length > 20
+                            ? product.name.substring(0, 20) + "..."
+                            : product.name}
+                        </p>
+                        <p className="text-xs text-[#1daa61] font-semibold">
+                          ₹{product.price}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 ml-4 mt-2">No products found</p>
+              )}
+            </details>
+          ))}
 
         </div>
       </div>
@@ -599,101 +615,65 @@ onToggle={(e) => {
               Your cart is empty.
             </p>
           ) : (
-            cart.map((item, index) => {
-              const product = item.productId || item; // handle both local + backend
-              const imageSrc =
-                product.images?.[0] || item.image || "/placeholder.png";
-              const name = product.name || item.name || "Unnamed Product";
-              const price = product.price || item.price || 0;
+cart.map((item, index) => {
+  const product = item.productId || item;    // backend or guest cart
+const productId =
+  typeof item.productId === "object"
+    ? item.productId._id        // populated object
+    : item.productId || item._id; // plain string or local cart
 
-              return (
-                <div key={index} className="flex items-center justify-between p-4">
-                  <div className="flex items-center space-x-3">
-                    {product.images?.length > 0 ? (
-                      <Image
-                        src={product.images[0]}
-                        alt={name}
-                        width={50}
-                        height={50}
-                        className="rounded-lg object-cover border"
-                      />
-                    ) : product.model3D ? (
-                      <div className="relative w-[50px] h-[50px]">
-                        {/* 3D Model Viewer */}
-                        <model-viewer
-                          src={product.model3D}
-                          alt={name}
-                          camera-controls
-                          auto-rotate
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            borderRadius: "0.5rem",
-                            background: "#f9fafb",
-                            border: "1px solid #e5e7eb",
-                          }}
-                        ></model-viewer>
+  const imageSrc =
+    product.images?.[0] ||                   // backend image
+    item.image ||                             // guest cart image
+    "/placeholder.png";
 
-                        {/* 🌀 Floating “3D” Badge */}
-                        <span
-                          className="absolute bottom-0 right-0 bg-[#1daa61] text-white text-[10px] font-bold px-0.8 py-[0.5px] rounded-tl-md shadow-sm"
-                        >
-                          3D
-                        </span>
-                      </div>
-                    ) : (
-                      <Image
-                        src="/placeholder.png"
-                        alt={name}
-                        width={50}
-                        height={50}
-                        className="rounded-lg object-cover border"
-                      />
-                    )}
+  const name = product.name || item.name;
+  const price = product.price || item.price;
 
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-800">{name}</h3>
-                      <p className="text-xs text-gray-500">
-                        Qty: {item.quantity || 1}
-                      </p>
-                      <p className="text-[#1daa61] font-semibold text-sm">
-                        ₹{price}
-                      </p>
-                    </div>
-                  </div>
+  return (
+    <div key={index} className="flex items-center justify-between p-4">
+      {/* ✅ Clicking product opens product page */}
+      <div
+        className="flex items-center space-x-3 cursor-pointer"
+        onClick={() => router.push(`/product/${productId}`)}
+      >
+        <Image
+          src={imageSrc}
+          alt={name}
+          width={50}
+          height={50}
+          className="rounded-lg object-cover border"
+        />
 
-                  {/* 🗑️ Remove Button */}
-                  <button className="text-gray-500 hover:text-red-500 transition">
-                    <Trash2
-                      className="w-5 h-5"
-                      onClick={() => {
-                        if (user) {
-                          console.log(product)
-                          dispatch(
-                            removeFromCartBackend({
-                              uid: user.uid,
-                              productId: product
-                            })
-                          )
-                            .unwrap()
-                            .then(() => {
-                              toast.error(`${name} removed from your account cart 🗑️`);
-                            })
-                            .catch((err: any) => {
-                              toast.error(err.message || "Failed to remove item ❌");
-                            });
-                        } else {
-                          dispatch(removeFromCart(item._id || item.id));
-                          toast.error(`${name} removed from cart 🗑️`);
-                        }
-                      }}
-                    />
-                  </button>
-                </div>
-              );
+        <div>
+          <h3 className="text-sm font-semibold text-gray-800">{name}</h3>
+          <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+          <p className="text-[#1daa61] font-semibold text-sm">₹{price}</p>
+        </div>
+      </div>
 
+      {/* 🗑 Remove */}
+      <button className="text-gray-500 hover:text-red-500 transition">
+        <Trash2
+          className="w-5 h-5"
+          onClick={() => {
+            if (user) {
+              dispatch(removeFromCartBackend({ uid: user.uid, productId: productId}))
+                .unwrap()
+                .then(() => toast.error(`${name} removed 🗑️`))
+                .catch((err: any) => toast.error(err.message));
+            } else {
+              dispatch(removeFromCart(productId));
+              toast.error(`${name} removed 🗑️`);
+            }
+          }}
+        />
+      </button>
+    </div>
+  );
+}))}
+          
 
-            }))}
         </div>
 
         {/* Footer */}

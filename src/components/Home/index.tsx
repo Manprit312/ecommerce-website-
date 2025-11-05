@@ -32,8 +32,6 @@ export default function EcommerceWebsite() {
   return selectedProduct ? (
     <ProductDetails
       product={selectedProduct}
-      // toggleFavorite={(id) => dispatch(toggleFavorite(id))}
-      // favorites={favorites}
       goBack={() => dispatch(clearSelectedProduct())}
     />
   ) : (
@@ -42,7 +40,7 @@ export default function EcommerceWebsite() {
      <SalePopup />
       <HomeBanner />
       <Categories  />
-      <div className="relative">
+      <div className="relative" id="productgrid">
         <ProductsGrid
         
          

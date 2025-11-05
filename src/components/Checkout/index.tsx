@@ -39,17 +39,54 @@ export default function CheckoutPage() {
     }
     setStep(2);
   };
+const handlePlaceOrder = async () => {
+  setLoading(true);
 
-  const handlePlaceOrder = async () => {
-    setLoading(true);
-    try {
-      console.log("✅ Order Placed:", { ...form, items });
-      await new Promise((r) => setTimeout(r, 1000));
-      setShowPopup("success");
-    } finally {
-      setLoading(false);
-    }
+  // 1️⃣ Create Razorpay order
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payment/create-order`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount: totalAmount }),
+  });
+
+  const data = await res.json();
+
+  const options = {
+    key: data.key,
+    order_id: data.orderId,
+    amount: data.amount,
+    handler: async function (response: any) {
+      // 2️⃣ Save order in DB
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/create`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          items,
+          subtotal: totalAmount,
+          totalAmount,
+          paymentStatus: "Paid",
+    paymentMethod: "Razorpay",
+          razorpayPaymentId: response.razorpay_payment_id,
+          razorpayOrderId: response.razorpay_order_id,
+        }),
+      });
+
+      router.push(
+      `/order-success?orderId=${data.orderId}&paymentId=${response.razorpay_payment_id}`
+    );
+    },
   };
+
+  const razorpay = new (window as any).Razorpay(options);
+  razorpay.open();
+
+  setLoading(false);
+};
+
+
+
+
 
   const closePopup = () => {
     setShowPopup(null);
@@ -57,7 +94,7 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f5fff9] via-white to-[#e6fff1] py-6 px-4 sm:py-10 sm:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#f5fff9] via-white to-[#e6fff1] py-6 px-4 sm:py-10 sm:px-8 mt-2">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 sm:mb-10">
@@ -108,6 +145,7 @@ export default function CheckoutPage() {
               >
                 Shipping
               </p>
+              
             </div>
 
             {/* Step 2 */}
@@ -132,49 +170,82 @@ export default function CheckoutPage() {
 
         {/* Step Content */}
         <div className="relative">
-          {step === 1 ? (
-            <div
-              key="step1"
-              className="bg-white shadow-xl rounded-2xl p-6 sm:p-8 border border-[#1daa61]/10 animate-fadeIn"
-            >
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                <MapPin className="text-[#1daa61] w-5 h-5" /> Shipping
-                Information
-              </h2>
+         {step === 1 ? (
+  <div
+    key="step1"
+    className="bg-white shadow-xl rounded-2xl p-6 sm:p-8 border border-[#1daa61]/10 animate-fadeIn"
+  >
+    <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+      <MapPin className="text-[#1daa61] w-5 h-5" /> Shipping Information
+    </h2>
 
-              <div className="space-y-4">
-                {[
-                  { name: "name", label: "Full Name", type: "text" },
-                  { name: "email", label: "Email Address", type: "email" },
-                  { name: "phone", label: "Phone Number", type: "tel" },
-                  { name: "address", label: "Address", type: "text" },
-                  { name: "city", label: "City", type: "text" },
-                  { name: "pincode", label: "Pincode", type: "text" },
-                ].map((field) => (
-                  <div key={field.name}>
-                    <label className="block text-gray-700 text-sm mb-1.5 font-medium">
-                      {field.label}
-                    </label>
-                    <input
-                      type={field.type}
-                      name={field.name}
-                      value={(form as any)[field.name]}
-                      onChange={handleChange}
-                      placeholder={`Enter ${field.label.toLowerCase()}`}
-                      className="w-full border border-gray-300 rounded-lg sm:rounded-full px-4 py-2.5 text-gray-700 focus:ring-2 focus:ring-[#1daa61] focus:border-[#1daa61] outline-none transition"
-                    />
-                  </div>
-                ))}
-              </div>
+    {/* ---------------- Shipping Form ---------------- */}
+    <div className="space-y-4">
+      {[
+        { name: "name", label: "Full Name", type: "text" },
+        { name: "email", label: "Email Address", type: "email" },
+        { name: "phone", label: "Phone Number", type: "tel" },
+        { name: "address", label: "Address", type: "text" },
+        { name: "city", label: "City", type: "text" },
+        { name: "pincode", label: "Pincode", type: "text" },
+      ].map((field) => (
+        <div key={field.name}>
+          <label className="block text-gray-700 text-sm mb-1.5 font-medium">
+            {field.label}
+          </label>
+          <input
+            type={field.type}
+            name={field.name}
+            value={(form as any)[field.name]}
+            onChange={handleChange}
+            placeholder={`Enter ${field.label.toLowerCase()}`}
+            className="w-full border border-gray-300 rounded-lg sm:rounded-full px-4 py-2.5 text-gray-700 focus:ring-2 focus:ring-[#1daa61] focus:border-[#1daa61] outline-none transition"
+          />
+        </div>
+      ))}
+    </div>
 
-              <button
-                onClick={nextStep}
-                className="mt-8 w-full bg-[#1daa61] text-white font-semibold py-3 rounded-lg sm:rounded-full shadow-lg hover:bg-[#179f55] active:scale-98 transition-all duration-300"
-              >
-                Continue to Review
-              </button>
+    {/* ---------------- Cart Summary Inside Step-1 ---------------- */}
+    <div className="mt-10 bg-[#f5fff9] rounded-xl border border-[#1daa61]/20 p-4">
+      <h3 className="font-semibold text-gray-800 mb-4 text-sm sm:text-base flex items-center gap-2">
+        <ShoppingBag className="text-[#1daa61] w-4 h-4" />
+        Order Summary
+      </h3>
+
+      <div className="space-y-3 max-h-[200px] overflow-y-auto pr-2">
+        {items.map((item) => (
+          <div
+            key={item._id}
+            className="flex justify-between items-center border-b border-gray-100 pb-3"
+          >
+            <div>
+              <p className="text-gray-800 font-medium text-sm sm:text-base">
+                {item.name}
+              </p>
+              <p className="text-xs sm:text-sm text-gray-500">Qty: {item.quantity}</p>
             </div>
-          ) : (
+            <p className="text-[#1daa61] font-semibold text-sm sm:text-base">
+              ₹{(item.price * item.quantity).toFixed(2)}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-between font-semibold text-gray-800 text-base sm:text-lg mt-4">
+        <p>Total</p>
+        <p className="text-[#1daa61]">₹{totalAmount.toFixed(2)}</p>
+      </div>
+    </div>
+
+    {/* ---------------- Next Button ---------------- */}
+    <button
+      onClick={nextStep}
+      className="mt-8 w-full bg-[#1daa61] text-white font-semibold py-3 rounded-lg sm:rounded-full shadow-lg hover:bg-[#179f55] active:scale-98 transition-all duration-300"
+    >
+      Continue to Review
+    </button>
+  </div>
+) : (
             <div
               key="step2"
               className="bg-white shadow-xl rounded-2xl p-6 sm:p-8 border border-[#1daa61]/10 animate-fadeIn"
