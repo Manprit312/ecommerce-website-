@@ -12,7 +12,7 @@ import {
 import Image from "next/image";
 import { fetchProducts } from "@/redux/features/productSlice";
 import toast from "react-hot-toast";
-
+import Categories from "../Categories";
 import { getUserCart } from "@/redux/features/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
@@ -226,9 +226,9 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
 
     dispatch(fetchProducts(name));   // ✅ same just like Categories
     const section = document.getElementById("productgrid");
-  if (section) {
-    section.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
 
@@ -246,7 +246,7 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
           subItems:
             cat.subcategories?.length > 0
               ? cat.subcategories.map((sub: any) => sub.name || sub)
-              : ["All Products"],
+              : [""],
         }));
 
         setMenus(formattedMenus);
@@ -381,10 +381,23 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
           {/* Scrollable container */}
           <div className="menu-scroll-wrapper overflow-x-auto overflow-y-visible">
             <div className="menu-scroll flex items-center justify-start space-x-10 px-6 max-w-7xl mx-auto">
+              <span
+                className="text-gray-800 font-semibold hover:text-[#1daa61] text-sm cursor-pointer"
+                onClick={() => router.push("/")}
+              >
+                Home
+              </span>
+              <span
+                className="text-gray-800 font-semibold hover:text-[#1daa61] text-sm cursor-pointer"
+                onClick={() => router.push("/category/all")}
+              >
+                View All
+              </span>
+
               {menus.map((menu, index) => (
                 <div
                   key={index}
-                 ref={(el) => {
+                  ref={(el) => {
                     menuRefs.current[menu.name] = el;
                   }}
                   className="relative py-4 flex items-center gap-1"
@@ -517,6 +530,7 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
 
               {/* Subcategories */}
               <div className="mt-2 ml-2 flex flex-col space-y-2 border-l pl-3 border-gray-200">
+
                 {menu.subItems.map((item, i) => (
                   <span
                     key={i}
@@ -615,64 +629,64 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
               Your cart is empty.
             </p>
           ) : (
-cart.map((item, index) => {
-  const product = item.productId || item;    // backend or guest cart
-const productId =
-  typeof item.productId === "object"
-    ? item.productId._id        // populated object
-    : item.productId || item._id; // plain string or local cart
+            cart.map((item, index) => {
+              const product = item.productId || item;    // backend or guest cart
+              const productId =
+                typeof item.productId === "object"
+                  ? item.productId._id        // populated object
+                  : item.productId || item._id; // plain string or local cart
 
-  const imageSrc =
-    product.images?.[0] ||                   // backend image
-    item.image ||                             // guest cart image
-    "/placeholder.png";
+              const imageSrc =
+                product.images?.[0] ||                   // backend image
+                item.image ||                             // guest cart image
+                "/placeholder.png";
 
-  const name = product.name || item.name;
-  const price = product.price || item.price;
+              const name = product.name || item.name;
+              const price = product.price || item.price;
 
-  return (
-    <div key={index} className="flex items-center justify-between p-4">
-      {/* ✅ Clicking product opens product page */}
-      <div
-        className="flex items-center space-x-3 cursor-pointer"
-        onClick={() => router.push(`/product/${productId}`)}
-      >
-        <Image
-          src={imageSrc}
-          alt={name}
-          width={50}
-          height={50}
-          className="rounded-lg object-cover border"
-        />
+              return (
+                <div key={index} className="flex items-center justify-between p-4">
+                  {/* ✅ Clicking product opens product page */}
+                  <div
+                    className="flex items-center space-x-3 cursor-pointer"
+                    onClick={() => router.push(`/product/${productId}`)}
+                  >
+                    <Image
+                      src={imageSrc}
+                      alt={name}
+                      width={50}
+                      height={50}
+                      className="rounded-lg object-cover border"
+                    />
 
-        <div>
-          <h3 className="text-sm font-semibold text-gray-800">{name}</h3>
-          <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
-          <p className="text-[#1daa61] font-semibold text-sm">₹{price}</p>
-        </div>
-      </div>
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-800">{name}</h3>
+                      <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                      <p className="text-[#1daa61] font-semibold text-sm">₹{price}</p>
+                    </div>
+                  </div>
 
-      {/* 🗑 Remove */}
-      <button className="text-gray-500 hover:text-red-500 transition">
-        <Trash2
-          className="w-5 h-5"
-          onClick={() => {
-            if (user) {
-              dispatch(removeFromCartBackend({ uid: user.uid, productId: productId}))
-                .unwrap()
-                .then(() => toast.error(`${name} removed 🗑️`))
-                .catch((err: any) => toast.error(err.message));
-            } else {
-              dispatch(removeFromCart(productId));
-              toast.error(`${name} removed 🗑️`);
-            }
-          }}
-        />
-      </button>
-    </div>
-  );
-}))}
-          
+                  {/* 🗑 Remove */}
+                  <button className="text-gray-500 hover:text-red-500 transition">
+                    <Trash2
+                      className="w-5 h-5"
+                      onClick={() => {
+                        if (user) {
+                          dispatch(removeFromCartBackend({ uid: user.uid, productId: productId }))
+                            .unwrap()
+                            .then(() => toast.error(`${name} removed 🗑️`))
+                            .catch((err: any) => toast.error(err.message));
+                        } else {
+                          dispatch(removeFromCart(productId));
+                          toast.error(`${name} removed 🗑️`);
+                        }
+                      }}
+                    />
+                  </button>
+                </div>
+              );
+            }))}
+
 
         </div>
 
@@ -749,7 +763,9 @@ const productId =
 
 
 
-
+<div className="md:hidden block ">  
+  <Categories />
+</div>
     </header>
   );
 }

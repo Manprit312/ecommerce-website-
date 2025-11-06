@@ -2,7 +2,7 @@
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Heart, ArrowLeft, ChevronLeft, ChevronRight, Router } from "lucide-react";
+import { ShoppingCart, Forward, ArrowLeft, ChevronLeft, ChevronRight, } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { addToCart } from "@/redux/features/cartSlice";
@@ -85,38 +85,38 @@ export default function ProductDetails({
   console.log(product)
   const [tab, setTab] = useState("description");
 
-// ✅ Get related products
-useEffect(() => {
-  if (!product?.categories?.length) return;
+  // ✅ Get related products
+  useEffect(() => {
+    if (!product?.categories?.length) return;
 
-  const fetchRelatedProducts = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
-      const data = await res.json();
+    const fetchRelatedProducts = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
+        const data = await res.json();
 
-      const productCategoryIDs = product.categories.map((c) =>
-        typeof c === "string" ? c : c._id
-      );
-
-      const related = data.filter((p) => {
-        const ids = p.categories.map((c) =>
+        const productCategoryIDs = product.categories.map((c) =>
           typeof c === "string" ? c : c._id
         );
 
-        return (
-          p._id !== product._id && // exclude same product
-          ids.some((cid) => productCategoryIDs.includes(cid))
-        );
-      });
+        const related = data.filter((p) => {
+          const ids = p.categories.map((c) =>
+            typeof c === "string" ? c : c._id
+          );
 
-      setRelatedProducts(related);
-    } catch (err) {
-      console.error("❌ Error fetching related:", err);
-    }
-  };
+          return (
+            p._id !== product._id && // exclude same product
+            ids.some((cid) => productCategoryIDs.includes(cid))
+          );
+        });
 
-  fetchRelatedProducts();
-}, [product]);
+        setRelatedProducts(related);
+      } catch (err) {
+        console.error("❌ Error fetching related:", err);
+      }
+    };
+
+    fetchRelatedProducts();
+  }, [product]);
 
 
 
@@ -248,8 +248,14 @@ useEffect(() => {
 
             {/* Right: Info + Actions */}
             <div >
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                Categories
+              </h3>
               <div className="flex items-center justify-between mb-4">
+
                 <div className="flex items-center gap-2 flex-wrap">
+
+
                   {categoryNames.map((cat) => (
                     <span
                       key={cat}
@@ -263,10 +269,12 @@ useEffect(() => {
 
                 <button
                   onClick={() => setShowShareModal(true)}
-                  className="p-2 rounded-lg shadow-sm bg-[#1daa61] text-white transition-all duration-200 shrink-0"
+                  className="p-2 rounded-lg shadow-sm bg-[#1daa61] text-white transition-all duration-200 shrink-0 flex items-center gap-2"
                 >
-                  <Share2Icon className="w-5 h-5 text-white hover:text-white" />
+                  <span>Share</span>
+                  <Forward className="w-5 h-5 text-white" />
                 </button>
+
               </div>
 
 
@@ -317,7 +325,7 @@ useEffect(() => {
                   })}
                 </div>
 
-                <div className="text-sm text-gray-600">{product?.rating} ({product?.reviews} reviews)</div>
+                {/* <div className="text-sm text-gray-600">{product?.rating} ({product?.reviews} reviews)</div> */}
               </div>
 
               <div className="mb-6">
@@ -327,10 +335,51 @@ useEffect(() => {
                     <div className="text-gray-400 line-through">  ₹{product.originalPrice}</div>
                   )}
                 </div>
-                {product?.inStock && <p className="text-green-600 font-medium mt-2">In Stock - Ready to Ship</p>}
+                {product?.inStock ? (
+                  <p className="text-green-600 font-medium mt-2">In Stock — Ready to Ship</p>
+                ) : (
+                  <p className="text-red-500 font-medium mt-2">Out of Stock</p>
+                )}
               </div>
 
-              <p className="text-gray-600 text-lg mb-6 leading-relaxed">{product?.shortDescription || product?.description}</p>
+              {/* ✅ Combined Features + Specifications — replacing tabs section */}
+              <div className="border-t  mt-8 rounded-b-3xl py-10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                  {/* Features Section */}
+                  {product?.keyFeatures?.length > 0 && (
+                    <div className="mb-8">
+                      <h3 className="font-bold text-xl mb-4 text-gray-800"> Key Features</h3>
+                      <ul className="space-y-2 text-gray-700">
+                        {product.keyFeatures.map((feature, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-[#1daa61] font-bold">•</span>
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Specifications Section */}
+                  {product?.specs && (
+                    <div className="mb-8">
+
+                      <ul className="space-y-2 text-gray-700">
+                        {Object.entries(product.specs).map(([key, value]) => (
+                          <li key={key} className="flex gap-2">
+                            <span className="text-[#1daa61] font-bold min-w-[130px] capitalize">
+                              {key.replace(/_/g, " ")}:
+                            </span>
+                            <span>{Array.isArray(value) ? value.join(", ") : value}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+
 
               {/* Color selection */}
               {product?.colors?.length > 0 && (
@@ -368,11 +417,17 @@ useEffect(() => {
 
                 </div>
               </div>
+              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                <div>{product?.shipping || "Free Shipping"}</div>
+                <div>{product?.returnPolicy || "Easy Returns"}</div>
+                <div>{product?.warranty || "1 Year Warranty"}</div>
+              </div>
 
               {/* Action Buttons */}
               <div className="space-y-3">
                 {/* 🟢 BUY NOW BUTTON */}
                 <button
+                  disabled={!product?.inStock}
                   onClick={async () => {
                     try {
                       // 1️⃣ Add to Cart (backend or local)
@@ -385,6 +440,10 @@ useEffect(() => {
                               selectedColor,
                               quantity,
                               image: product.images?.[0],
+                              shippingCharge:
+  typeof product.shipping === "number"
+    ? product.shipping                   // use numeric shipping price
+    : 0,    // ✅ include shippingCharge
                             },
                           })
                         );
@@ -431,10 +490,12 @@ useEffect(() => {
                 </button>
 
                 <button
+                  disabled={!product?.inStock}
                   onClick={() => {
                     if (user) {
                       // 👤 Logged-in user — sync with backend
-                      dispatch(
+                   (console.log("Adding to cart for user:", Number(String(product.shipping).replace(/[^0-9]/g, "")) ),  
+                       dispatch(
                         addToCartBackend({
                           uid: user.uid,
                           product: {
@@ -442,9 +503,10 @@ useEffect(() => {
                             selectedColor,
                             quantity,
                             image: product.images?.[0],
+                            shippingCharge: Number(String(product.shipping).replace(/[^0-9]/g, "")) || 0
                           },
                         })
-                      )
+                      ))
                       // toast.success(`${product.name} added to your account cart! 🛒`);
                     } else {
                       // 🧍 Guest user — local Redux only
@@ -454,6 +516,7 @@ useEffect(() => {
                           selectedColor,
                           quantity,
                           image: product.images?.[0],
+                         shippingCharge: Number(String(product.shipping).replace(/[^0-9]/g, "")) || 0
                         })
                       );
                       toast.success(`${product.name} added to cart! 🛒`);
@@ -469,11 +532,7 @@ useEffect(() => {
                 </button>
 
 
-                <div className="flex items-center justify-between text-sm text-gray-600 mt-2">
-                  <div>Free Shipping</div>
-                  <div>Easy Returns</div>
-                  <div>1 Year Warranty</div>
-                </div>
+
               </div>
               {showShareModal && (
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fadeIn">
@@ -619,7 +678,7 @@ useEffect(() => {
           <div className="border-t">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
               {/* Tabs Header */}
-              <div className="flex items-center gap-6 border-b pb-4">
+              <div className="flex items-center gap-6  pb-4">
                 <button
                   onClick={() => setTab("description")}
                   className={`pb-2 ${tab === "description"
@@ -629,7 +688,7 @@ useEffect(() => {
                 >
                   Description
                 </button>
-                <button
+                {/* <button
                   onClick={() => setTab("specs")}
                   className={`pb-2 ${tab === "specs"
                     ? "border-b-2 border-amber-500 font-semibold text-amber-600"
@@ -646,7 +705,7 @@ useEffect(() => {
                     }`}
                 >
                   Reviews
-                </button>
+                </button> */}
               </div>
 
               {/* Tab Content */}
@@ -664,7 +723,7 @@ useEffect(() => {
                         {product?.description ||
                           "Premium product with elegant design and high-quality materials."}
                       </p>
-                      <ul className="mt-4 space-y-2 text-gray-700">
+                      {/* <ul className="mt-4 space-y-2 text-gray-700">
                         {(product?.keyFeatures || product?.specs?.features || []).map(
                           (f, i) => (
                             <li key={i} className="flex items-start gap-2">
@@ -673,7 +732,7 @@ useEffect(() => {
                             </li>
                           )
                         )}
-                      </ul>
+                      </ul> */}
                     </motion.div>
                   )}
 
@@ -777,43 +836,43 @@ useEffect(() => {
 
                 {/* Swiper Slider for Related Products */}
                 <div className="relative">
-                <Swiper
-  slidesPerView={1.5}
-  spaceBetween={16}
-  breakpoints={{
-    640: { slidesPerView: 2.5, spaceBetween: 20 },
-    1024: { slidesPerView: 4, spaceBetween: 24 },
-  }}
-  loop
-  autoplay={{ delay: 4000, disableOnInteraction: false }}
-  className="pb-6"
->
-  {relatedProducts.slice(0, 8).map((item,i) => (
-    <SwiperSlide key={i}>
-      <div
-        onClick={() => router.push(`/product/${item._id}`)}
-        className="cursor-pointer rounded-2xl m-2 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden"
-      >
-        <div className="relative h-40 flex items-center justify-center overflow-hidden">
-          <Image
-            src={item.images?.[0] || "/placeholder.png"}
-            alt={item.name}
-            width={200}
-            height={200}
-            className="object-cover w-full transition-transform duration-300 hover:scale-105"
-          />
-        </div>
+                  <Swiper
+                    slidesPerView={1.5}
+                    spaceBetween={16}
+                    breakpoints={{
+                      640: { slidesPerView: 2.5, spaceBetween: 20 },
+                      1024: { slidesPerView: 4, spaceBetween: 24 },
+                    }}
+                    loop
+                    autoplay={{ delay: 4000, disableOnInteraction: false }}
+                    className="pb-6"
+                  >
+                    {relatedProducts.slice(0, 8).map((item, i) => (
+                      <SwiperSlide key={i}>
+                        <div
+                          onClick={() => router.push(`/product/${item._id}`)}
+                          className="cursor-pointer rounded-2xl m-2 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                        >
+                          <div className="relative h-40 flex items-center justify-center overflow-hidden">
+                            <Image
+                              src={item.images?.[0] || "/placeholder.png"}
+                              alt={item.name}
+                              width={200}
+                              height={200}
+                              className="object-cover w-full transition-transform duration-300 hover:scale-105"
+                            />
+                          </div>
 
-        <div className="p-4 text-center">
-          <h5 className="text-gray-800 font-semibold text-sm truncate">
-            {item.name}
-          </h5>
-          <p className="text-[#1daa61] font-bold text-base">₹{item.price}</p>
-        </div>
-      </div>
-    </SwiperSlide>
-  ))}
-</Swiper>
+                          <div className="p-4 text-center">
+                            <h5 className="text-gray-800 font-semibold text-sm truncate">
+                              {item.name}
+                            </h5>
+                            <p className="text-[#1daa61] font-bold text-base">₹{item.price}</p>
+                          </div>
+                        </div>
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
 
                 </div>
               </div>

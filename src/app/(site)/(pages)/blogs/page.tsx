@@ -33,7 +33,7 @@ export default function BlogPage() {
   }, []);
 
   return (
-    <section className="min-h-screen bg-gradient-to-b from-[#E8FFF3] to-[#D6FFE5] py-20 px-6 overflow-hidden">
+    <section className="min-h-screen bg-gradient-to-b from-[#E8FFF3] to-[#D6FFE5] py-20 px-6 overflow-hidden mt-20">
       {/* Background floating shapes */}
       <motion.div
         className="absolute w-72 h-72 bg-[#1daa61]/10 rounded-full blur-3xl top-20 -left-20"

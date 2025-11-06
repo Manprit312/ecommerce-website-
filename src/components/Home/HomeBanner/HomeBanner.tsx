@@ -53,86 +53,55 @@ export default function HeroSection() {
       {/* 🖼️ Swiper Section (scrolls after video) */}
 
       <section
-        className="relative pt-[90px] sm:pt-[120px] md:pt-[120px] overflow-hidden text-gray-800 bg-white"
-        style={{
-          backgroundImage: "url(/images/homebannerback.png)",
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-        }}
+        className="relative pt-[135px] sm:pt-[120px] md:pt-[120px] overflow-hidden text-gray-800 bg-white"
+
+        // style={{
+        //   backgroundImage: "url(/images/homebannerback.png)",
+        //   backgroundSize: "cover",
+        //   backgroundRepeat: "no-repeat",
+        //   backgroundPosition: "center",
+        // }}
       >
         <div className="absolute inset-0 bg-black/10 z-[1]" />
 
-        <Swiper
-          modules={[Autoplay, Navigation]}
-          autoplay={{ delay: 4000, disableOnInteraction: false }}
-          navigation={{
-            nextEl: ".swiper-button-next-custom",
-            prevEl: ".swiper-button-prev-custom",
-          }}
-          loop
-          className="w-full z-[2]"
-        >
-          {slides.map((slide) => (
-            <SwiperSlide key={slide.id}>
-              <div className="relative pt-2 md:py-10 transition-all duration-700">
-                <div className="absolute inset-0 bg-[#1daa61]/5"></div>
+      <Swiper
+  modules={[Autoplay, Navigation]}
+  autoplay={{ delay: 4000, disableOnInteraction: false }}
+  navigation={{
+    nextEl: ".swiper-button-next-custom",
+    prevEl: ".swiper-button-prev-custom",
+  }}
+  loop
+  className="w-full h-[140px] sm:h-[350px] md:h-[520px] relative"
+>
+  {slides.map((slide) => (
+    <SwiperSlide key={slide.id}>
+      <div className="relative w-full h-full overflow-hidden">
+        <Image
+          src={slide.image}
+          alt={slide.product}
+          fill
+          priority
+          className="object-cover w-full h-full"
+        />
+      </div>
+    </SwiperSlide>
+  ))}
 
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="grid md:grid-cols-2 gap-10 items-center">
-                    {/* Left Section */}
-                    <div className="relative z-10">
-                      <div className="inline-block bg-[#1daa61]/10 backdrop-blur-sm px-3 py-1 rounded-full mb-3">
-                        <span className="text-sm font-semibold text-[#1daa61]">
-                          {slide.subtitle}
-                        </span>
-                      </div>
-                      <h1 className="text-3xl md:text-4xl font-bold mb-3 leading-tight text-gray-900">
-                        {slide.title}
-                      </h1>
-                      <p className="text-base md:text-lg mb-5 text-gray-600 max-w-md">
-                        {slide.description}
-                      </p>
-                    </div>
+  {/* Arrows */}
+  <div className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-white/80 hover:bg-[#1daa61] text-[#1daa61] hover:text-white p-2 rounded-full shadow-md transition-all cursor-pointer">
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+    </svg>
+  </div>
 
-                    {/* Right Section */}
-                    <div className="hidden md:flex justify-center">
-                      <div className="relative bg-white/50 rounded-2x flex flex-col items-center transform perspective-[1000px]">
-                        <div className="relative md:w-96 md:h-72 mb-3 overflow-hidden rounded-xl transform-gpu transition-transform duration-700 ease-in-out hover:rotate-y-6 hover:scale-[1.05]">
-                          <Image
-                            src={slide.image}
-                            alt={slide.product}
-                            fill
-                            className="object-cover rounded-2xl transition-transform duration-[6000ms] ease-in-out"
-                          />
-                        </div>
-                        {/* <h3 className="text-xl font-bold mb-1 text-gray-800">
-                          {slide.product}
-                        </h3>
-                        <p className="text-[#1daa61] font-medium text-sm">
-                          {slide.tag}
-                        </p> */}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
+  <div className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-white/80 hover:bg-[#1daa61] text-[#1daa61] hover:text-white p-2 rounded-full shadow-md transition-all cursor-pointer">
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+    </svg>
+  </div>
+</Swiper>
 
-          {/* Custom Navigation */}
-          <div className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-[#1daa61] text-[#1daa61] hover:text-white p-2 rounded-full shadow-md transition-all cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-            </svg>
-          </div>
-
-          <div className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-[#1daa61] text-[#1daa61] hover:text-white p-2 rounded-full shadow-md transition-all cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </Swiper>
       </section>
     </>
   );

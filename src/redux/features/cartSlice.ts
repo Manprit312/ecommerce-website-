@@ -9,6 +9,7 @@ export interface CartItem {
   price: number;
   image?: string;
   quantity: number;
+  shippingCharge?: number;
 }
 
 export interface CartState {
@@ -39,9 +40,11 @@ export const addToCartBackend = createAsyncThunk(
    const body = JSON.stringify({
   uid,
   productId: product._id,
-  quantity: product.quantity,        // ✅ Send quantity
+  quantity: product.quantity,
   image: product.image,
+  shippingCharge: product.shippingCharge || 0,  // ✅ include shippingCharge
 });
+
 
       console.log("📦 [Request Body]:", body);
 
@@ -195,10 +198,10 @@ extraReducers: (builder) => {
       const cart = action.payload;
       state.items = cart?.items || [];
       state.totalQuantity = cart?.totalCount || 0;
-      state.totalAmount = state.items.reduce(
-        (sum, i) => sum + i.price * i.quantity,
-        0
-      );
+     state.totalAmount = state.items.reduce(
+  (sum, i) => sum + (i.price * i.quantity) + (i.shippingCharge || 0),
+  0
+);
     })
     .addCase(addToCartBackend.rejected, (state, action) => {
       state.status = "failed";
@@ -214,10 +217,10 @@ extraReducers: (builder) => {
       const cart = action.payload;
       state.items = cart?.items || [];
       state.totalQuantity = cart?.totalCount || 0;
-      state.totalAmount = state.items.reduce(
-        (sum, i) => sum + i.price * i.quantity,
-        0
-      );
+     state.totalAmount = state.items.reduce(
+  (sum, i) => sum + (i.price * i.quantity) + (i.shippingCharge || 0),
+  0
+);
     })
     .addCase(getUserCart.rejected, (state, action) => {
       state.status = "failed";
@@ -229,10 +232,10 @@ extraReducers: (builder) => {
       const cart = action.payload;
       state.items = cart?.items || [];
       state.totalQuantity = cart?.totalCount || 0;
-      state.totalAmount = state.items.reduce(
-        (sum, i) => sum + i.price * i.quantity,
-        0
-      );
+     state.totalAmount = state.items.reduce(
+  (sum, i) => sum + (i.price * i.quantity) + (i.shippingCharge || 0),
+  0
+);
     })
 
     // ✅ Clear Cart (backend)

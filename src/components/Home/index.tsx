@@ -2,7 +2,7 @@
 "use client";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {  selectProduct, clearSelectedProduct } from "@/redux/features/productSlice";
+import { selectProduct, clearSelectedProduct } from "@/redux/features/productSlice";
 import ProductCard from "./ProductCard";
 import NetworkBackground from "../background";
 import { useRouter } from "next/navigation";
@@ -36,15 +36,17 @@ export default function EcommerceWebsite() {
     />
   ) : (
     <>
-     <NetworkBackground />
-     <SalePopup />
+      <NetworkBackground />
+      <SalePopup />
       <HomeBanner />
-      <Categories  />
+      <div className="hidden md:block">
+        <Categories />
+      </div>
       <div className="relative" id="productgrid">
         <ProductsGrid
-        
-         
-        
+
+
+
         />
 
         <div className="flex justify-end px-6 mb-12">
@@ -56,7 +58,7 @@ export default function EcommerceWebsite() {
           </button>
         </div>
       </div>
-      <UncategorizedProducts/>
+      <UncategorizedProducts />
     </>
   );
 }
