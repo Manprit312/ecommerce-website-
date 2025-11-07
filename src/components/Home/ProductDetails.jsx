@@ -429,7 +429,7 @@ export default function ProductDetails({
                 </div>
               </div>
               <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                <div>{product?.shipping || "Free Shipping"}</div>
+                <div className="font-bold">₹ { product?.shipping+ " Shipping Charges" || "Free Shipping"}</div>
                 <div>{product?.returnPolicy || "Easy Returns"}</div>
                 <div>{product?.warranty || "1 Year Warranty"}</div>
               </div>
