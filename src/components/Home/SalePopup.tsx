@@ -40,13 +40,13 @@ export default function SalePopup() {
 
         {/* ✅ Close button stays on top */}
         <button
-          onClick={() => setIsOpen(false)}
-          className="absolute top-3 right-3 z-[100] bg-black/70 text-white hover:bg-red-600
-                     w-10 h-10 flex items-center justify-center rounded-full transition
-                     font-bold text-xl shadow-lg"
-        >
-          <X size={20} />
-        </button>
+      onClick={() => setIsOpen(false)}
+      className="absolute top-2 right-2 z-[10000] bg-green text-white hover:bg-red-600
+                 w-10 h-10 flex items-center justify-center rounded-full transition
+                 font-bold text-xl shadow-lg"
+    >
+      <X size={20} />
+    </button>
 
         {/* ✅ Image keeps its natural size */}
         <Image

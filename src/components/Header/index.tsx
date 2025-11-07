@@ -216,11 +216,15 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
   };
 
   const handleCheckout = () => {
-    if (!user) {
-      toast.error("Please log in to continue checkout.");
-      router.push("/signin"); // or your login page route
-      return;
-    } router.push("/checkout");
+   if (!user) {
+    toast.error("Please log in to continue checkout.");
+    router.push("/signin");
+    setCartOpen(false);   // ✅ Close cart after redirect
+    return;
+  }
+
+  setCartOpen(false);     // ✅ Close cart
+  router.push("/checkout");
   }
   const handleClick = (name: string) => {
 
@@ -510,6 +514,19 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
         </div>
 
         <div className="flex flex-col p-4 space-y-4 overflow-y-auto">
+           <span
+                className="text-gray-800 font-semibold hover:text-[#1daa61] text-sm cursor-pointer"
+                onClick={() =>{ router.push("/"); setMobileMenuOpen(false);}}
+              >
+                Home
+              </span>
+              <span
+                className="text-gray-800 font-semibold hover:text-[#1daa61] text-sm cursor-pointer"
+                onClick={() => {    router.push("/category/all"); setMobileMenuOpen(false); }}
+              >
+                View All
+              </span>
+
           {menus.map((menu, index) => (
             <details
               key={index}

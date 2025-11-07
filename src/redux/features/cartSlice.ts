@@ -71,14 +71,17 @@ export const addToCartBackend = createAsyncThunk(
 export const removeFromCartBackend = createAsyncThunk(
   "cart/removeFromCartBackend",
   async (
-    { uid, productId }: { uid: string; productId: string },
+    { uid, productId, removeAll = false, }: { uid: string; productId: string,removeAll?: boolean; },
     { rejectWithValue }
   ) => {
+
     try {
+      console.log("REQ BODY:", { uid, productId, removeAll });
+
       const res = await fetch(`${API_URL}/api/users/cart/remove`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid, productId }),
+        body: JSON.stringify({ uid, productId ,removeAll}),
       });
 
       const data = await res.json();

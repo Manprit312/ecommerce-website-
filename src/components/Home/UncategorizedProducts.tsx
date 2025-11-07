@@ -30,15 +30,14 @@ export default function UncategorizedProducts() {
         const data: Product[] = await res.json();
 
         // ✅ Filter products that have no categories
-        const uncategorized = data.filter(
-          (p) =>
-            !p.categories ||
-            !Array.isArray(p.categories) ||
-            p.categories.length === 0
-        );
-
-        setProducts(uncategorized);
-        if (uncategorized.length === 0)
+       const newCategoryProducts = data.filter((p) =>
+      Array.isArray(p.categories) &&
+      p.categories.some((c:any) =>
+        typeof c === "object" && c.name?.toLowerCase() === "new"
+      )
+    );
+        setProducts(newCategoryProducts);
+        if (newCategoryProducts.length === 0)
           toast("No uncategorized products found.");
       } catch (err: any) {
         toast.error("❌ " + err.message);

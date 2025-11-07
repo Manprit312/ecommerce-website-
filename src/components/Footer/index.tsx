@@ -4,24 +4,25 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import React, { useState ,useEffect} from "react";
-import { Mail, Phone, Clock, Facebook, Instagram, Linkedin } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Mail, Phone, Clock, Facebook, Instagram, Linkedin, PinIcon } from "lucide-react";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
-  const [description, setDescription] = useState(""); 
+  const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState(""); // success / error
   const [loading, setLoading] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
- useEffect(() => {
-     const fetchLogo = async () => {
+  const [contact, setContact] = useState<any>(null);
+  useEffect(() => {
+    const fetchLogo = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logo`);
         if (!res.ok) throw new Error("Failed to fetch logo");
         const data = await res.json();
         if (data?.logoUrl) setLogoUrl(data.logoUrl);
-        setDescription(data?.description || "");  
+        setDescription(data?.description || "");
       } catch (err) {
         console.error("❌ Failed to fetch logo:", err);
       } finally {
@@ -29,7 +30,20 @@ export default function Footer() {
       }
     };
     fetchLogo();
- }, []);
+  }, []);
+  useEffect(() => {
+      const fetchContactData = async () => {
+        try {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contact-settings`);
+          const data = await res.json();
+          setContact(data);
+        } catch (error) {
+          console.error("Failed to load contact settings");
+        }
+      };
+  
+      fetchContactData();
+    }, []);
   return (
     <footer className="bg-[#182337] text-white py-14 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
@@ -39,7 +53,7 @@ export default function Footer() {
           {/* ✅ Brand + Description */}
           <div>
             <Image
-              src={logoUrl?logoUrl:null} // ⭐ change to logo url (public folder or cloudinary)
+              src={logoUrl ? logoUrl : null} // ⭐ change to logo url (public folder or cloudinary)
               alt="Arya Enterprises Logo"
               width={120}
               height={120}
@@ -47,7 +61,7 @@ export default function Footer() {
             />
 
             <p className="text-gray-300 leading-relaxed pr-8">
-            {description}
+              {description}
             </p>
 
             {/* ✅ Social Icons */}
@@ -70,9 +84,13 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4 text-[#1daa61]">Support</h4>
             <ul className="space-y-2 text-gray-300">
-              <li><Link href="/contact" className="hover:text-[#1daa61]">Contact Us</Link></li>
-              <li><Link href="/shipping" className="hover:text-[#1daa61]">Shipping Info</Link></li>
+              <li><Link href="/" className="hover:text-[#1daa61]">Home</Link></li>
+              <li><Link href="/category/all" className="hover:text-[#1daa61]">Shop</Link></li>
               <li><Link href="/blogs" className="hover:text-[#1daa61]">Blogs</Link></li>
+               <li><Link href="/about-us" className="hover:text-[#1daa61]">About Us</Link></li>
+              <li><Link href="/contact" className="hover:text-[#1daa61]">Contact Us</Link></li>
+
+
             </ul>
           </div>
 
@@ -80,6 +98,8 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4 text-[#1daa61]">Policies</h4>
             <ul className="space-y-2 text-gray-300">
+               <li><Link href="/disclaimer" className="hover:text-[#1daa61]">Disclaimer</Link></li>
+              <li><Link href="/shipping" className="hover:text-[#1daa61]">Shipping Info</Link></li>
               <li><Link href="/return&refund" className="hover:text-[#1daa61]">Returns & Refunds</Link></li>
               <li><Link href="/privacy_policy" className="hover:text-[#1daa61]">Privacy Policy</Link></li>
             </ul>
@@ -102,6 +122,10 @@ export default function Footer() {
               <li className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-[#1daa61]" />
                 Mon – Sat, 10 AM – 6 PM
+              </li>
+                <li className="flex items-center gap-2">
+                <PinIcon className="w-5 h-5 text-[#1daa61]" />
+             {contact?.address || "Loading..."}
               </li>
             </ul>
           </div>

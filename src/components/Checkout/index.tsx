@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   X,
+  Trash,
 } from "lucide-react";
 
 export default function CheckoutPage() {
@@ -28,22 +29,22 @@ export default function CheckoutPage() {
   const backendCart = useAppSelector((state: any) => state.cart);
 
   const items = user ? backendCart.items : localCart;
-// ✅ Subtotal (products only)
-const subtotal = items.reduce(
-  (sum: number, item: any) => sum + item.price * item.quantity,
-  0
-);
+  // ✅ Subtotal (products only)
+  const subtotal = items.reduce(
+    (sum: number, item: any) => sum + item.price * item.quantity,
+    0
+  );
 
-// ✅ Shipping total (sum of product shipping)
-const shipping = items.reduce(
-  (sum: number, item: any) => sum + (item.shippingCharge || 0),
-  0
-);
+  // ✅ Shipping total (sum of product shipping)
+  const shipping = items.reduce(
+    (sum: number, item: any) => sum + (item.shippingCharge || 0),
+    0
+  );
 
-// ✅ If subtotal crosses the free shipping slab
-const totalAmount = subtotal > 999 ? subtotal : subtotal + shipping;
+  // ✅ If subtotal crosses the free shipping slab
+  const totalAmount = subtotal > 999 ? subtotal : subtotal + shipping;
 
-console.log("Total Amount:", localCart, backendCart, totalAmount);
+  console.log("Total Amount:", localCart, backendCart, totalAmount);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -123,17 +124,17 @@ console.log("Total Amount:", localCart, backendCart, totalAmount);
 
 
   const closePopup = () => {
-  if (showPopup === "success") {
-    router.push("/profile");
-  } else if (items.length === 0) {
-    router.push("/");        // ✅ Redirect to Home when no product
-  }
+    if (showPopup === "success") {
+      router.push("/profile");
+    } else if (items.length === 0) {
+      router.push("/");        // ✅ Redirect to Home when no product
+    }
 
-  setShowPopup(null);
-};
+    setShowPopup(null);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f5fff9] via-white to-[#e6fff1] py-6 px-4 sm:py-10 sm:px-8 mt-26">
+    <div className="min-h-screen bg-gradient-to-br from-[#f5fff9] via-white to-[#e6fff1] py-6 px-4 sm:py-10 sm:px-8 mt-29">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 sm:mb-10">
@@ -188,7 +189,7 @@ console.log("Total Amount:", localCart, backendCart, totalAmount);
             {/* Step 2 */}
             <div className="relative flex flex-col items-center z-10">
               <div
-                className={`flex items-center justify-center w-10 h-10 rounded-full font-semibold shadow-lg text-white transition-all duration-300 ${step === 2 ? "bg-[#1daa61] scale-110" : "bg-gray-300"
+                className={`flex items-center justify-center w-10 h-10 rounded-full font-semibold shadow-lg  ${step === 2 ? "text-white" : "text-black"} transition-all duration-300 ${step === 2 ? "bg-[#1daa61] scale-110" : "bg-gray-300"
                   }`}
               >
                 2
@@ -308,9 +309,30 @@ console.log("Total Amount:", localCart, backendCart, totalAmount);
                           </div>
 
                         </div>
-                        <p className="text-[#1daa61] font-semibold text-sm sm:text-base">
-                          ₹{(item.price * item.quantity).toFixed(2)}
-                        </p>
+                        <div className="flex flex-col items-end justify-end gap-1">
+
+                          <p className="text-[#1daa61] font-semibold text-sm sm:text-base">
+                            ₹{(item.price * item.quantity).toFixed(2)}
+
+                          </p>
+                          <button
+                            onClick={() =>
+                              dispatch(
+                                removeFromCartBackend({
+                                  uid: user.uid,
+                                  productId: productId,
+                                  removeAll: true,
+                                }))
+
+                            }
+                            className="w-7 h-7 rounded-full flex justify-center items-center border hover:bg-red-500 hover:text-red transition text-red-500"
+                            title="Remove item"
+                          >
+                            <Trash size={13} />
+                          </button>
+                        </div>
+
+
                       </div>
                     )
                   })}
@@ -375,24 +397,24 @@ console.log("Total Amount:", localCart, backendCart, totalAmount);
                 ))}
               </div>
 
-           <div className="mt-6 border-t border-gray-200 pt-4 space-y-2">
-  <div className="flex justify-between text-gray-700 text-sm sm:text-base">
-    <p>Subtotal</p>
-    <p>₹{subtotal.toFixed(2)}</p>
-  </div>
+              <div className="mt-6 border-t border-gray-200 pt-4 space-y-2">
+                <div className="flex justify-between text-gray-700 text-sm sm:text-base">
+                  <p>Subtotal</p>
+                  <p>₹{subtotal.toFixed(2)}</p>
+                </div>
 
-  <div className="flex justify-between text-gray-700 text-sm sm:text-base">
-    <p>Shipping</p>
-    <p className="text-[#1daa61] font-medium">
-      {`₹${shipping.toFixed(2)}`}
-    </p>
-  </div>
+                <div className="flex justify-between text-gray-700 text-sm sm:text-base">
+                  <p>Shipping</p>
+                  <p className="text-[#1daa61] font-medium">
+                    {`₹${shipping.toFixed(2)}`}
+                  </p>
+                </div>
 
-  <div className="flex justify-between font-semibold text-base sm:text-lg text-gray-800 pt-2">
-    <p>Total</p>
-    <p className="text-[#1daa61]">₹{totalAmount.toFixed(2)}</p>
-  </div>
-</div>
+                <div className="flex justify-between font-semibold text-base sm:text-lg text-gray-800 pt-2">
+                  <p>Total</p>
+                  <p className="text-[#1daa61]">₹{totalAmount.toFixed(2)}</p>
+                </div>
+              </div>
 
 
               <button

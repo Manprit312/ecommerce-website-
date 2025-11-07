@@ -127,19 +127,36 @@ export default function ProductDetails({
 
       {/* Product Detail Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <button
-          onClick={goBack}
-          className="flex items-center space-x-2 text-gray-700 hover:text-amber-600 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 " />
-          <span className="font-medium text-[#1daa61]">Back to Shop</span>
-        </button>
+        <div className="flex items-center justify-between ">
+
+  {/* Back to Shop */}
+  <button
+    onClick={goBack}
+    className="flex items-center space-x-2 text-gray-700 hover:text-[#1daa61] transition-colors"
+  >
+    <ArrowLeft className="w-5 h-5" />
+    <span className="font-medium text-xs sm:text-sm text-[#1daa61]">
+      Back to Shop
+    </span>
+  </button>
+
+  {/* Share */}
+  <button
+    onClick={() => setShowShareModal(true)}
+    className="p-2 rounded-lg shadow-sm text-[#1daa61] transition-all duration-200 shrink-0 flex items-center gap-2"
+  >
+    <span className="font-medium text-xs sm:text-sm">Share</span>
+    <Forward className="w-4 h-4 sm:w-5 sm:h-5 text-[#1daa61]" />
+  </button>
+
+</div>
+
 
         <div className="backdrop-transparent-lg rounded-3xl  overflow-hidden">
-          <div className="grid md:grid-cols-2 gap-8 p-6 md:p-8">
+          <div className="grid md:grid-cols-2 gap-8 md:p-8">
             {/* Left: Gallery + Thumbs */}
             <div>
-              <div className="relative rounded-2xl overflow-hidden bg-amber-100 p-6  rounded-xl">
+              <div className="relative rounded-2xl overflow-hidden bg-amber-100 p-1  rounded-xl">
                 <AnimatePresence initial={false} mode="wait">
 
                   <motion.div
@@ -248,10 +265,10 @@ export default function ProductDetails({
 
             {/* Right: Info + Actions */}
             <div >
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">
+              <h3 className="text-sm font-semibold text-gray-700 sm:mb-2">
                 Categories
               </h3>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between sm:mb-4">
 
                 <div className="flex items-center gap-2 flex-wrap">
 
@@ -267,13 +284,7 @@ export default function ProductDetails({
                   ))}
                 </div>
 
-                <button
-                  onClick={() => setShowShareModal(true)}
-                  className="p-2 rounded-lg shadow-sm bg-[#1daa61] text-white transition-all duration-200 shrink-0 flex items-center gap-2"
-                >
-                  <span>Share</span>
-                  <Forward className="w-5 h-5 text-white" />
-                </button>
+             
 
               </div>
 
@@ -288,7 +299,7 @@ export default function ProductDetails({
 
               <div className="flex items-center gap-3 mb-4">
 
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   {[...Array(5)].map((_, i) => {
                     const rating = product?.rating || 0;
 
@@ -323,7 +334,7 @@ export default function ProductDetails({
                       />
                     );
                   })}
-                </div>
+                </div> */}
 
                 {/* <div className="text-sm text-gray-600">{product?.rating} ({product?.reviews} reviews)</div> */}
               </div>
@@ -709,7 +720,7 @@ export default function ProductDetails({
               </div>
 
               {/* Tab Content */}
-              <div className="py-6">
+              <div className="py-2">
                 <AnimatePresence mode="wait">
                   {tab === "description" && (
                     <motion.div
@@ -718,7 +729,7 @@ export default function ProductDetails({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
                     >
-                      <h3 className="font-bold text-lg mb-3">Product Description</h3>
+                      {/* <h3 className="font-bold text-lg mb-3">Product Description</h3> */}
                       <p className="text-gray-600">
                         {product?.description ||
                           "Premium product with elegant design and high-quality materials."}
@@ -830,7 +841,7 @@ export default function ProductDetails({
             </div>
 
             {/* ✅ Related Products Section */}
-            <div className="border-t bg-transparent backdrop-blur-md mt-8 rounded-b-3xl py-10">
+            <div className="border-t bg-transparent backdrop-blur-md mt-2 rounded-b-3xl py-10">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h4 className="font-bold mb-6 text-gray-800 text-lg">You Might Also Like</h4>
 
@@ -881,6 +892,7 @@ export default function ProductDetails({
 
           </div>
         </div>
+
       </div>
     </div>
   );

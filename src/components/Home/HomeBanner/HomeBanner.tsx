@@ -53,7 +53,7 @@ export default function HeroSection() {
       {/* 🖼️ Swiper Section (scrolls after video) */}
 
       <section
-        className="relative pt-[135px] sm:pt-[120px] md:pt-[120px] overflow-hidden text-gray-800 bg-white"
+        className="relative pt-[135px] sm:pt-[120px] md:pt-[120px] overflow-hidden text-gray-800 bg-white mt-1"
 
         // style={{
         //   backgroundImage: "url(/images/homebannerback.png)",
