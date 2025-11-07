@@ -153,7 +153,7 @@ export default function ProductDetails({
 
 
         <div className="backdrop-transparent-lg rounded-3xl  overflow-hidden">
-          <div className="grid md:grid-cols-2 gap-8 md:p-8">
+          <div className="grid md:grid-cols-2 gap-4 md:p-8">
             {/* Left: Gallery + Thumbs */}
             <div>
               <div className="relative rounded-2xl overflow-hidden bg-amber-100 p-1  rounded-xl">
@@ -195,7 +195,7 @@ export default function ProductDetails({
 
                   </motion.div>
                 </AnimatePresence>
-                {!product?.model3D && (
+                {/* {!product?.model3D && (
                   <>
                     <button
                       onClick={goPrev}
@@ -212,7 +212,7 @@ export default function ProductDetails({
                       <ChevronRight className="w-6 h-6" />
                     </button>
                   </>
-                )}
+                )} */}
                 {gallery.length > 0 && (
                   <div className="mt-4 flex items-center gap-3 overflow-x-auto pb-2">
                     {gallery.map((item, i) => (
@@ -241,7 +241,7 @@ export default function ProductDetails({
                           <Image
                             src={item.src}
                             alt={`thumb-${i}`}
-                            width={80}
+                            width={90}
                             height={80}
                             className="object-cover"
                           />
@@ -255,8 +255,8 @@ export default function ProductDetails({
 
               {/* Badge */}
               {product?.badge && (
-                <div className="mt-4">
-                  <span className="inline-block bg-gradient-to-r from-amber-500 to-orange-600 text-[#d0061] px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                <div className="mt-1">
+                  <span className="inline-block bg-gradient-to-r from-amber-500 to-orange-600 text-[#d0061] px-4 py-1 rounded-full text-sm font-bold shadow-lg">
                     {product.badge}
                   </span>
                 </div>
@@ -265,15 +265,15 @@ export default function ProductDetails({
 
             {/* Right: Info + Actions */}
             <div >
-              <h3 className="text-sm font-semibold text-gray-700 sm:mb-2">
-                Categories
-              </h3>
+             
               <div className="flex items-center justify-between sm:mb-4">
 
                 <div className="flex items-center gap-2 flex-wrap">
 
 
-                  {categoryNames.map((cat) => (
+                  <h3 className="text-sm font-semibold text-gray-700 sm:mb-2">
+                Categories
+              </h3> {categoryNames.map((cat) => (
                     <span
                       key={cat}
                       onClick={() => handleClick(cat)}
@@ -289,7 +289,7 @@ export default function ProductDetails({
               </div>
 
 
-              <div className="flex items-start justify-between mb-2 gap-4">
+              <div className="flex items-start justify-between mb-1 gap-4">
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-800 flex-1">
                   {product?.name}
                 </h1>
@@ -297,7 +297,7 @@ export default function ProductDetails({
 
               </div>
 
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-1">
 
                 {/* <div className="flex items-center">
                   {[...Array(5)].map((_, i) => {
@@ -357,37 +357,22 @@ export default function ProductDetails({
               <div className="border-t  mt-8 rounded-b-3xl py-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                  {/* Features Section */}
-                  {product?.keyFeatures?.length > 0 && (
-                    <div className="mb-8">
-                      <h3 className="font-bold text-xl mb-4 text-gray-800"> Key Features</h3>
-                      <ul className="space-y-2 text-gray-700">
-                        {product.keyFeatures.map((feature, i) => (
-                          <li key={i} className="flex items-start gap-2">
-                            <span className="text-[#1daa61] font-bold">•</span>
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                {product?.specs?.length > 0 && (
+  <div className="mb-8">
+    <h3 className="font-bold text-xl mb-4 text-gray-800">Specifications</h3>
 
-                  {/* Specifications Section */}
-                  {product?.specs && (
-                    <div className="mb-8">
-
-                      <ul className="space-y-2 text-gray-700">
-                        {Object.entries(product.specs).map(([key, value]) => (
-                          <li key={key} className="flex gap-2">
-                            <span className="text-[#1daa61] font-bold min-w-[130px] capitalize">
-                              {key.replace(/_/g, " ")}:
-                            </span>
-                            <span>{Array.isArray(value) ? value.join(", ") : value}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+    <ul className="space-y-2 text-gray-700">
+      {product.specs.map((spec, index) => (
+        <li key={index} className="flex gap-2">
+          <span className="text-[#1daa61] font-bold min-w-[130px] capitalize">
+            {spec.key}:
+          </span>
+          <span>{spec.value}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
                 </div>
               </div>
 

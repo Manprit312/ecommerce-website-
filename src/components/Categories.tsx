@@ -39,7 +39,7 @@ export default function Categories() {
   // ✅ Handle click
   const handleClick = (name) => {
     setSelectedCategory(name);
-    dispatch(fetchProducts(name));
+   
   };
 
   if (loading)
@@ -54,7 +54,7 @@ export default function Categories() {
     ...categories.filter(c => c.name !== "All" && c.name !== "New"),   // remove New
   ];
   return (
-  <section className="relative w-full bg-gradient-to-b from-[#f5fff9] to-white shadow-inner  sm:py-1">
+    <section className="relative w-full bg-gradient-to-b from-[#f5fff9] to-white shadow-inner  sm:py-1">
 
       <NetworkBackground />
 
@@ -70,21 +70,19 @@ pt-1 pb-1 sm:pt-1 sm:pb-1 snap-x touch-pan-x`}
             <button
               key={index}
               onClick={() => {
-                if (category.name?.toLowerCase() === "all") {
-                  router.push("/category/all");
-                }
-                handleClick(category.name);
+                setSelectedCategory(category.name);
+                router.push(`/category/${category.name}`); // ✅ send param
+                 dispatch(fetchProducts(category.name));
               }}
               className={`snap-start flex flex-col items-center flex-shrink-0 
               w-12 sm:w-20 cursor-pointer rounded-xl transition-all duration-300 
               ${selectedCategory === category.name ? "scale-105" : "hover:bg-gray-50"}`}
             >
-             <div
-  className={`w-8 h-8 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 
-              flex items-center justify-center mb-0.5 sm:mb-1 transition-colors duration-300 ${
-                selectedCategory === category.name ? "border-[#1daa61]" : "border-white"
-              }`}
->
+              <div
+                className={`w-8 h-8 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 
+              flex items-center justify-center mb-0.5 sm:mb-1 transition-colors duration-300 ${selectedCategory === category.name ? "border-[#1daa61]" : "border-white"
+                  }`}
+              >
 
                 <Image
                   src={category.image}

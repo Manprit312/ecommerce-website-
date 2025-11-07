@@ -11,28 +11,7 @@ export default function CategoryPage() {
   const [error, setError] = useState("");
   const [products, setProducts] = useState([]);
 
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      setError("");
-
-      // 👇 Correct API endpoint for category
-      const res = await fetch(`${apiUrl}/api/products`);
-      if (!res.ok) throw new Error("Failed to fetch products");
-
-      const data = await res.json();
-      setProducts(data);
-    } catch (err) {
-      const errObj = err as Error;
-      setError(errObj.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchProducts()
-    console.log(products)
-  }, [])
+  
 
   return (
     <>
@@ -40,7 +19,7 @@ export default function CategoryPage() {
       <div className="max-w-7xl mx-auto  mt-25 px-6 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-xl md:text-3xl font-bold text-gray-800 capitalize">
-            All Category Products
+            {category} Category Products
           </h1>
 
           <button
@@ -51,18 +30,9 @@ export default function CategoryPage() {
           </button>
         </div>
 
-        {products.length > 0 ? (
-          <ProductsGrid
-
-
-
-
-          />
-        ) : (
-          <p className="text-gray-600 text-center py-10">
-            No products found for this category.
-          </p>
-        )}
+       
+          <ProductsGrid/>
+       
       </div>
     </>
   );

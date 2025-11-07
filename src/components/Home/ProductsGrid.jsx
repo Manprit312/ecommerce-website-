@@ -10,9 +10,7 @@ export default function ProductsGrid() {
   const dispatch = useDispatch();
   const { filtered, loading, error } = useSelector((state) => state.products);
 
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+
 
   if (loading)
     return (

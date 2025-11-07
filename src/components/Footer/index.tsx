@@ -82,7 +82,7 @@ export default function Footer() {
 
           {/* ✅ Support Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-[#1daa61]">Support</h4>
+            <h4 className="text-lg font-semibold mb-4 text-[#1daa61]">Quick Links</h4>
             <ul className="space-y-2 text-gray-300">
               <li><Link href="/" className="hover:text-[#1daa61]">Home</Link></li>
               <li><Link href="/category/all" className="hover:text-[#1daa61]">Shop</Link></li>
@@ -138,11 +138,11 @@ export default function Footer() {
           <p className="mt-3 md:mt-0">
             Designed by{" "}
             <a
-              href="https://www.aydpm.in/"
+              href="https://bharatai-software.vercel.app/"
               target="_blank"
               className="text-[#1daa61] hover:text-[#17c36e] font-semibold"
             >
-              AYD Software
+             Bharat Ai Software
             </a>
           </p>
         </div>

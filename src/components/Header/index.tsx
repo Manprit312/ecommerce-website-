@@ -228,6 +228,9 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
   }
   const handleClick = (name: string) => {
 
+  const slug = encodeURIComponent(name.toLowerCase().replace(/\s+/g, "-"));
+  router.push(`/category/${slug}`);
+
     dispatch(fetchProducts(name));   // ✅ same just like Categories
     const section = document.getElementById("productgrid");
     if (section) {
@@ -395,7 +398,7 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
                 className="text-gray-800 font-semibold hover:text-[#1daa61] text-sm cursor-pointer"
                 onClick={() => router.push("/category/all")}
               >
-                View All
+              Shop
               </span>
 
               {menus.map((menu, index) => (
@@ -524,7 +527,7 @@ export default function Header({ menuOpen, setMenuOpen }: HeaderProps) {
                 className="text-gray-800 font-semibold hover:text-[#1daa61] text-sm cursor-pointer"
                 onClick={() => {    router.push("/category/all"); setMobileMenuOpen(false); }}
               >
-                View All
+                Shop
               </span>
 
           {menus.map((menu, index) => (

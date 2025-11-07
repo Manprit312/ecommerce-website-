@@ -6,9 +6,9 @@ export default function ThreeDLoader() {
   return (
     <div className="loader-container">
       {/* SVG gradient definitions */}
-      <svg height="0" width="0" viewBox="0 0 64 64" className="absolute">
+      {/* <svg height="0" width="0" viewBox="0 0 64 64" className="absolute">
         <defs>
-          {/* Mint gradients */}
+        
           <linearGradient id="a1" x1="0" y1="62" x2="0" y2="2" gradientUnits="userSpaceOnUse">
             <stop stopColor="#1daa61" />
             <stop stopColor="#b4f2d6" offset="1" />
@@ -38,9 +38,9 @@ export default function ThreeDLoader() {
         </defs>
       </svg>
 
-      {/* ARYA Animated Letters */}
+     
       <div className="flex items-center justify-center gap-3 relative drop-shadow-xl">
-        {/* A */}
+
         <svg viewBox="0 0 64 64" height="64" width="64" className="inline-block">
           <path
             strokeLinecap="round"
@@ -53,7 +53,7 @@ export default function ThreeDLoader() {
           />
         </svg>
 
-        {/* R */}
+       
         <svg viewBox="0 0 64 64" height="64" width="64" className="inline-block">
           <path
             strokeLinecap="round"
@@ -66,7 +66,7 @@ export default function ThreeDLoader() {
           />
         </svg>
 
-        {/* Y */}
+       
         <svg viewBox="0 0 64 64" height="64" width="64" className="inline-block spin-slow">
           <path
             strokeLinecap="round"
@@ -79,7 +79,7 @@ export default function ThreeDLoader() {
           />
         </svg>
 
-        {/* A */}
+    
         <svg viewBox="0 0 64 64" height="64" width="64" className="inline-block">
           <path
             strokeLinecap="round"
@@ -93,14 +93,14 @@ export default function ThreeDLoader() {
         </svg>
       </div>
 
-      {/* ENTERPRISES text */}
+   
       <p className="text-[#1daa61] font-bold mt-6 tracking-[0.3em] text-xl uppercase drop-shadow-md animate-fadeIn">
         ENTERPRISES
       </p>
 
       <p className="text-gray-500 font-medium mt-2 tracking-wide animate-pulse">
         Loading your experience...
-      </p>
+      </p> */}
     </div>
   );
 }
